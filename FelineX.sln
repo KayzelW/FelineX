@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIServer", "APIServer\APIServer.csproj", "{5DFBF558-E2AE-4F93-BEC8-F7BE0A512A69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DFBF558-E2AE-4F93-BEC8-F7BE0A512A69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DFBF558-E2AE-4F93-BEC8-F7BE0A512A69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DFBF558-E2AE-4F93-BEC8-F7BE0A512A69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DFBF558-E2AE-4F93-BEC8-F7BE0A512A69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
