@@ -17,6 +17,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1"/>
+        <PackageReference Include="OpenIddict" Version="5.1.0" />
+        <PackageReference Include="OpenIddict.Core" Version="5.1.0" />
     </ItemGroup>
 
     <ItemGroup>
