@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Database.Data;
+namespace Shared.DBClasses;
 
 // Add profile data for application users by adding properties to the ApplicationUser class
 public class ApplicationUser : IdentityUser
 {
+    
 }

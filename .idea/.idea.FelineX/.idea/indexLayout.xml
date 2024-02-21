@@ -3,6 +3,9 @@
   <component name="UserContentModel">
     <attachedFolders />
     <explicitIncludes />
-    <explicitExcludes />
+    <explicitExcludes>
+      <Path>APIServer/Data/app.db-shm</Path>
+      <Path>APIServer/Data/app.db-wal</Path>
+    </explicitExcludes>
   </component>
 </project>
