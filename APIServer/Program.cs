@@ -1,5 +1,6 @@
 using APIServer.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace APIServer;
 
@@ -14,11 +15,14 @@ public sealed class Program
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException(
                                    "Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(connectionString));
 
 #if DEBUG
-
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo(){ Title = "Dev API", Version = "v1"});
+        });
 #endif
 
         builder.Services.AddControllers();
@@ -37,7 +41,10 @@ public sealed class Program
         {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dev API v1");
+            });
         }
 
         app.UseHttpsRedirection();
