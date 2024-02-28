@@ -3,7 +3,7 @@ using Shared.DB.Interfaces;
 
 namespace Shared.DB.Classes.Task;
 
-public class Task : ITask
+public abstract class Task : ITask
 {
     public Guid Id { get; protected set; }
     public string Question { get; set; }
