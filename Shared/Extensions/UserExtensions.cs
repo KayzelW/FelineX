@@ -1,4 +1,4 @@
-﻿using Shared.DBClasses;
+﻿using Shared.DB.Classes;
 using Shared.Models;
 
 namespace Shared.Extensions;

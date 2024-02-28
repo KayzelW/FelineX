@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Shared.DBClasses;
+namespace Shared.DB.Classes;
 
 // Add profile data for application users by adding properties to the User class
 public class User : IdentityUser

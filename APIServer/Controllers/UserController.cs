@@ -2,7 +2,7 @@
 using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.DBClasses;
+using Shared.DB.Classes;
 using Shared.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -18,17 +18,6 @@ public class UserController : Controller
         _dbContext = dbContext;
     }
 
-    [HttpGet(Name = "GetTestData")]
-    public async Task<ActionResult<string>> GetUser()
-    {
-        var User = await _dbContext.Users.FirstOrDefaultAsync();
-        if (User is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(User.ToDTO());
-    }
     
     [HttpPost(Name = "PostUser")]
     [SwaggerOperation("Post a new user from UserDTO")]
@@ -57,6 +46,6 @@ public class UserController : Controller
         await _dbContext.Users.AddAsync(_user);
         await _dbContext.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetUser), new { id = _user }, _user.ToDTO());
+        return Ok(_user.Id);
     }
 }
