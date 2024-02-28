@@ -1,0 +1,61 @@
+﻿@page "/my_tests"
+@rendermode InteractiveServer
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Handle</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>
+            <button
+                type="button"
+                class="btn btn-link btn-rounded btn-sm fw-bold"
+                data-mdb-ripple-color="dark">
+                Edit
+            </button>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">2</th>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">
+              Dropdown
+            </button>
+            <ul class="dropdown-menu">
+              <li><button class="dropdown-item" type="button">Dropdown item</button></li>
+              <li><button class="dropdown-item" type="button">Dropdown item</button></li>
+              <li><button class="dropdown-item" type="button">Dropdown item</button></li>
+            </ul>
+          </div>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">3</th>
+        <td colspan="2">Larry the Bird</td>
+        <td>
+            <button
+                type="button"
+                class="btn btn-link btn-rounded btn-sm fw-bold"
+                data-mdb-ripple-color="dark">
+                Edit
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+@code {
+
+}
