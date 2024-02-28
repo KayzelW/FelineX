@@ -1,5 +1,4 @@
 ﻿using Shared.Models;
-using Shared.DBClasses;
 
 namespace APIServer.Extensions;
 

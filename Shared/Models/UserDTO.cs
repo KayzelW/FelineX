@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Shared.DBClasses;
+using Shared.DB.Classes;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shared.Models;

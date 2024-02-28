@@ -17,7 +17,7 @@ namespace APIServer.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
 
-            modelBuilder.Entity("Shared.DBClasses.User", b =>
+            modelBuilder.Entity("Shared.DB.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
