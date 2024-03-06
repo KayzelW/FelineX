@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shared.DBClasses;
+using Shared.DB.Classes;
 
 namespace APIServer.Database;
 

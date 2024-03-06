@@ -1,0 +1,37 @@
+﻿@page "/profile"
+@inject NavigationManager nav
+@rendermode InteractiveServer
+
+
+<div class="row d-flex justify-content-center align-items-center h-100">
+    <div class="col col-lg-6 mb-4 mb-lg-0">
+        <div class="card mb-3" style="border-radius: .5rem;">
+            <div class="row g-0">
+                <div class="col-md-4 gradient-custom text-center"
+                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                         alt="Avatar" class="img-fluid my-5" style="width: 80px;"/>
+                </div>
+                <div class="col-md-8 justify-content-center">
+                    <div class="card-body p-5">
+                        <h5>Бабаева</h5>
+                        <p>Преподаватель</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+         <button class="btn btn-primary me-md-2" type="button" @onclick="cringe">Выход</button>
+       </div>
+        
+    </div>
+</div>
+
+@code {
+
+    private void cringe()
+    {
+        nav.NavigateTo("/");
+    }
+
+}
