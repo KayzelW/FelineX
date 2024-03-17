@@ -6,6 +6,6 @@ public interface ITask
 {
     Guid Id { get; }
     string Question { get; set; }
-    public List<(string, bool)> VariableAnswers { get; set; }
+    public List<VariableAnswer> VariableAnswers { get; set; }
     public ThemeTask Thematic { get; set; }
 }

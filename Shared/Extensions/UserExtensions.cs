@@ -1,4 +1,4 @@
-﻿using Shared.DB.Classes;
+﻿using Shared.DB.Classes.User;
 using Shared.Models;
 
 namespace Shared.Extensions;
@@ -10,9 +10,9 @@ public static partial class UserExtensions
     /// </summary>
     /// <param name="user"></param>
     /// <returns>UserDTO</returns>
-    public static UserDTO ToDTO(this User user)
+    public static UserDto ToDTO(this User user)
     {
-        return new UserDTO()
+        return new UserDto()
         {
             Id = user.Id,
             UserName = user.UserName,
@@ -25,7 +25,7 @@ public static partial class UserExtensions
     /// </summary>
     /// <param name="dto"></param>
     /// <returns>User</returns>
-    public static User FromDto(this UserDTO dto)
+    public static User FromDto(this UserDto dto)
     {
         return new User()
         {
@@ -34,5 +34,4 @@ public static partial class UserExtensions
             Access = dto.Access
         };
     }
-    
 }

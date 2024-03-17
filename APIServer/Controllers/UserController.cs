@@ -3,6 +3,7 @@ using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.DB.Classes;
+using Shared.DB.Classes.User;
 using Shared.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -18,12 +19,12 @@ public class UserController : Controller
         _dbContext = dbContext;
     }
 
-    
+
     [HttpPost(Name = "PostUser")]
     [SwaggerOperation("Post a new user from UserDTO")]
     [SwaggerResponse(409, "Already Exists")]
     [SwaggerResponse(201, "Success")]
-    public async Task<ActionResult> PostUser(UserDTO user)
+    public async Task<ActionResult> PostUser(UserDto user)
     {
         var _user = new User()
         {

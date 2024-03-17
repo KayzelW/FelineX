@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Shared.DB.Classes;
+namespace Shared.DB.Classes.User;
 
 // Add profile data for application users by adding properties to the User class
 public class User : IdentityUser
@@ -10,5 +10,6 @@ public class User : IdentityUser
         if (Access.Count == 0)
             Access.Add(AccessLevel.Student);
     }
+
     public List<AccessLevel> Access { get; set; } = new();
 }

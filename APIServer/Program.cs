@@ -21,7 +21,7 @@ public sealed class Program
 #if DEBUG
         builder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo(){ Title = "Dev API", Version = "v1"});
+            c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Dev API", Version = "v1" });
         });
 #endif
 
@@ -41,17 +41,11 @@ public sealed class Program
         {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dev API v1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dev API v1"); });
         }
 
         app.UseHttpsRedirection();
-
-        app.UseAuthorization();
         app.MapControllers();
-
 
 #if DEBUG
         app.UseDeveloperExceptionPage();

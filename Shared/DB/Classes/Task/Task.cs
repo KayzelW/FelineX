@@ -1,38 +1,39 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Shared.DB.Interfaces;
 
 namespace Shared.DB.Classes.Task;
 
-public abstract class Task : ITask
+public sealed class Task : ITask
 {
-    public Guid Id { get; protected set; }
-    public string Question { get; set; }
-    protected virtual List<(string, bool)> _variableAnswers { get; set; } = new();
-    [ForeignKey(nameof(ThemeTask))] public ThemeTask Thematic { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; private set; }
 
-    public virtual List<(string, bool)> VariableAnswers
-    {
-        get => _variableAnswers;
-        set => _variableAnswers = value;
-    }
+    [MaxLength(1000)] public string Question { get; set; }
+    [ForeignKey(nameof(ThemeTask))] public ThemeTask Thematic { get; set; }
+    public InteractionType InteractionType { get; set; }
+    public List<VariableAnswer> VariableAnswers { get; set; }
+    [ForeignKey(nameof(User.User))] public User.User Creator { get; set; }
 
     #region Constructors
 
-    protected Task()
+    private Task()
     {
         Id = new Guid();
     }
 
-    public Task(string? question) : this()
+    public Task(string? question, InteractionType interactionType) : this()
     {
         Question = question ?? "Вопрос задания";
+        InteractionType = interactionType;
     }
 
-    public Task(string? question, params string[] answers) : this(question)
+    public Task(string? question, InteractionType interactionType, params string[] answers) : this(question,
+        interactionType)
     {
         foreach (var answer in answers)
         {
-            _variableAnswers.Add((answer, false));
+            VariableAnswers.Add(new VariableAnswer(answer));
         }
     }
 
