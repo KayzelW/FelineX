@@ -1,61 +1,72 @@
 ﻿@page "/my_tests"
-@rendermode InteractiveServer
+
+
+<a>Тесты</a>
+
 
 <table class="table">
     <thead>
     <tr>
         <th scope="col">#</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Handle</th>
+        <th scope="col">Название</th>
+        <th scope="col">Дата создания</th>
+        <th scope="col">Кол-во заданий</th>
+        <th scope="col"></th>
     </tr>
     </thead>
     <tbody>
-    <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>
-            <button
-                type="button"
-                class="btn btn-link btn-rounded btn-sm fw-bold"
-                data-mdb-ripple-color="dark">
-                Edit
-            </button>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>
-          <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">
-              Dropdown
-            </button>
-            <ul class="dropdown-menu">
-              <li><button class="dropdown-item" type="button">Dropdown item</button></li>
-              <li><button class="dropdown-item" type="button">Dropdown item</button></li>
-              <li><button class="dropdown-item" type="button">Dropdown item</button></li>
-            </ul>
-          </div>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">3</th>
-        <td colspan="2">Larry the Bird</td>
-        <td>
-            <button
-                type="button"
-                class="btn btn-link btn-rounded btn-sm fw-bold"
-                data-mdb-ripple-color="dark">
-                Edit
-            </button>
-        </td>
-    </tr>
+    @foreach (var testData in testDataList)
+    {
+        <tr>
+            <th scope="row">@testData.Id</th>
+            <td>@testData.Name</td>
+            <td>@testData.Date</td>
+            <td>@testData.TaskCount</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px">
+                        <i class="bi bi-link-45deg" style="color: #0a58ca" title="Менеджер ссылок"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary m-1 " style="background-color: transparent; border: 0px">
+                        <i class="bi bi-pencil-square" style="color: #0a58ca" title="Изменить"></i>
+                    </button>
+                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px">
+                        <i class="bi bi-trash3 " style="color: #0a58ca" title="Удалить"></i>
+                    </button>
+
+                </div>
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
 
+
 @code {
+
+    public class TestData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Date { get; set; }
+        public int TaskCount { get; set; }
+    }
+
+    List<TestData> testDataList = new List<TestData>();
+
+    protected override void OnInitialized()
+    {
+        // Генерация тестовых данных и заполнение списка
+        for (int i = 1; i <= 10; i++)
+        {
+            testDataList.Add(new TestData
+            {
+                Id = i,
+                Name = "Name" + i,
+                Date = "Date" + i,
+                TaskCount = 20 + 10 * i // Пример увеличения количества заданий для каждой строки
+            });
+        }
+    }
 
 }
