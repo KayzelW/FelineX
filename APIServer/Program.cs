@@ -16,7 +16,14 @@ public sealed class Program
                                throw new InvalidOperationException(
                                    "Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(connectionString));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+
+        builder.Services.AddLogging(logging =>
+        {
+            logging.AddConsole();
+            logging.AddDebug();
+        });
 
 #if DEBUG
         builder.Services.AddSwaggerGen(c =>
@@ -55,5 +62,12 @@ public sealed class Program
         app.Run();
 
         #endregion
+
+        Console.WriteLine("Trying to verify DB");
+
+        {
+            var dbContext = app.Services.GetRequiredService<AppDbContext>();
+            dbContext.Database.EnsureCreated();
+        }
     }
 }

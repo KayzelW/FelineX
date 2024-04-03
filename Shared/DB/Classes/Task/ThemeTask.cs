@@ -7,5 +7,5 @@ public class ThemeTask
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    public string Theme { get; set; } 
+    public string? Theme { get; set; } 
 }

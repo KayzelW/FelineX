@@ -22,7 +22,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
-            optionsBuilder.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }
     }
 

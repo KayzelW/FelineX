@@ -7,12 +7,16 @@ public class VariableAnswer
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public string StringAnswer { get; set; }
+    public string StringAnswer { get; set; } = "someVarAnswer";
 
     public bool Selected = false;
 
+    public VariableAnswer()
+    {
+    }
+
     public VariableAnswer(string varAnswer)
     {
-        StringAnswer = varAnswer;
+        this.StringAnswer = varAnswer;
     }
 }
