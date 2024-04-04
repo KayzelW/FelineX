@@ -53,7 +53,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = _dbContext.Users!.Select(x => x.UserName);
+            var user = _dbContext.Users!.Select(x => x);
             return Ok(user ?? null);
         }
         catch (Exception e)

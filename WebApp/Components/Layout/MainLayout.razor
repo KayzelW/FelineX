@@ -1,17 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    
+<div class="page" style="background-color: #DDEBFF; min-height: 650px">
     <main>
-        <div class = "navbar"> <NavMenu/> </div>    
-
+        <div class="navbar" > <NavMenu/> </div>
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+<div class="page" style="background-color: #DDEBFF; height: 120px; justify-content: end;">
+        <img class="img-fluid my-5" style="height: 70px;  opacity: 0.5;" src="icon1.png" alt="" />
+</div>
 
-<div id="blazor-error-ui">
+<div id="blazor-error-ui" style="background-color: #DDEBFF">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
