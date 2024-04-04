@@ -36,6 +36,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .WithMany(task => task.Tasks);
         modelBuilder.Entity<Test>()
             .HasMany(x => x.Tasks);
+        modelBuilder.Entity<Test>()
+            .HasOne(x => x.Creator);
         modelBuilder.Entity<User>()
             .HasMany(x => x.CreatedTests)
             .WithOne(x => x.Creator);

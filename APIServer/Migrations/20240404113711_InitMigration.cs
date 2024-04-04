@@ -34,13 +34,13 @@ namespace APIServer.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserName = table.Column<string>(type: "longtext", nullable: true)
+                    NormalizedUserName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedUserName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
+                    PasswordHash = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Access = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -57,8 +57,7 @@ namespace APIServer.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CreatorId = table.Column<string>(type: "varchar(30)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    CreatorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,8 +80,7 @@ namespace APIServer.Migrations
                     Question = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     InteractionType = table.Column<int>(type: "int", nullable: false),
-                    User = table.Column<string>(type: "varchar(30)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    User = table.Column<int>(type: "int", nullable: true),
                     TestId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

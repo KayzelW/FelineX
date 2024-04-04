@@ -8,7 +8,7 @@ namespace Shared.Models;
 public class UserDto
 {
     [SwaggerSchema("Id пользователя")]
-    public string? Id { get; set; }
+    public int Id { get; set; }
     [Required ,SwaggerSchema("Login пользователя")]
     public string? UserName { get; set; }
     public List<AccessLevel> Access { get; set; } = new();

@@ -39,10 +39,6 @@ public class UserController : Controller
                 return Conflict(_user.ToDTO());
             }
         }
-        else
-        {
-            _user.Id = Guid.NewGuid().ToString();
-        }
 
         await _dbContext.Users.AddAsync(_user);
         await _dbContext.SaveChangesAsync();

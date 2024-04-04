@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240404110947_FixFKMigration1")]
-    partial class FixFKMigration1
+    [Migration("20240404113711_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,8 +43,8 @@ namespace APIServer.Migrations
                     b.Property<int?>("TestId")
                         .HasColumnType("int");
 
-                    b.Property<string>("User")
-                        .HasColumnType("varchar(30)");
+                    b.Property<int?>("User")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -99,9 +99,8 @@ namespace APIServer.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("varchar(30)");
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -112,23 +111,27 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Classes.User.User", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Access")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
