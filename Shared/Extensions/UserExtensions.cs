@@ -16,7 +16,7 @@ public static partial class UserExtensions
         {
             Id = user.Id,
             UserName = user.UserName,
-            Access = user.Access,
+            AccessFlags = user.AccessFlags,
         };
     }
 
@@ -31,7 +31,7 @@ public static partial class UserExtensions
         {
             Id = dto.Id,
             UserName = dto.UserName,
-            Access = dto.Access
+            AccessFlags = dto.AccessFlags
         };
     }
 }

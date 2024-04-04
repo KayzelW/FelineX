@@ -2,9 +2,10 @@
 
 public enum InteractionType
 {
-    ShortStringTask,
-    LongStringTask,
-    OneVariantTask,
-    ManyVariantsTask,
-    SqlQueryTask
+    None = 0,
+    ShortStringTask = 1,
+    LongStringTask = 2,
+    OneVariantTask = 3,
+    ManyVariantsTask = 4,
+    SqlQueryTask = 5
 }

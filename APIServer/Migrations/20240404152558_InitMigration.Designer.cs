@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240404113711_InitMigration")]
+    [Migration("20240404152558_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -27,11 +27,9 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Classes.Task.Task", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("InteractionType")
                         .HasColumnType("int");
@@ -40,11 +38,11 @@ namespace APIServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
 
-                    b.Property<int?>("TestId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("TestId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int?>("User")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("User")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -57,14 +55,13 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Classes.Task.ThemeTask", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Theme")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -81,8 +78,8 @@ namespace APIServer.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("TaskId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("TaskId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -93,14 +90,16 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Classes.Test", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("int");
+                    b.Property<string>("TestName")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -111,15 +110,12 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Classes.User.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Access")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<uint>("AccessFlags")
+                        .HasColumnType("int unsigned");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(100)
@@ -140,11 +136,11 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskThemeTask", b =>
                 {
-                    b.Property<int>("ThematicsId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ThematicsId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("ThemeTask")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ThemeTask")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("ThematicsId", "ThemeTask");
 

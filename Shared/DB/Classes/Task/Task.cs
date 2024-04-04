@@ -6,8 +6,8 @@ namespace Shared.DB.Classes.Task;
 
 public sealed class Task : ITask
 {
-    [Key,  DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; private set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; set; } = new Guid();
     [MaxLength(1000)] public string? Question { get; set; }
     [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; }
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;

@@ -1,25 +1,43 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Shared.DB.Classes.User;
 
 // Add profile data for application users by adding properties to the User class
 public sealed class User
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; set; } = new Guid();
 
     [MaxLength(100)] public string? UserName { get; set; }
     [MaxLength(100)] public string? NormalizedUserName { get; set; }
     [MaxLength(100)] public string? PasswordHash { get; set; }
-    public List<AccessLevel> Access { get; set; } = new();
+
+    /// <summary>
+    /// DO NOT TOUCH. FOR YOUR HANDS EXISTS: Access
+    /// </summary>
+    public uint AccessFlags { get; set; } // Хранить флаги доступа в виде числа
+
+    /// <summary>
+    /// Use '|' to add permssions like:
+    /// user.Access |= AccessLevel.Teacher;
+    /// To delete perm use:
+    /// user.Access &= ~AccessLevel.Teacher;
+    /// </summary>
+    [NotMapped] // Это свойство не будет отображаться в базе данных
+    public AccessLevel Access
+    {
+        get => (AccessLevel)AccessFlags;
+        set => AccessFlags = (uint)value;
+    }
+
     public List<Test>? CreatedTests { get; set; }
 
     public User()
     {
-        if (Access.Count == 0)
-            Access.Add(AccessLevel.Student);
+        Access = AccessLevel.Student;
     }
 
     public User(string userName) : this()

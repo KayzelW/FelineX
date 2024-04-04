@@ -5,9 +5,9 @@ namespace Shared.DB.Classes.Task;
 
 public class ThemeTask
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid Id { get; set; } = new Guid();
 
-    public string? Theme { get; set; }
-    public List<Task> Tasks { get; set; }
+    [MaxLength(100)] public string? Theme { get; set; }
+    public List<Task>? Tasks { get; set; }
 }

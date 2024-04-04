@@ -13,10 +13,12 @@ namespace APIServer.Controllers;
 public class UserController : Controller
 {
     private readonly AppDbContext _dbContext;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(AppDbContext dbContext)
+    public UserController(AppDbContext dbContext, ILogger<UserController> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
 
@@ -30,7 +32,7 @@ public class UserController : Controller
         {
             Id = user.Id,
             UserName = user.UserName,
-            Access = new() { AccessLevel.Student },
+            Access = AccessLevel.Student
         };
         if (_user.Id != null)
         {
@@ -44,5 +46,21 @@ public class UserController : Controller
         await _dbContext.SaveChangesAsync();
 
         return Ok(_user.Id);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult> GetUser()
+    {
+        try
+        {
+            var user = _dbContext.Users!.Select(x => x.UserName);
+            return Ok(user ?? null);
+        }
+        catch (Exception e)
+        {
+            _logger.Log(LogLevel.Debug, e, "There was an error while selecting a user");
+        }
+
+        return NotFound();
     }
 }
