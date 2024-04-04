@@ -1,0 +1,39 @@
+﻿@page "/test"
+<h3 >Test</h3>
+
+@for (int i = 1; i <= 5; i++)
+{
+    <div class="container mt-5">
+        
+        <div class="d-flex justify-content-center row">
+            <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+            <div class="col-md-10 col-lg-10" >
+
+                <div class="d-flex flex-row justify-content-between  align-items-center mcq" >
+                    <h4 >Task @i</h4><span>(@i of 5)</span>
+                </div>
+            </div>
+            <div class="question p-3 border-bottom">
+                <div class="d-flex flex-row align-items-center question-title" >
+                    <h5 class="mt-1 ml-2">task-text @i</h5>
+                </div>
+                @for (int j = 1; j <= 4; j++)
+                {
+                    <div class="ans ml-2" >
+                        <label class="radio" >
+                            <input type="radio" name="answer-@i" value="@j" > <span>@j</span>
+                        </label>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+        </div>
+
+}
+
+
+@code {
+
+}
