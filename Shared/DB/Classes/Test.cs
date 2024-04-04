@@ -9,5 +9,6 @@ public class Test
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; protected set; }
 
-    public List<ITask> Tasks { get; protected set; }
+    public User.User Creator { get; set; }
+    public List<Task.Task> Tasks { get; protected set; }
 }

@@ -7,5 +7,5 @@ public interface ITask
     int Id { get; }
     string Question { get; set; }
     public List<VariableAnswer> VariableAnswers { get; set; }
-    public ThemeTask Thematic { get; set; }
+    public List<ThemeTask>? Thematics { get; set; }
 }

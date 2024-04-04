@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240402142833_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240404110947_FixFKMigration1")]
+    partial class FixFKMigration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,7 @@ namespace APIServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
 
-                    b.Property<int?>("ThemeTask")
+                    b.Property<int?>("TestId")
                         .HasColumnType("int");
 
                     b.Property<string>("User")
@@ -48,7 +48,7 @@ namespace APIServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ThemeTask");
+                    b.HasIndex("TestId");
 
                     b.HasIndex("User");
 
@@ -91,6 +91,25 @@ namespace APIServer.Migrations
                     b.ToTable("VariableAnswers");
                 });
 
+            modelBuilder.Entity("Shared.DB.Classes.Test", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Tests");
+                });
+
             modelBuilder.Entity("Shared.DB.Classes.User.User", b =>
                 {
                     b.Property<string>("Id")
@@ -116,31 +135,82 @@ namespace APIServer.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("TaskThemeTask", b =>
+                {
+                    b.Property<int>("ThematicsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ThemeTask")
+                        .HasColumnType("int");
+
+                    b.HasKey("ThematicsId", "ThemeTask");
+
+                    b.HasIndex("ThemeTask");
+
+                    b.ToTable("TaskThemeTask");
+                });
+
             modelBuilder.Entity("Shared.DB.Classes.Task.Task", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Task.ThemeTask", "Thematic")
-                        .WithMany()
-                        .HasForeignKey("ThemeTask");
+                    b.HasOne("Shared.DB.Classes.Test", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("TestId");
 
                     b.HasOne("Shared.DB.Classes.User.User", "Creator")
                         .WithMany()
                         .HasForeignKey("User");
 
                     b.Navigation("Creator");
-
-                    b.Navigation("Thematic");
                 });
 
             modelBuilder.Entity("Shared.DB.Classes.Task.VariableAnswer", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Task.Task", null)
+                    b.HasOne("Shared.DB.Classes.Task.Task", "Task")
                         .WithMany("VariableAnswers")
                         .HasForeignKey("TaskId");
+
+                    b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("Shared.DB.Classes.Test", b =>
+                {
+                    b.HasOne("Shared.DB.Classes.User.User", "Creator")
+                        .WithMany("CreatedTests")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("TaskThemeTask", b =>
+                {
+                    b.HasOne("Shared.DB.Classes.Task.ThemeTask", null)
+                        .WithMany()
+                        .HasForeignKey("ThematicsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.DB.Classes.Task.Task", null)
+                        .WithMany()
+                        .HasForeignKey("ThemeTask")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Shared.DB.Classes.Task.Task", b =>
                 {
                     b.Navigation("VariableAnswers");
+                });
+
+            modelBuilder.Entity("Shared.DB.Classes.Test", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("Shared.DB.Classes.User.User", b =>
+                {
+                    b.Navigation("CreatedTests");
                 });
 #pragma warning restore 612, 618
         }

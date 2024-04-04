@@ -9,7 +9,7 @@ public class VariableAnswer
 
     public string StringAnswer { get; set; } = "someVarAnswer";
 
-    public bool Selected = false;
+    public Task? Task { get; set; }
 
     public VariableAnswer()
     {

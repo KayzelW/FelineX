@@ -6,10 +6,10 @@ namespace Shared.DB.Classes.Task;
 
 public sealed class Task : ITask
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [Key,  DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; private set; }
     [MaxLength(1000)] public string? Question { get; set; }
-    [ForeignKey(nameof(ThemeTask))] public ThemeTask? Thematic { get; set; }
+    [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; }
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
     public List<VariableAnswer>? VariableAnswers { get; set; }
     [ForeignKey(nameof(User.User))] public User.User? Creator { get; set; }
