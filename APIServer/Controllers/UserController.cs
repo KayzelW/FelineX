@@ -45,4 +45,20 @@ public class UserController : Controller
 
         return Ok(_user.Id);
     }
+
+    [HttpGet]
+    public async Task<ActionResult> GetUser()
+    {
+        try
+        {
+            var user = _dbContext.Users!.Select(x => x);
+            return Ok(user ?? null);
+        }
+        catch (Exception e)
+        {
+            _logger.Log(LogLevel.Debug, e, "There was an error while selecting a user");
+        }
+
+        return NotFound();
+    }
 }
