@@ -41,6 +41,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.Entity<User>()
             .HasMany(x => x.CreatedTests)
             .WithOne(x => x.Creator);
+        modelBuilder.Entity<User>()
+            .HasIndex(e => e.UserName)
+            .IsUnique();
         modelBuilder.Entity<VariableAnswer>()
             .HasOne(x => x.Task)
             .WithMany(x => x.VariableAnswers);

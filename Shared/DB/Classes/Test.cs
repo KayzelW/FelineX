@@ -7,8 +7,9 @@ namespace Shared.DB.Classes;
 public class Test
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; protected set; }
+    public Guid Id { get; protected set; } = new Guid();
 
+    [MaxLength(100)] public string? TestName { get; set; }
     public User.User Creator { get; set; }
     public List<Task.Task> Tasks { get; protected set; }
 }

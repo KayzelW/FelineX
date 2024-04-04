@@ -4,7 +4,7 @@ namespace Shared.DB.Interfaces;
 
 public interface ITask
 {
-    int Id { get; }
+    Guid Id { get; }
     string Question { get; set; }
     public List<VariableAnswer> VariableAnswers { get; set; }
     public List<ThemeTask>? Thematics { get; set; }
