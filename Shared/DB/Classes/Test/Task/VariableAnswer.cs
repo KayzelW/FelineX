@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Shared.DB.Classes.Task;
+namespace Shared.DB.Classes.Test.Task;
 
 public class VariableAnswer
 {
@@ -8,7 +8,7 @@ public class VariableAnswer
     public Guid Id { get; set; } = new Guid();
 
     public string StringAnswer { get; set; } = "someVarAnswer";
-
+    public bool Truthful = false;
     public Task? Task { get; set; }
 
     public VariableAnswer()

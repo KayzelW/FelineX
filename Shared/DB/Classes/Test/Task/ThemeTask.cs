@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Shared.DB.Classes.Task;
+namespace Shared.DB.Classes.Test.Task;
 
 public class ThemeTask
 {

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Shared.DB.Classes;
-using Shared.DB.Classes.Task;
+using Shared.DB.Classes.Test;
+using Shared.DB.Classes.Test.Task;
+using Shared.DB.Classes.Test.Task.TaskAnswer;
 using Shared.DB.Classes.User;
-using MyTask = Shared.DB.Classes.Task.Task;
+using Task = Shared.DB.Classes.Test.Task.Task;
 
 namespace APIServer.Database;
 
@@ -13,8 +15,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<User>? Users { get; set; }
     public DbSet<ThemeTask>? ThemeTasks { get; set; }
     public DbSet<Test>? Tests { get; set; }
-    public DbSet<MyTask>? Tasks { get; set; }
+    public DbSet<Task>? Tasks { get; set; }
     public DbSet<VariableAnswer>? VariableAnswers { get; set; }
+    public DbSet<UserGroup>? Groups { get; set; }
+    public DbSet<TestAnswer>? TestAnswers { get; set; }
+    public DbSet<TaskAnswer>? TaskAnswers { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,7 +37,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MyTask>()
+        modelBuilder.Entity<Task>()
             .HasMany(x => x.Thematics)
             .WithMany(task => task.Tasks);
         modelBuilder.Entity<Test>()
@@ -44,6 +50,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.Entity<User>()
             .HasIndex(e => e.UserName)
             .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.UserGroups)
+            .WithMany(ug => ug.Student);
+        modelBuilder.Entity<TestAnswer>()
+            .HasMany(testAns => testAns.TaskAnswers);
+        modelBuilder.Entity<TaskAnswer>()
+            .HasMany(taskAns => taskAns.GotVariables);
+        modelBuilder.Entity<TaskAnswer>()
+            .HasMany(taskAns => taskAns.MarkedVariables);
+        modelBuilder.Entity<TaskAnswer>()
+            .HasOne(x => x.Student);
+        modelBuilder.Entity<TaskAnswer>()
+            .HasOne(x => x.AnsweredTask);
         modelBuilder.Entity<VariableAnswer>()
             .HasOne(x => x.Task)
             .WithMany(x => x.VariableAnswers);

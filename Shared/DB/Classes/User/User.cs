@@ -26,14 +26,16 @@ public sealed class User
     /// To delete perm use:
     /// user.Access &= ~AccessLevel.Teacher;
     /// </summary>
-    [NotMapped] // Это свойство не будет отображаться в базе данных
+    [NotMapped]
     public AccessLevel Access
     {
         get => (AccessLevel)AccessFlags;
         set => AccessFlags = (uint)value;
     }
 
-    public List<Test>? CreatedTests { get; set; }
+    public List<Test.Test>? CreatedTests { get; set; }
+
+    public List<UserGroup> UserGroups { get; set; }
 
     public User()
     {

@@ -2,17 +2,19 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Shared.DB.Interfaces;
 
-namespace Shared.DB.Classes.Task;
+namespace Shared.DB.Classes.Test.Task;
 
-public sealed class Task : ITask
+public sealed partial class Task : ITask
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; } = new Guid();
+
     [MaxLength(1000)] public string? Question { get; set; }
     [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; }
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
     public List<VariableAnswer>? VariableAnswers { get; set; }
     [ForeignKey(nameof(User.User))] public User.User? Creator { get; set; }
+    
 
     #region Constructors
 

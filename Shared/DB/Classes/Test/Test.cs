@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Shared.DB.Interfaces;
 
-namespace Shared.DB.Classes;
+namespace Shared.DB.Classes.Test;
 
 public class Test
 {
@@ -12,4 +11,5 @@ public class Test
     [MaxLength(100)] public string? TestName { get; set; }
     public User.User Creator { get; set; }
     public List<Task.Task> Tasks { get; protected set; }
+    
 }

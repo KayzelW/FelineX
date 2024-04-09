@@ -1,4 +1,4 @@
-﻿namespace Shared.DB.Classes.Task;
+﻿namespace Shared.DB.Classes.Test.Task;
 
 public enum InteractionType
 {
