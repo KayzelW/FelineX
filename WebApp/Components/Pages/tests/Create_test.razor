@@ -1,6 +1,48 @@
 ﻿@page "/Create_test"
 <h3 class="text-center">Новый тест</h3>
 
+    <div class="input-group input-group-lg" style="max-width: max-content">
+                            <span class="input-group-text" id="basic-addon1" ></span>
+                            <input type="text" class="form-control"  placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1">
+                            </div>
+
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-center row">
+        <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+            <div class="col-md-10 col-lg-10" >
+
+                <div class="d-flex flex-row justify-content-between  align-items-center mcq" >
+                    <h4 >Задание @i</h4><span>(@i of @max)</span>
+                </div>
+            </div>
+            <div class="question p-3 border-bottom">
+                <div class="d-flex flex-row align-items-center question-title" >
+                    <h5 class="mt-1 ml-2">@task1</h5>
+                </div>
+                @for (int j = 1; j <= 4; j++)
+                {
+                    <div class="ans ml-2" >
+                        <label class="radio" >
+                            <input type="radio" name="answer-@i" value="@j" > <span>@j</span>
+                        </label>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A">
+    <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button">Сохранить</button>
+</div>
+
 @code {
-    
+    string task2 = "Как правильно разводить водицу?";
+    string task1 = "Вилкой раз или в жопу раз?";
+    string task3 = "Что делать, если твой друг нарик?";
+    int i = 1;
+    int max = 10;
+    List<String> fruits = ["Яблоко", "Банан", "Апельсин"];
 }

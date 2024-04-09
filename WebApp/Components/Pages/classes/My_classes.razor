@@ -12,13 +12,13 @@
 
 <h3>Мои классы</h3>
 
-<table class="table" style="background-color: #EFF4FF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
+<table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
     <thead>
     <tr>
-        <th scope="col" style="background-color: #EFF4FF; text-overline-color: #00003A; border-radius: .5rem">#</th>
-        <th scope="col" style="background-color: #EFF4FF; -webkit-text-fill-color: #00003A">Название</th>
-        <th scope="col" style="background-color: #EFF4FF;  -webkit-text-fill-color: #00003A">Кол-во человек</th>
-        <th scope="col" style="background-color: #EFF4FF;  -webkit-text-fill-color: #00003A"></th>
+        <th scope="col" style=" border-radius: .5rem;"></th>
+        <th scope="col" >Название</th>
+        <th scope="col" >Кол-во человек</th>
+        <th scope="col" ></th>
     </tr>
     </thead>
     <tbody>
@@ -26,10 +26,10 @@
     {
         <tr>
             
-            <th scope="row" style="background-color: #EFF4FF">@testData.Id</th>
-            <td style="background-color: #EFF4FF">@testData.Name</td>
-            <td style="background-color: #EFF4FF">@testData.TaskCount</td>
-            <td style="background-color: #EFF4FF">
+            <th scope="row" >@testData.Id</th>
+            <td>@testData.Name</td>
+            <td>@testData.TaskCount</td>
+            <td >
                 <div class="btn-group" role="group" aria-label="Basic example">
                     <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px">
                         <i class="bi bi-link-45deg" style="color: #00003A" title="Менеджер ссылок"></i>
@@ -50,6 +50,7 @@
 
 
 @code {
+    
 
     public class TestData
     {
@@ -63,26 +64,25 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        // Генерация тестовых данных и заполнение списка
         for (int i = 1; i <= 10; i++)
         {
             testDataList.Add(new TestData
             {
                 Id = i,
                 Name = "Name" + i,
-                TaskCount = 20 + 10 * i // Пример увеличения количества заданий для каждой строки
+                TaskCount = 20 + 10 * i 
             });
         }
     }
     
     private void cringe()
     {
-        nav.NavigateTo("/Create_test");
+        nav.NavigateTo("/Create_class");
     }
     
     private void cringe1()
     {
-        nav.NavigateTo("/test");
+        nav.NavigateTo("/Class");
     }
     
     
