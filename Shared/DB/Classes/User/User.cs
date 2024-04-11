@@ -33,8 +33,6 @@ public sealed class User
         set => AccessFlags = (uint)value;
     }
 
-    public List<Test.Test>? CreatedTests { get; set; }
-
     public List<UserGroup> UserGroups { get; set; }
 
     public User()
