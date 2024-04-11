@@ -3,11 +3,11 @@
 
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-center" style="height: 40px; -webkit-text-fill-color: #00003A">
-    <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" @onclick="cringe">  Добавить студента  </button>
+    <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" @onclick="cringe"> Добавить студента </button>
 </div>
 <div class="text-success" style="border-color:  #00003A; height: 1px">
-      <hr>
-    </div>
+    <hr>
+</div>
 
 
 <h3>Мои студенты</h3>
@@ -24,7 +24,7 @@
     @foreach (var testData in testDataList)
     {
         <tr>
-            
+
             <th scope="row" style="background-color: #EFF4FF">@testData.Id</th>
             <td style="background-color: #EFF4FF">@testData.Name</td>
             <td style="background-color: #EFF4FF">
@@ -54,7 +54,7 @@
         public int Id { get; set; }
         public string Name { get; set; }
     }
-    
+
     List<TestData> testDataList = new List<TestData>();
 
     protected override void OnInitialized()
@@ -70,17 +70,17 @@
             });
         }
     }
-    
+
     private void cringe()
     {
         nav.NavigateTo("/Create_student");
     }
-    
+
     private void cringe1()
     {
         nav.NavigateTo("/Student");
     }
-    
-    
 
-}}
+
+
+}

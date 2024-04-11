@@ -26,8 +26,8 @@ public class TestController : Controller
         //     .Include(x => x.Tasks)
         //     .Include(x => x.Creator)
         //     .FirstOrDefaultAsync();
-        var test = await _dbContext.Tests.Include(x => x.Creator).ToListAsync();
-        Console.WriteLine(test[0].Creator);
+        var test = await _dbContext.Tests.Include(x => x.Creator).FirstOrDefaultAsync();
+        Console.WriteLine(test.Creator);
         return Ok(test);
     }
 }

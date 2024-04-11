@@ -5,7 +5,8 @@ namespace WebApp.Services;
 
 public class ApiService
 {
-    private HttpClient _httpClient = new HttpClient();
+    private HttpClient _httpClient;
+
     public ApiService()
     {
         var config = new ConfigurationBuilder()
@@ -13,7 +14,10 @@ public class ApiService
             .AddJsonFile("appsettings.json")
             .Build();
         var BaseUrl = config.GetConnectionString("ApiUrl");
-        _httpClient.BaseAddress = new Uri(/*BaseUrl ??*/ "http://26.96.214.129:5071/");
+        _httpClient = new HttpClient()
+        {
+            BaseAddress = new Uri(BaseUrl ?? "http://localhost:5071/")
+        };
     }
 
     public async Task<MyTest> GetRandomTest()
