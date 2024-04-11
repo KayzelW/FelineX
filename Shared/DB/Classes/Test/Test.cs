@@ -10,6 +10,7 @@ public class Test
 
     [MaxLength(100)] public string? TestName { get; set; }
     public User.User Creator { get; set; }
+    public DateTime CreationTime { get; set; }
     public List<Task.Task> Tasks { get; protected set; }
     
 }
