@@ -8,5 +8,5 @@ public class UserGroup
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
     public User? GroupCreator { get; set; }
-    public List<User>? Student { get; set; }
+    public List<User>? Students { get; set; }
 }

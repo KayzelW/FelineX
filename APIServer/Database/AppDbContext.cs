@@ -51,8 +51,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasIndex(e => e.UserName)
             .IsUnique();
         modelBuilder.Entity<User>()
-            .HasMany(u => u.UserGroups)
-            .WithMany(ug => ug.Student);
+            .HasMany(x => x.UserGroups)
+            .WithMany(x => x.Students);
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(x => x.GroupCreator);
         modelBuilder.Entity<TestAnswer>()
             .HasMany(testAns => testAns.TaskAnswers);
         modelBuilder.Entity<TaskAnswer>()
