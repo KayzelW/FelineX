@@ -1,4 +1,5 @@
 using WebApp.Components;
+using WebApp.Services;
 
 namespace WebApp;
 
@@ -11,6 +12,8 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+
+        builder.Services.AddSingleton<ApiService>();
 
         var app = builder.Build();
 

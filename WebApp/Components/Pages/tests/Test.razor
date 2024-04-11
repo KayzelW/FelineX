@@ -1,4 +1,6 @@
 ﻿@page "/test"
+@using WebApp.Services
+@inject ApiService _ApiService
     <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: "Держись, брат"</h3>
     
 
@@ -105,5 +107,17 @@
     string task3 = "Что делать, если твой друг нарик?";
     int i = 1;
     int max = 10;
+    List<int> taskList;
     List<String> fruits = ["Яблоко", "Банан", "Апельсин"];
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var test = _ApiService.GetRandomTest().Result;
+        Console.WriteLine(test.TestName);
+        task1 = test.TestName;
+        task2 = test.CreationTime.ToString();
+        task3 = test.Creator.UserName;
+    }
+
 }
