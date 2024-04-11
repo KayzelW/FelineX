@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Net;
+using System.Net.Security;
 using WebApp.Components;
 using WebApp.Services;
 
@@ -16,6 +19,7 @@ public class Program
         builder.Services.AddSingleton<ApiService>();
 
         var app = builder.Build();
+
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

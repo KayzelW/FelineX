@@ -7,28 +7,25 @@ public class ApiService
 {
     private HttpClient _httpClient;
 
-    public ApiService()
+    public ApiService(IConfiguration configuration)
     {
-        var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
-        var BaseUrl = config.GetConnectionString("ApiUrl");
+        var baseUrl = configuration?.GetConnectionString("ApiUrl");
+
         _httpClient = new HttpClient()
         {
-            BaseAddress = new Uri(BaseUrl ?? "http://localhost:5071/")
+            BaseAddress = new Uri(baseUrl ?? "http://localhost:5071/")
         };
     }
 
     public async Task<MyTest> GetRandomTest()
     {
-        MyTest? _test = null;
+        MyTest? test = null;
         HttpResponseMessage responseMessage = await _httpClient.GetAsync("Test");
         if (responseMessage.IsSuccessStatusCode)
         {
-            _test = await responseMessage.Content.ReadFromJsonAsync<MyTest>();
+            test = await responseMessage.Content.ReadFromJsonAsync<MyTest>();
         }
 
-        return _test;
+        return test;
     }
 }
