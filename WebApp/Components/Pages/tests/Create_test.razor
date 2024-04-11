@@ -6,8 +6,6 @@
 
 <h3 class="text-center">Новый тест</h3>
   
-@InteractionType.None.TaskTypeToString()
-
 <div class="input-group input-group-lg" style="max-width: max-content">
     <span class="input-group-text" id="basic-addon1" ></span>
     <input type="text" class="form-control"  placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1">
@@ -27,23 +25,24 @@
                         <h4 >Задание @i</h4><span>(@i of @max)</span>
                     </div>
                 </div >
+                <div class="input-group input-group-md" >
+                    <span class="input-group-text" id="basic-addon1"></span>
+                    <input type="text" class="form-control" placeholder="Введите задание" aria-label="Введите задание" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group input-group-sm mb-3" style="max-width: max-content">
+                                        <span class="input-group-text" id="inputGroup-sizing-sm">кол-во</span>
+                                        <input type="text" class="form-control" placeholder="Количество вопросов" aria-describedby="inputGroup-sizing-sm" @bind="questionCount">
+                                    </div>
                 <div class="question p-3 border-bottom">
-                    int j;
-                    <div class="input-group input-group-lg" style="max-width: max-content">
-                        <span class="input-group-text" id="basic-addon1"></span>
-                        <input type="text" class="form-control" placeholder="Введите задание" aria-label="Введите задание" aria-describedby="basic-addon1">
-                    </div>
-                    @for (int j = 1; j <= 4; j++)
+                    
+                    
+                    @for (int j = 0; j < int.Parse(questionCount); j++)
                     {
-                        <div class="ans ml-2">
-                            <label class="radio">
-                                <input type="radio" name="answer-@i" value="@j"> <span>@j</span>
-                            </label>
+                        <div class="input-group input-group-sm mb-3" style="max-width: max-content">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">@(j + 1)</span>
+                            <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm">
                         </div>
                     }
-                    <div class="d-flex justify-content-end">
-                        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" >+ </button>
-                    </div>
 
                 </div>
             </div>
@@ -81,7 +80,9 @@
     string task1 = "Вилкой раз или в жопу раз?";
     string task3 = "Что делать, если твой друг нарик?";
     int max = 1;
-    List<String> fruits = ["Яблоко", "Банан", "Апельсин"];
+    private string questionCount = "1";
+    private List<string> questions = new List<string>();
+
     
     private void cringe()
     {
@@ -99,4 +100,15 @@
     {
         int m;
     }
-}
+    
+    private void UpdateQuestionCount()
+    {
+        questions.Clear(); // Очистка списка перед обновлением
+        for (int i = 0; i < int.Parse(questionCount); i++)
+        {
+            questions.Add(""); // Добавление новых элементов в список
+        }
+        StateHasChanged();
+    }
+
+} 
