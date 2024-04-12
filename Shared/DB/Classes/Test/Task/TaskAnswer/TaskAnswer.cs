@@ -12,4 +12,9 @@ public class TaskAnswer
     public Task? AnsweredTask { get; set; }
     public List<VariableAnswer>? GotVariables { get; set; }
     public List<VariableAnswer>? MarkedVariables { get; set; }
+
+    public TaskAnswer()
+    {
+        
+    }
 }
