@@ -37,7 +37,6 @@ public sealed class User
 
     public User()
     {
-        Access = AccessLevel.Student;
     }
 
     public User(string userName) : this()

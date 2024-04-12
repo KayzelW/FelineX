@@ -9,4 +9,9 @@ public class UserGroup
     public Guid Id { get; set; }
     public User? GroupCreator { get; set; }
     public List<User>? Students { get; set; }
+
+    public UserGroup()
+    {
+        
+    }
 }
