@@ -1,0 +1,28 @@
+﻿
+<div class="d-flex justify-content-center row">
+        <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+            <div class="col-md-10 col-lg-10">
+                <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                    <h4 >Задание @number</h4>
+                </div>
+                <div class="question p-3 border-bottom">
+                    <div class="d-flex flex-row align-items-center question-title">
+                        <h5 class="mt-1 ml-2"> @question</h5>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1"></span>
+                        <input type="text" class="form-control" aria-describedby="basic-addon1">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+@code {
+    [Parameter] 
+    public int number { get; set; }
+    [Parameter] 
+    public string question { get; set; } = "";
+}

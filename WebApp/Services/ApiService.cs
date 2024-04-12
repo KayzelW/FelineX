@@ -29,13 +29,12 @@ public class ApiService
         return tests;
     }
     
-    public async Task<MyTest> GetTest()
+    public async Task<MyTest> GetTest(string testId)
     {
         MyTest? test = null;
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync("Test/get_test");
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"Test/get_test/{testId}");
         if (responseMessage.IsSuccessStatusCode)
         {
-            Console.WriteLine(await responseMessage.Content.ReadAsStringAsync());
             test = await responseMessage.Content.ReadFromJsonAsync<MyTest>();
         }
         return test;
