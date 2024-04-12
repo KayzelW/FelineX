@@ -11,4 +11,9 @@ public class TestAnswer
     public User.User? Student { get; set; }
     public Test? AnsweredTest { get; set; }
     public List<TaskAnswer>? TaskAnswers { get; set; }
+
+    public TestAnswer()
+    {
+        
+    }
 }

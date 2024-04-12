@@ -19,14 +19,19 @@ public class TestController : Controller
         _dbContext = dbContext;
     }
 
-    [HttpGet]
+    [HttpGet("get_tests")]
+    public async Task<ActionResult> GetTests()
+    {
+        var tests = await _dbContext.Tests.
+                Include(x => x.Tasks).ToListAsync();
+        return Ok(tests);
+    }
+    
+    [HttpGet("get_test")]
     public async Task<ActionResult> GetTest()
     {
-        // var test = await _dbContext.Tests
-        //     .Include(x => x.Tasks)
-        //     .Include(x => x.Creator)
-        //     .FirstOrDefaultAsync();
-        var test = await _dbContext.Tests.Include(x => x.Creator).FirstOrDefaultAsync();
+        var test = await _dbContext.Tests.
+            Include(x => x.Tasks).FirstOrDefaultAsync();
         return Ok(test);
     }
 }

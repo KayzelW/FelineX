@@ -5,7 +5,7 @@ namespace Shared.DB.Classes.Test.Task;
 public class VariableAnswer
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; } = new Guid();
+    public Guid Id { get; set; }
 
     public string StringAnswer { get; set; } = "someVarAnswer";
     public bool Truthful = false;
@@ -15,7 +15,7 @@ public class VariableAnswer
     {
     }
 
-    public VariableAnswer(string varAnswer)
+    public VariableAnswer(string varAnswer) : this()
     {
         this.StringAnswer = varAnswer;
     }

@@ -9,7 +9,7 @@ namespace Shared.DB.Classes.User;
 public sealed class User
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; } = new Guid();
+    public Guid Id { get; set; }
 
     [MaxLength(100)] public string? UserName { get; set; }
     [MaxLength(100)] public string? NormalizedUserName { get; set; }
@@ -37,7 +37,6 @@ public sealed class User
 
     public User()
     {
-        Access = AccessLevel.Student;
     }
 
     public User(string userName) : this()
