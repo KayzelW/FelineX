@@ -10,9 +10,9 @@ public sealed partial class Task : ITask
     public Guid Id { get; set; }
 
     [MaxLength(1000)] public string? Question { get; set; }
-    [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; }
+    [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; } = new List<ThemeTask>();
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
-    public List<VariableAnswer>? VariableAnswers { get; set; }
+    public List<VariableAnswer>? VariableAnswers { get; set; } = new List<VariableAnswer>();
     [ForeignKey(nameof(User.User))] public User.User? Creator { get; set; }
 
 
