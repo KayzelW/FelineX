@@ -8,8 +8,7 @@ public class VariableAnswer
     public Guid Id { get; set; }
 
     public string StringAnswer { get; set; } = "someVarAnswer";
-    public bool Truthful = false;
-    public Task? Task { get; set; }
+    public bool Truthful { get; set; }
 
     public VariableAnswer()
     {

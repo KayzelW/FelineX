@@ -131,6 +131,9 @@ namespace APIServer.Migrations
                     b.Property<Guid?>("TaskId")
                         .HasColumnType("char(36)");
 
+                    b.Property<bool>("Truthful")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TaskAnswerId");
@@ -297,11 +300,9 @@ namespace APIServer.Migrations
                         .WithMany("MarkedVariables")
                         .HasForeignKey("TaskAnswerId1");
 
-                    b.HasOne("Shared.DB.Classes.Test.Task.Task", "Task")
+                    b.HasOne("Shared.DB.Classes.Test.Task.Task", null)
                         .WithMany("VariableAnswers")
                         .HasForeignKey("TaskId");
-
-                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("Shared.DB.Classes.Test.Test", b =>

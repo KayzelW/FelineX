@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240411092729_RemoveListTests")]
-    partial class RemoveListTests
+    [Migration("20240412193346_InitMigrations")]
+    partial class InitMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,6 +133,9 @@ namespace APIServer.Migrations
 
                     b.Property<Guid?>("TaskId")
                         .HasColumnType("char(36)");
+
+                    b.Property<bool>("Truthful")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 
@@ -300,11 +303,9 @@ namespace APIServer.Migrations
                         .WithMany("MarkedVariables")
                         .HasForeignKey("TaskAnswerId1");
 
-                    b.HasOne("Shared.DB.Classes.Test.Task.Task", "Task")
+                    b.HasOne("Shared.DB.Classes.Test.Task.Task", null)
                         .WithMany("VariableAnswers")
                         .HasForeignKey("TaskId");
-
-                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("Shared.DB.Classes.Test.Test", b =>

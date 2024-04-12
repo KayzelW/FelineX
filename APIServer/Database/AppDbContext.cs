@@ -40,6 +40,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.Entity<Task>()
             .HasMany(x => x.Thematics)
             .WithMany(task => task.Tasks);
+        modelBuilder.Entity<Task>()
+            .HasMany(x => x.VariableAnswers);
         modelBuilder.Entity<Test>()
             .HasMany(x => x.Tasks);
         modelBuilder.Entity<Test>()
@@ -62,8 +64,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasOne(x => x.Student);
         modelBuilder.Entity<TaskAnswer>()
             .HasOne(x => x.AnsweredTask);
-        modelBuilder.Entity<VariableAnswer>()
-            .HasOne(x => x.Task)
-            .WithMany(x => x.VariableAnswers);
     }
 }

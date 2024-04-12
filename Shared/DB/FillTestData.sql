@@ -4,10 +4,11 @@ INSERT INTO Users (Id, AccessFlags, UserName, NormalizedUserName)
 VALUES (UUID(), 1, 'rooter', 'root');
 COMMIT;
 
-INSERT INTO Tests (Id, CreatorId, TestName)
+INSERT INTO Tests (Id, CreatorId, TestName, CreationTime)
 VALUES (UUID(),
         (SELECT Users.Id FROM Users WHERE Users.UserName = 'rooter' LIMIT 1),
-        'simple name for Testname');
+        'simple name for Testname',
+        current_date());
 COMMIT;
 
 INSERT INTO ThemeTasks (Id, Theme)
