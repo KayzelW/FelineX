@@ -5,3 +5,4 @@ riderModule.iml
 /_ReSharper.Caches/
 APIServer/appsettings.Development.json
 .idea/.idea.FelineX/.idea/dataSources.xml
+.idea/config/applicationhost.config
