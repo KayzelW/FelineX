@@ -2,38 +2,51 @@
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.Extensions
-@using Mytest =  Shared.DB.Classes.Test.Test
-
 @rendermode InteractiveServer
-
-
+@using MyTest = Shared.DB.Classes.Test.Test;
+@using MyTask = Shared.DB.Classes.Test.Task.Task;
+@using System.Collections
 <h3 class="text-center">Новый тест</h3>
   
 <div class="input-group input-group-lg" style="max-width: max-content">
     <span class="input-group-text" id="basic-addon1" ></span>
-    <input type="text" class="form-control"  placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1">
+    <input type="text" class="form-control"  placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1" @bind="test1.TestName">
 </div>
 
-
+@if (test1.Tasks != null)
+{
+    <div class="container mt-5">
+        @foreach (var task in test1.Tasks)
+        {
+            <div class="d-flex justify-content-center row">
+                <div class="card mb-3" style="border-radius: 5px; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+                    <div class="col-md-10 col-lg-10">
+                        <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                            <h4>@task.Question</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 <div class="container mt-5">
-    @for (int i = 1; i <= @max; i++)
-    {
-
+    
         <div class="d-flex justify-content-center row">
             <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
                 <div class="col-md-10 col-lg-10">
 
                     <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                        <h4 >Задание @i</h4><span>(@i of @max)</span>
+                        <h4 >Задание @max</h4><span>(@max of @max)</span>
                     </div>
                 </div >
                 <div class="input-group input-group-md" >
                     <span class="input-group-text" id="basic-addon1"></span>
-                    <input type="text" class="form-control" placeholder="Введите задание" aria-label="Введите задание" aria-describedby="basic-addon1">
+                    <input type="text" class="form-control" placeholder="Введите задание" aria-describedby="basic-addon1" @bind="taskinput">
                 </div>
                 <div class="input-group input-group-sm mb-3" style="max-width: max-content">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm">кол-во</span>
+                                        <span class="input-group-text" id="inputGroup-sizing-sm4">кол-во</span>
                                         <input type="text" class="form-control" placeholder="Количество вопросов" aria-describedby="inputGroup-sizing-sm" @bind="questionCount">
                                     </div>
                 <div class="question p-3 border-bottom">
@@ -42,18 +55,19 @@
                     @for (int j = 0; j < int.Parse(questionCount); j++)
                     {
                         <div class="input-group input-group-sm mb-3" style="max-width: max-content">
-                            <span class="input-group-text" id="inputGroup-sizing-sm">@(j + 1)</span>
-                            <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm">
+                            
+                            <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" >
                         </div>
                     }
+
 
                 </div>
             </div>
 
         </div>
-    }
+    
     <div class="d-flex justify-content-end">
-        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" @onclick="cringe"> + @max </button>
+        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" @onclick="plus"> + @max </button>
     </div>
     
     <div class="dropdown">
@@ -71,7 +85,7 @@
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A">
-        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button">Сохранить</button>
+        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" @onclick="save">Сохранить</button>
     </div>
 </div>
 
@@ -79,39 +93,55 @@
 
 @code {
     
-    string task2 = "Как правильно разводить водицу?";
-    string task1 = "Вилкой раз или в жопу раз?";
-    string task3 = "Что делать, если твой друг нарик?";
+    
+    MyTask task3 = new MyTask("Как правильно разводить водицу?", InteractionType.OneVariantTask);
     int max = 1;
     private string questionCount = "1";
-    private List<string> questions = new List<string>();
-
+    private string taskinput;
    
-    private void cringe()
+    List<string> questions = new List<string>(); // questionCount определено где-то в вашем коде
+    
+    void UpdateQuestion(int index, string value)
     {
-        max++;
-        InvokeAsync(StateHasChanged);
+        questions[index] = value;
+    }
+   
+    
+    MyTest test1 = new MyTest()
+    {
+        Tasks = new List<MyTask>()
+    };
+    
+    //Task task2 = new Task("Вилкой раз или в жопу раз?", InteractionType.LongStringTask, "Ответ на второй вопрос");
+
+
+
+
+
+    private void plus()
+    {
+        
+            max++;
+            InvokeAsync(StateHasChanged);
+            //MyTask task1 = new MyTask(taskinput, InteractionType.OneVariantTask, questions.ToArray());
+            //MyTask task2 = new MyTask("водицу?", InteractionType.OneVariantTask);
+            //test1.Tasks.Add(task1);
+            //test1.Tasks.Add(task2);
+            //Console.WriteLine(task1.Question);
+            Console.WriteLine(questions.ToString());
+        
     }
     
-    private void cringe1(int j)
-    {
-        j++;
-        InvokeAsync(StateHasChanged);
-    }
     
     private void sss()
     {
         int m;
     }
     
-    private void UpdateQuestionCount()
+    private void save()
     {
-        questions.Clear(); // Очистка списка перед обновлением
-        for (int i = 0; i < int.Parse(questionCount); i++)
-        {
-            questions.Add(""); // Добавление новых элементов в список
-        }
-        StateHasChanged();
+        Console.WriteLine(test1.TestName);
+        //for (int i = 0; i< test1.Tasks.Count(); i++)
     }
 
 } 
