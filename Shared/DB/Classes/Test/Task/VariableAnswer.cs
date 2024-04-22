@@ -7,7 +7,7 @@ public class VariableAnswer
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public string StringAnswer { get; set; } = "someVarAnswer";
+    public string StringAnswer { get; set; } = "";
     public bool Truthful { get; set; }
 
     public VariableAnswer()

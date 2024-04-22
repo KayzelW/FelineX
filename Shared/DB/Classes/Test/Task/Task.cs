@@ -31,7 +31,7 @@ public sealed partial class Task : ITask
     public Task(string? question, InteractionType interactionType) :
         this()
     {
-        Question = question ?? "Вопрос задания";
+        Question = question ?? "";
         InteractionType = interactionType;
     }
 
