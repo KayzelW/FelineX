@@ -50,7 +50,11 @@ public class TestController : Controller
             return BadRequest();
         }
 
-        await _dbContext.Tests!.AddAsync(test); //TODO: can't add or update Entity due to errors with Foreign keys
+        var user = await _dbContext.Users.Where(x => x.Id == test.Creator.Id).FirstOrDefaultAsync();
+        
+        test.Creator = user;
+
+        await _dbContext.Tests!.AddAsync(test); 
         await _dbContext.SaveChangesAsync();
         
         return Ok();

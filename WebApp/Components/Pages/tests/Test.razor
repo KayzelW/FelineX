@@ -3,6 +3,9 @@
 @using WebApp.Components.Tasks_Components
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
 @using MyTest = Shared.DB.Classes.Test.Test;
+@using Microsoft.AspNetCore.Mvc.TagHelpers.Cache
+@using Shared.DB.Classes.Test.Task
+@using Task = System.Threading.Tasks.Task
 
 @inject ApiService _ApiService
 
@@ -34,61 +37,80 @@
     @*         </div> *@
     @*     </div> *@
     @* </div> *@
+    
+    @* <ManyVariantsTask></ManyVariantsTask> *@
+    @* <OneVariantTask></OneVariantTask> *@
+    @* <ShortStringTask></ShortStringTask> *@
+    
 
-    <div class="d-flex justify-content-center row">
-        <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
-            <div class="col-md-10 col-lg-10">
+    @* <div class="d-flex justify-content-center row"> *@
+    @*     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
+    @*         <div class="col-md-10 col-lg-10"> *@
+    @* *@
+    @*             <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
+    @*                 <h4 >Задание 1</h4> *@
+    @*             </div> *@
+    @*         </div> *@
+    @*         <div class="question p-3 border-bottom"> *@
+    @*             <div class="d-flex flex-row align-items-center question-title"> *@
+    @*                 <h5 class="mt-1 ml-2"> 132456</h5> *@
+    @*             </div> *@
+    @* *@
+    @*             <div class="form-check"> *@
+    @*                 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> *@
+    @*                 <label class="form-check-label" for="defaultCheck1"> *@
+    @*                     Default checkbox *@
+    @*                 </label> *@
+    @*             </div> *@
+    @*             <div class="form-check"> *@
+    @*                 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> *@
+    @*                 <label class="form-check-label" for="defaultCheck1"> *@
+    @*                     Default checkbox *@
+    @*                 </label> *@
+    @*             </div> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </div> *@
+@* *@
+@for (int i = 0; i < test.Tasks.Count; i++)
+{
+    switch (test.Tasks[i].InteractionType)
+        {
+            case InteractionType.LongStringTask:
+                <LongStringTask number="@(i+1)" task="@test.Tasks[i]"></LongStringTask>
+                break;
+            case InteractionType.ShortStringTask:
+                <ShortStringTask number="@(i+1)" task="@test.Tasks[i]"></ShortStringTask>
+                break;
+            case InteractionType.ManyVariantsTask:
+                <ManyVariantsTask number="@(i+1)" task="@test.Tasks[i]"></ManyVariantsTask>
+                break;
+            case InteractionType.OneVariantTask:
+                <OneVariantTask number="@(i+1)" task="@test.Tasks[i]"></OneVariantTask>
+                break;
+        }
+}
 
-                <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                    <h4 >Задание 1</h4>
-                </div>
-            </div>
-            <div class="question p-3 border-bottom">
-                <div class="d-flex flex-row align-items-center question-title">
-                    <h5 class="mt-1 ml-2"> 132456</h5>
-                </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                    <label class="form-check-label" for="defaultCheck1">
-                        Default checkbox
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                    <label class="form-check-label" for="defaultCheck1">
-                        Default checkbox
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-@* *@
-@* @for (int i = 0; i < test.Tasks.Count; i++) *@
-@* { *@
-@*     <ShortStringTask number="@i" question="@test.Tasks[i].Question"></ShortStringTask>  *@
-@* } *@
-@* *@
-@* *@
-@*     <div class="d-flex justify-content-center row"> *@
-@*         <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
-@*             <div class="col-md-10 col-lg-10"> *@
-@*                 <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
-@*                     <h4 >Задание @i</h4><span>(@i of @max)</span> *@
-@*                 </div> *@
-@*                 <div class="question p-3 border-bottom"> *@
-@*                     <div class="d-flex flex-row align-items-center question-title"> *@
-@*                         <h5 class="mt-1 ml-2">@task3</h5> *@
-@*                     </div> *@
-@*      *@
-@*                     <div class="form-floating"> *@
-@*                         <textarea class="form-control"  id="floatingTextarea2" style="height: 100px"></textarea> *@
-@*                         <label for="floatingTextarea2"></label> *@
-@*                     </div> *@
-@*                 </div> *@
-@*             </div> *@
-@*         </div> *@
-@*     </div> *@
+@* <div class="d-flex justify-content-center row"> *@
+    @*     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
+    @*         <div class="col-md-10 col-lg-10"> *@
+    @*             <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
+    @*                 <h4 >Задание 1</h4> *@
+    @*             </div> *@
+    @*             <div class="question p-3 border-bottom"> *@
+    @*                 <div class="d-flex flex-row align-items-center question-title"> *@
+    @*                     <h5 class="mt-1 ml-2">s;ljdkfghjng;okljsdnfojihg;nsdxfpoi;jxtgnhiop;ujdxfxn</h5> *@
+    @*                 </div> *@
+    @* *@
+    @*                 <div class="form-floating"> *@
+    @*                     <textarea class="form-control"  id="floatingTextarea2" style="height: 100px"></textarea> *@
+    @*                     <label for="floatingTextarea2"></label> *@
+    @*                 </div> *@
+    @*             </div> *@
+    @*         </div> *@
+    @*     </div> *@
+    @* </div> *@
 @* </div> *@
 
 @code {
