@@ -1,0 +1,34 @@
+﻿<div class="d-flex justify-content-center row">
+        <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+            <div class="col-md-10 col-lg-10">
+
+                <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                    <h4 >@question </h4>
+                </div>
+            </div>
+            <div class="question p-3 border-bottom">
+                <div class="d-flex flex-row align-items-center question-title">
+                    <h5 class="mt-1">"dfgsdfg"</h5>
+                </div>
+                @for (int j = 1; j <= 4; j++)
+                {
+                    <div class="ans ml-2">
+                        <label class="radio">
+                            <input type="radio" name="answer-1" value="@j"> <span>@j</span>
+                        </label>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+@code {
+    [Parameter] 
+    public int number { get; set; }
+    [Parameter] 
+    public string question { get; set; } = "";
+    [Parameter]
+    public List<string> variants { get; set; } = new List<string>();
+    
+}
