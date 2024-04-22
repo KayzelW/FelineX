@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using Shared.DB.Classes.User;
 using MyTest = Shared.DB.Classes.Test.Test;
 
 namespace WebApp.Services;
@@ -42,10 +43,21 @@ public class ApiService
         return test;
     }
 
+    public async Task<User?> GetUser()
+    {
+        User? user = null;
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"User/get_user");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            user = await responseMessage.Content.ReadFromJsonAsync<User>();
+        }
+        return user;
+    } 
+    
     public async Task<bool> PostTest(MyTest test)
     {
-        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-        var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test, options);
+        test.Creator = await GetUser(); //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key 
+        var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test);
         return responseMessage.IsSuccessStatusCode;
     }
 

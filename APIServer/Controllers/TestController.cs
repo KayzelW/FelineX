@@ -1,4 +1,5 @@
-﻿using APIServer.Database;
+﻿using System.Diagnostics.CodeAnalysis;
+using APIServer.Database;
 using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,10 @@ public class TestController : Controller
     }
 
     [HttpGet("get_tests")]
+    [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action")]
     public async Task<ActionResult> GetTests()
     {
-        var tests = await _dbContext.Tests.
+        var tests = await _dbContext.Tests!.
                 Include(x => x.Tasks).ToListAsync();
         return Ok(tests);
     }
@@ -48,7 +50,7 @@ public class TestController : Controller
             return BadRequest();
         }
 
-        await _dbContext.Tests!.AddAsync(test);
+        await _dbContext.Tests!.AddAsync(test); //TODO: can't add or update Entity due to errors with Foreign keys
         await _dbContext.SaveChangesAsync();
         
         return Ok();
