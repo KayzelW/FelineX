@@ -1,4 +1,5 @@
-﻿using APIServer.Database;
+﻿using System.Diagnostics.CodeAnalysis;
+using APIServer.Database;
 using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +24,10 @@ public class TestController : Controller
     }
 
     [HttpGet("get_tests")]
+    [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action")]
     public async Task<ActionResult> GetTests()
     {
-        var tests = await _dbContext.Tests.
+        var tests = await _dbContext.Tests!.
                 Include(x => x.Tasks).ToListAsync();
         return Ok(tests);
     }
@@ -39,23 +41,22 @@ public class TestController : Controller
             .FirstOrDefaultAsync();
         return Ok(test);
     }
-
+    
     [HttpPost("create_test")]
-    public async Task<ActionResult> CreateTest()
+    public async Task<ActionResult> CreateTest(Test? test)
     {
-        Test test = new Test();
-
-        test.TestName = "Test_Testname";
-        test.Creator = _dbContext.Users.FirstOrDefault();
-        for (int i = 0; i < 3; i++)
+        if (test is null)
         {
-            var task = new MyTask("Task " + i, InteractionType.ShortStringTask, "Task ans " + i,"Task ans " + i+1);
-            test.Tasks.Add(task);
-        } 
+            return BadRequest();
+        }
+
+        var user = await _dbContext.Users.Where(x => x.Id == test.Creator.Id).FirstOrDefaultAsync();
         
-        await _dbContext.Tests.AddAsync(test);
+        test.Creator = user;
+
+        await _dbContext.Tests!.AddAsync(test); 
         await _dbContext.SaveChangesAsync();
         
-        return Ok(test);
+        return Ok();
     }
 }

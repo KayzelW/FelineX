@@ -48,12 +48,12 @@ public class UserController : Controller
         return Ok(_user.Id);
     }
 
-    [HttpGet]
+    [HttpGet("get_user")]
     public async Task<ActionResult> GetUser()
     {
         try
         {
-            var user = _dbContext.Users!.Select(x => x);
+            var user = _dbContext.Users!.FirstOrDefault();
             return Ok(user ?? null);
         }
         catch (Exception e)
