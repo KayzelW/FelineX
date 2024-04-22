@@ -1,3 +1,9 @@
-@APIServer_HostAddress = http://localhost:5071
+@APIServer_HostAddress = http://26.96.214.129:5071
 ###
+
+GET @APIServer_HostAddress/Test/get_tests
+Accept: application/json
+
+###
+
 
