@@ -32,21 +32,24 @@
                     <span class="input-group-text" id="basic-addon1"  style="background-color: #E7EEFF;  "></span>
                     <input type="text" class="form-control" placeholder="Введите задание" aria-describedby="basic-addon1" @bind="task.Question"  style="background-color: #EFF4FF; border-color: #BDD3FF;">
                 </div>
+                
                 @switch (task.InteractionType)
                 {
                     case InteractionType.ManyVariantsTask:
-                        <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF">
-                            <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF;  ">кол-во</span>
-                            <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
-                                   @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF;">
-                        </div>
+                        <div class="d-flex justify-content-lg-start row-cols-1">
+                            <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF ">
+                                <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF;  ">кол-во</span>
+                                <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
+                                       @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF;">
+                            </div>
+                            </div>
                         <div class="question p-3 border-bottom">
 
                             @foreach (var varAnswer in task.VariableAnswers!)
                             {
-                                <div class="form-check">
-                                    <input class="form-check-input"  aria-label="Правдивый" type="checkbox" value="" id="defaultCheck1" @bind="varAnswer.Truthful">
-                                    <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; border-left-color: #BDD3FF;">
+                                <div class="form-check" style="min-height: 50px">
+                                    <input class="form-check-input"  aria-label="Правдивый" type="checkbox" id="defaultCheck1" @bind="varAnswer.Truthful">
+                                    <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; border-left-color: #BDD3FF; --bs-btn-close-focus-shadow: none">
 
                                 </div>
                             }
@@ -63,9 +66,8 @@
 
                                 @foreach (var varAnswer in task.VariableAnswers!)
                                 {
-                                    <div class="input-group input-group-sm mb-3" style="min-width: auto">
-                                        <label class="radio"> 
-                                        <input type="radio" name="answer-1" value="" @bind="varAnswer.Truthful"  aria-label="Правдивый"></label>
+                                    <div class="form-check" style="min-height: 50px">
+                                      <input class="form-check-input" type="radio" name="flexRadioDefault"  @bind="varAnswer.Truthful"  aria-label="Правдивый">
                                         <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF;">
                                     </div>
                                     
