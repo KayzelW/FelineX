@@ -1,4 +1,6 @@
-﻿using MyTest = Shared.DB.Classes.Test.Test;
+﻿using System.Diagnostics;
+using System.Text.Json;
+using MyTest = Shared.DB.Classes.Test.Test;
 
 namespace WebApp.Services;
 
@@ -39,6 +41,12 @@ public class ApiService
         }
         return test;
     }
-    
-    
+
+    public async Task<bool> PostTest(MyTest test)
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test, options);
+        return responseMessage.IsSuccessStatusCode;
+    }
+
 }

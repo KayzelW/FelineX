@@ -2,11 +2,13 @@
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.Extensions
+@using WebApp.Services
 @rendermode InteractiveServer
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
-@using System.Collections
-@using WebApp.Services
+@using Task = System.Threading.Tasks.Task
+@inject ApiService _apiService
+
 <h3 class="text-center">Новый тест</h3>
 
 <div class="input-group input-group-lg" style="max-width: max-content">
@@ -96,9 +98,10 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private void Save()
+    private async void Save()
     {
         //TODO: proceed save test using ApiService
+        await _apiService.PostTest(test);
         Console.WriteLine(test.TestName);
     }
 

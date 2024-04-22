@@ -39,23 +39,18 @@ public class TestController : Controller
             .FirstOrDefaultAsync();
         return Ok(test);
     }
-
+    
     [HttpPost("create_test")]
-    public async Task<ActionResult> CreateTest()
+    public async Task<ActionResult> CreateTest(Test? test)
     {
-        Test test = new Test();
-
-        test.TestName = "Test_Testname";
-        test.Creator = _dbContext.Users.FirstOrDefault();
-        for (int i = 0; i < 3; i++)
+        if (test is null)
         {
-            var task = new MyTask("Task " + i, InteractionType.ShortStringTask, "Task ans " + i,"Task ans " + i+1);
-            test.Tasks.Add(task);
-        } 
-        
-        await _dbContext.Tests.AddAsync(test);
+            return BadRequest();
+        }
+
+        await _dbContext.Tests!.AddAsync(test);
         await _dbContext.SaveChangesAsync();
         
-        return Ok(test);
+        return Ok();
     }
 }

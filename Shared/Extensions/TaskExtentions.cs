@@ -14,7 +14,7 @@ public static partial class TaskExtentions
             InteractionType.ShortStringTask => "Короткий текст",
             InteractionType.LongStringTask => "Длинный текст",
             InteractionType.OneVariantTask => "Один вариант ответа",
-            InteractionType.ManyVariantsTask => "Несколько вариянтов ответа",
+            InteractionType.ManyVariantsTask => "Несколько вариантов ответа",
             InteractionType.SqlQueryTask => "SQL запрос",
             _ => "Unknown"
         };
