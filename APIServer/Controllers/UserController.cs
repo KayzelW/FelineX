@@ -38,7 +38,7 @@ public class UserController : Controller
         {
             if (await _dbContext.Users.FindAsync(_user.Id) != null)
             {
-                return Conflict(_user.ToDTO());
+                return Conflict(_user);
             }
         }
 
@@ -63,4 +63,6 @@ public class UserController : Controller
 
         return NotFound();
     }
+
+
 }

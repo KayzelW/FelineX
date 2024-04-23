@@ -1,7 +1,7 @@
 ﻿START TRANSACTION;
 
-INSERT INTO Users (Id, AccessFlags, UserName, NormalizedUserName)
-VALUES (UUID(), 1, 'rooter', 'root');
+INSERT INTO Users (Id, AccessFlags, UserName, NormalizedUserName, PasswordHash)
+VALUES (UUID(), 1, 'root', 'rooter', 'ABEAgd8WihbmgXMY9Xp+ZMPg4Xt1YK66UFSw2e4ObQKlX3VfnM//72gWUA6Uq6f1LA==');
 COMMIT;
 
 INSERT INTO Tests (Id, CreatorId, TestName, CreationTime)
