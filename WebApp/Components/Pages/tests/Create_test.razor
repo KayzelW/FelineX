@@ -6,7 +6,6 @@
 @rendermode InteractiveServer
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
-@using Task = System.Threading.Tasks.Task
 @inject ApiService _apiService
 
 <h3 class="text-center">Новый тест</h3>
@@ -32,7 +31,8 @@
                     <span class="input-group-text" id="basic-addon1"  style="background-color: #E7EEFF;  "></span>
                     <input type="text" class="form-control" placeholder="Введите задание" aria-describedby="basic-addon1" @bind="task.Question"  style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
                 </div>
-                
+                <div class="container-md" style="min-height: 20px"></div>
+                <div class="container-md">
                 @switch (task.InteractionType)
                 {
                     case InteractionType.ManyVariantsTask:
@@ -43,8 +43,7 @@
                                        @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
                             </div>
                             </div>
-                        <div class="question p-3 border-bottom">
-
+                        
                             @foreach (var varAnswer in task.VariableAnswers!)
                             {
                                 <div class="form-check" style="min-height: 50px; box-shadow: #0a3622; outline-color: #0a3622">
@@ -53,7 +52,6 @@
 
                                 </div>
                             }
-                    </div>
                         break;
                         
                         case InteractionType.OneVariantTask:
@@ -62,8 +60,7 @@
                                 <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
                                        @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
                             </div>
-                            <div class="question p-3 border-bottom">
-
+                            
                                 @foreach (var varAnswer in task.VariableAnswers!)
                                 {
                                     <div class="form-check" style="min-height: 50px">
@@ -73,27 +70,31 @@
                                     
                                     
                                 }
-                        </div>
                             break;
                             
                         case InteractionType.ShortStringTask:
-                        <div class="question p-3 border-bottom">
                             <input type="text" class="form-control"  aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
                                    style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
-                        </div>
                         break;
                         
                         case InteractionType.LongStringTask:
-                        <div class="question p-3 border-bottom">
+                        
                             <div class="form-floating" > 
                                 <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
                                     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;"></textarea> 
                                 
                             </div>
-                            </div>
                         break;
                 }
-            </div>
+                </div>
+                <div class="d-flex justify-content-end" style="min-height: 20px">
+                </div>
+                    <div class="d-flex justify-content-end" style="min-height: 60px">
+                        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button" @onclick="(() => { Delete(task); })">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
         </div>
     }
 
@@ -152,6 +153,12 @@
 
         await _apiService.PostTest(test);
         Console.WriteLine(test.TestName);
+    }
+
+    private void Delete(MyTask task)
+    {
+        test.Tasks.Remove(task);
+        InvokeAsync(StateHasChanged);
     }
 
 }
