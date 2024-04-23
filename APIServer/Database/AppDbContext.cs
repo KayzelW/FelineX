@@ -37,6 +37,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.Entity<Task>()
             .HasMany(x => x.Thematics)
             .WithMany(task => task.Tasks);
@@ -46,12 +47,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasMany(x => x.Tasks);
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Creator);
+        
         modelBuilder.Entity<User>()
             .HasIndex(e => e.UserName)
             .IsUnique();
         modelBuilder.Entity<User>()
             .HasMany(x => x.UserGroups)
             .WithMany(x => x.Students);
+        modelBuilder.Entity<Test>()
+            .HasOne(x => x.Creator)
+            .WithMany()
+            .HasForeignKey(x => x.CreatorId);
+        
         modelBuilder.Entity<UserGroup>()
             .HasOne(x => x.GroupCreator);
         modelBuilder.Entity<TestAnswer>()

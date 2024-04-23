@@ -73,10 +73,19 @@
     protected override async Task OnInitializedAsync()
     {
         base.OnInitializedAsync();
-        
-        tests = await _ApiService.GetTests();
-
+        try
+        {
+            tests = await _ApiService.GetTests();
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
         await InvokeAsync(StateHasChanged);
+        
+        
     }
     
     private void Navigate_to_create_test()
