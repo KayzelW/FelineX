@@ -1,5 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +16,7 @@ public sealed class User
 
     [MaxLength(100)] public string? UserName { get; set; }
     [MaxLength(100)] public string? NormalizedUserName { get; set; }
-    [MaxLength(100)] public string? PasswordHash { get; set; }
+    [JsonIgnore, MaxLength(100)] public string? PasswordHash { get; set; }
 
     /// <summary>
     /// DO NOT TOUCH. FOR YOUR HANDS EXISTS: Access
@@ -26,14 +29,14 @@ public sealed class User
     /// To delete perm use:
     /// user.Access &= ~AccessLevel.Teacher;
     /// </summary>
-    [NotMapped]
+    [NotMapped, JsonIgnore]
     public AccessLevel Access
     {
         get => (AccessLevel)AccessFlags;
         set => AccessFlags = (uint)value;
     }
 
-    public List<UserGroup>? UserGroups { get; set; }
+    [JsonIgnore] public List<UserGroup>? UserGroups { get; set; }
 
     public User()
     {

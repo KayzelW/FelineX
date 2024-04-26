@@ -57,7 +57,15 @@ public class ApiService
     public async Task<bool> PostTest(MyTest test)
     {
         var user = await GetUser();
-        test.Creator = user!; //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
+        test.CreatorId = user!.Id; //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
+        if (test.Tasks is not null)
+        {
+            foreach (var task in test.Tasks)
+            {
+                task.CreatorId = test.CreatorId;
+            }
+        }
+        
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test);
         return responseMessage.IsSuccessStatusCode;
     }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Shared.DB.Interfaces;
 
 namespace Shared.DB.Classes.Test.Task;
@@ -7,15 +8,17 @@ namespace Shared.DB.Classes.Test.Task;
 public sealed partial class Task : ITask
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = new Guid();
 
     [MaxLength(1000)] public string? Question { get; set; } = "";
     [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; } = new List<ThemeTask>();
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
     public List<VariableAnswer>? VariableAnswers { get; set; } = new List<VariableAnswer>();
-    [ForeignKey(nameof(User.User))] public User.User? Creator { get; set; }
+    [JsonIgnore] public User.User? Creator { get; set; }
+    public Guid? CreatorId { get; set; }
+    [JsonIgnore] public List<Test>? Tests { get; set; } = new List<Test>();
 
-    [NotMapped]
+    [NotMapped, JsonIgnore]
     public int CountVariables
     {
         get => VariableAnswers!.Count;
@@ -51,7 +54,7 @@ public sealed partial class Task : ITask
     {
         int countInTask = VariableAnswers!.Count;
 
-        if (targetCount == 0)
+        if (targetCount <= 0)
         {
             VariableAnswers!.Clear();
             return;
@@ -59,10 +62,13 @@ public sealed partial class Task : ITask
 
         if (countInTask > targetCount)
         {
-            for (int i = countInTask; i > targetCount; i--)
+            var tempArray = VariableAnswers!.ToArray();
+            VariableAnswers.Clear();
+            for (var i = 0; i < targetCount; i++)
             {
-                VariableAnswers!.RemoveAt(i);
+                VariableAnswers!.Add(tempArray[i]);
             }
+
             return;
         }
 
@@ -72,6 +78,7 @@ public sealed partial class Task : ITask
             {
                 VariableAnswers!.Add(new VariableAnswer());
             }
+
             return;
         }
     }

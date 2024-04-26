@@ -7,13 +7,13 @@ namespace Shared.DB.Classes.Test;
 public class Test
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = new Guid();
 
     [MaxLength(100)] public string? TestName { get; set; }
     [JsonIgnore]
-    public User.User Creator { get; set; }
-    public Guid CreatorId { get; set; }
-    public DateTime CreationTime { get; set; } = DateTime.Now;
+    public User.User? Creator { get; set; }
+    public Guid? CreatorId { get; set; }
+    public DateTime? CreationTime { get; set; } = DateTime.Now;
     public List<Task.Task>? Tasks { get; set; } = new List<Task.Task>();
 
     public Test()
