@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using Shared.DB.Classes.User;
+using Shared.Extensions;
 using MyTest = Shared.DB.Classes.Test.Test;
 
 namespace WebApp.Services;
@@ -8,11 +9,12 @@ namespace WebApp.Services;
 public class ApiService
 {
     private HttpClient _httpClient;
-    
+    private CookieManagerService _cookieManager;
+    HttpContext httpContext = new DefaultHttpContext();
 
-    public ApiService(IConfiguration configuration)
+    public ApiService(IConfiguration configuration, CookieManagerService cookieManager)
     {
-        
+        _cookieManager = cookieManager;
         var baseUrl = configuration?.GetConnectionString("ApiUrl");
 
         _httpClient = new HttpClient()
@@ -46,7 +48,7 @@ public class ApiService
     public async Task<User?> GetUser()
     {
         User? user = null;
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"User/get_user");
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync("User/get_user");
         if (responseMessage.IsSuccessStatusCode)
         {
             user = await responseMessage.Content.ReadFromJsonAsync<User>();
@@ -68,6 +70,17 @@ public class ApiService
         
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test);
         return responseMessage.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> Auth_user(string login, string password)
+    {
+        var hash = UserExtensions.HashPassword(password);
+        var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", (login, hash));
+        var user = await responseMessage.Content.ReadFromJsonAsync<(bool success, string userId)>();
+        if (!user.success) return false;
+        _cookieManager.SetUserIdCookie(httpContext, user.userId);
+        return true;
+
     }
 
 }

@@ -16,7 +16,8 @@ public class Program
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        builder.Services.AddSingleton<ApiService>();
+        builder.Services.AddTransient<ApiService>();
+        builder.Services.AddTransient<CookieManagerService>();
 
         var app = builder.Build();
 
