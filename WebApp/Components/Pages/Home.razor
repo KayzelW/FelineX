@@ -1,6 +1,17 @@
 ﻿@page "/"
+@using Shared.Extensions
+@using WebApp.Services
+@rendermode InteractiveServer
+@inject NavigationManager nav
 
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A" type="button" @onclick="User_auth">  Начать  </button>
+        </div>
 
 @code {
-    
+    private void User_auth()
+    {
+        Console.WriteLine("cringee");
+        nav.NavigateTo($"/Auth");
+    }
 }
