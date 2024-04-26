@@ -5,10 +5,10 @@ namespace Shared.DB.Classes.Test.Task;
 public class VariableAnswer
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = new Guid();
 
-    public string StringAnswer { get; set; } = "";
-    public bool Truthful { get; set; }
+    public string? StringAnswer { get; set; } = "";
+    public bool? Truthful { get; set; } = false;
 
     public VariableAnswer()
     {

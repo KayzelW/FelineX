@@ -37,39 +37,74 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        
         modelBuilder.Entity<Task>()
             .HasMany(x => x.Thematics)
             .WithMany(task => task.Tasks);
         modelBuilder.Entity<Task>()
-            .HasMany(x => x.VariableAnswers);
+            .HasMany(x => x.VariableAnswers)
+            .WithOne();
+
         modelBuilder.Entity<Test>()
-            .HasMany(x => x.Tasks);
+            .HasMany(x => x.Tasks)
+            .WithMany(x => x.Tests);
         modelBuilder.Entity<Test>()
-            .HasOne(x => x.Creator);
-        
+            .HasOne(x => x.Creator)
+            .WithMany();
+
         modelBuilder.Entity<User>()
             .HasIndex(e => e.UserName)
             .IsUnique();
         modelBuilder.Entity<User>()
             .HasMany(x => x.UserGroups)
             .WithMany(x => x.Students);
+
+        #region usingId
+
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Creator)
             .WithMany()
             .HasForeignKey(x => x.CreatorId);
-        
         modelBuilder.Entity<UserGroup>()
-            .HasOne(x => x.GroupCreator);
+            .HasOne(x => x.GroupCreator)
+            .WithMany()
+            .HasForeignKey(x => x.GroupCreatorId);
+        modelBuilder.Entity<Task>()
+            .HasOne(x => x.Creator)
+            .WithMany()
+            .HasForeignKey(x => x.CreatorId);
+
+        modelBuilder.Entity<TaskAnswer>()
+            .HasOne(x => x.Student)
+            .WithMany()
+            .HasForeignKey(x => x.StudentId);
+        modelBuilder.Entity<TaskAnswer>()
+            .HasOne(x => x.AnsweredTask)
+            .WithMany()
+            .HasForeignKey(x => x.AnsweredTaskId);
+        modelBuilder.Entity<UserGroup>()
+            .HasOne(x => x.GroupCreator)
+            .WithMany()
+            .HasForeignKey(x => x.GroupCreatorId);
         modelBuilder.Entity<TestAnswer>()
-            .HasMany(testAns => testAns.TaskAnswers);
+            .HasOne(x => x.Student)
+            .WithMany()
+            .HasForeignKey(x => x.StudentId);
+        modelBuilder.Entity<TestAnswer>()
+            .HasOne(x => x.AnsweredTest)
+            .WithMany()
+            .HasForeignKey(x => x.AnsweredTestId);
+
+        #endregion
+
+        modelBuilder.Entity<TestAnswer>()
+            .HasMany(testAns => testAns.TaskAnswers)
+            .WithMany();
+        
         modelBuilder.Entity<TaskAnswer>()
-            .HasMany(taskAns => taskAns.GotVariables);
+            .HasMany(taskAns => taskAns.GotVariables)
+            .WithMany();
         modelBuilder.Entity<TaskAnswer>()
-            .HasMany(taskAns => taskAns.MarkedVariables);
-        modelBuilder.Entity<TaskAnswer>()
-            .HasOne(x => x.Student);
-        modelBuilder.Entity<TaskAnswer>()
-            .HasOne(x => x.AnsweredTask);
+            .HasMany(x => x.MarkedVariables)
+            .WithMany();
     }
 }

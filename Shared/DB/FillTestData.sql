@@ -15,8 +15,7 @@ INSERT INTO ThemeTasks (Id, Theme)
 VALUES (UUID(), 'тестовые задание');
 COMMIT;
 
-INSERT INTO Tasks (Id, Question, InteractionType, User, TestId)
+INSERT INTO Tasks (Id, Question, InteractionType, TestId)
 VALUES (UUID(), 'Some test question', 1,
-        (SELECT Users.Id FROM Users WHERE Users.UserName = 'rooter' LIMIT 1),
         (SELECT Tests.Id FROM Tests WHERE Tests.TestName = 'simple name for Testname' LIMIT 1));
 COMMIT;

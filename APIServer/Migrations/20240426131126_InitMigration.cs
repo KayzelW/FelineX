@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIServer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMigrations : Migration
+    public partial class InitMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -66,14 +66,35 @@ namespace APIServer.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Tasks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Question = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    InteractionType = table.Column<int>(type: "int", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tasks_Users_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Tests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     TestName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatorId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreationTime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    CreatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    CreationTime = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -82,8 +103,7 @@ namespace APIServer.Migrations
                         name: "FK_Tests_Users_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -113,50 +133,27 @@ namespace APIServer.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Tasks",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Question = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    InteractionType = table.Column<int>(type: "int", nullable: false),
-                    User = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    TestId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tasks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tasks_Tests_TestId",
-                        column: x => x.TestId,
-                        principalTable: "Tests",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Users_User",
-                        column: x => x.User,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TestAnswers",
+                name: "TaskAnswers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     StudentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    AnsweredTestId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    AnsweredTaskId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    GotVariableIds = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MarkedVariableIds = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TestAnswers", x => x.Id);
+                    table.PrimaryKey("PK_TaskAnswers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TestAnswers_Tests_AnsweredTestId",
-                        column: x => x.AnsweredTestId,
-                        principalTable: "Tests",
+                        name: "FK_TaskAnswers_Tasks_AnsweredTaskId",
+                        column: x => x.AnsweredTaskId,
+                        principalTable: "Tasks",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TestAnswers_Users_StudentId",
+                        name: "FK_TaskAnswers_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -189,60 +186,18 @@ namespace APIServer.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "TaskAnswers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StudentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    AnsweredTaskId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    TestAnswerId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskAnswers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TaskAnswers_Tasks_AnsweredTaskId",
-                        column: x => x.AnsweredTaskId,
-                        principalTable: "Tasks",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_TaskAnswers_TestAnswers_TestAnswerId",
-                        column: x => x.TestAnswerId,
-                        principalTable: "TestAnswers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_TaskAnswers_Users_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "VariableAnswers",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StringAnswer = table.Column<string>(type: "longtext", nullable: false)
+                    StringAnswer = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Truthful = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    TaskAnswerId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    TaskAnswerId1 = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    Truthful = table.Column<bool>(type: "tinyint(1)", nullable: true),
                     TaskId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VariableAnswers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_VariableAnswers_TaskAnswers_TaskAnswerId",
-                        column: x => x.TaskAnswerId,
-                        principalTable: "TaskAnswers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_VariableAnswers_TaskAnswers_TaskAnswerId1",
-                        column: x => x.TaskAnswerId1,
-                        principalTable: "TaskAnswers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_VariableAnswers_Tasks_TaskId",
                         column: x => x.TaskId,
@@ -251,10 +206,149 @@ namespace APIServer.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "TaskTest",
+                columns: table => new
+                {
+                    TasksId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TestsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskTest", x => new { x.TasksId, x.TestsId });
+                    table.ForeignKey(
+                        name: "FK_TaskTest_Tasks_TasksId",
+                        column: x => x.TasksId,
+                        principalTable: "Tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskTest_Tests_TestsId",
+                        column: x => x.TestsId,
+                        principalTable: "Tests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TestAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    StudentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    AnsweredTestId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TestAnswers_Tests_AnsweredTestId",
+                        column: x => x.AnsweredTestId,
+                        principalTable: "Tests",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TestAnswers_Users_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TaskAnswerVariableAnswer",
+                columns: table => new
+                {
+                    GotVariablesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TaskAnswerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAnswerVariableAnswer", x => new { x.GotVariablesId, x.TaskAnswerId });
+                    table.ForeignKey(
+                        name: "FK_TaskAnswerVariableAnswer_TaskAnswers_TaskAnswerId",
+                        column: x => x.TaskAnswerId,
+                        principalTable: "TaskAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAnswerVariableAnswer_VariableAnswers_GotVariablesId",
+                        column: x => x.GotVariablesId,
+                        principalTable: "VariableAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TaskAnswerVariableAnswer1",
+                columns: table => new
+                {
+                    MarkedVariablesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TaskAnswer1Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAnswerVariableAnswer1", x => new { x.MarkedVariablesId, x.TaskAnswer1Id });
+                    table.ForeignKey(
+                        name: "FK_TaskAnswerVariableAnswer1_TaskAnswers_TaskAnswer1Id",
+                        column: x => x.TaskAnswer1Id,
+                        principalTable: "TaskAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAnswerVariableAnswer1_VariableAnswers_MarkedVariablesId",
+                        column: x => x.MarkedVariablesId,
+                        principalTable: "VariableAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TaskAnswerTestAnswer",
+                columns: table => new
+                {
+                    TaskAnswersId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TestAnswerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAnswerTestAnswer", x => new { x.TaskAnswersId, x.TestAnswerId });
+                    table.ForeignKey(
+                        name: "FK_TaskAnswerTestAnswer_TaskAnswers_TaskAnswersId",
+                        column: x => x.TaskAnswersId,
+                        principalTable: "TaskAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAnswerTestAnswer_TestAnswers_TestAnswerId",
+                        column: x => x.TestAnswerId,
+                        principalTable: "TestAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_GroupCreatorId",
                 table: "Groups",
                 column: "GroupCreatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAnswerTestAnswer_TestAnswerId",
+                table: "TaskAnswerTestAnswer",
+                column: "TestAnswerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAnswerVariableAnswer_TaskAnswerId",
+                table: "TaskAnswerVariableAnswer",
+                column: "TaskAnswerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskAnswerVariableAnswer1_TaskAnswer1Id",
+                table: "TaskAnswerVariableAnswer1",
+                column: "TaskAnswer1Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskAnswers_AnsweredTaskId",
@@ -267,9 +361,9 @@ namespace APIServer.Migrations
                 column: "StudentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskAnswers_TestAnswerId",
-                table: "TaskAnswers",
-                column: "TestAnswerId");
+                name: "IX_TaskTest_TestsId",
+                table: "TaskTest",
+                column: "TestsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskThemeTask_ThemeTask",
@@ -277,14 +371,9 @@ namespace APIServer.Migrations
                 column: "ThemeTask");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TestId",
+                name: "IX_Tasks_CreatorId",
                 table: "Tasks",
-                column: "TestId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_User",
-                table: "Tasks",
-                column: "User");
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TestAnswers_AnsweredTestId",
@@ -313,16 +402,6 @@ namespace APIServer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_VariableAnswers_TaskAnswerId",
-                table: "VariableAnswers",
-                column: "TaskAnswerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_VariableAnswers_TaskAnswerId1",
-                table: "VariableAnswers",
-                column: "TaskAnswerId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_VariableAnswers_TaskId",
                 table: "VariableAnswers",
                 column: "TaskId");
@@ -332,10 +411,28 @@ namespace APIServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "TaskAnswerTestAnswer");
+
+            migrationBuilder.DropTable(
+                name: "TaskAnswerVariableAnswer");
+
+            migrationBuilder.DropTable(
+                name: "TaskAnswerVariableAnswer1");
+
+            migrationBuilder.DropTable(
+                name: "TaskTest");
+
+            migrationBuilder.DropTable(
                 name: "TaskThemeTask");
 
             migrationBuilder.DropTable(
                 name: "UserUserGroup");
+
+            migrationBuilder.DropTable(
+                name: "TestAnswers");
+
+            migrationBuilder.DropTable(
+                name: "TaskAnswers");
 
             migrationBuilder.DropTable(
                 name: "VariableAnswers");
@@ -347,16 +444,10 @@ namespace APIServer.Migrations
                 name: "Groups");
 
             migrationBuilder.DropTable(
-                name: "TaskAnswers");
+                name: "Tests");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
-
-            migrationBuilder.DropTable(
-                name: "TestAnswers");
-
-            migrationBuilder.DropTable(
-                name: "Tests");
 
             migrationBuilder.DropTable(
                 name: "Users");

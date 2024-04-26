@@ -1,10 +1,8 @@
 ﻿using APIServer.Database;
-using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.DB.Classes;
 using Shared.DB.Classes.User;
-using Shared.Extensions;
+using Shared.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace APIServer.Controllers;
@@ -64,5 +62,15 @@ public class UserController : Controller
         return NotFound();
     }
 
+    [HttpGet("auth")]
+    public async Task<ActionResult<(bool, string)>> TryAuth((string login, string hashedPassword) data)
+    {
+        var _user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == data.login);
+        if (_user.PasswordHash == data.hashedPassword)
+        {
+            return Ok((true, _user.Id));
+        }
 
+        return NotFound((false, (string)default!));
+    }
 }
