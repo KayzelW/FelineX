@@ -1,8 +1,9 @@
 ﻿@page "/profile"
+@using WebApp.Services
 @inject NavigationManager nav
 @rendermode InteractiveServer
 
-<h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль</h1>
+<h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль, @userId</h1>
 <div class="row d-flex justify-content-center align-items-center h-100">
     <div class="col col-lg-6 mb-4 mb-lg-0" >
         <div class="card mb-3" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF">
@@ -31,6 +32,14 @@
 </div>
 
 @code {
+    private CookieManagerService _cookieManager;
+    private string userId { get; set; }
+    HttpContext httpContext = new DefaultHttpContext();
+    // protected override async Task OnInitializedAsync()
+    // {
+    //    await base.OnInitializedAsync();
+    //    // userId = _cookieManager.GetUserIdFromCookie();
+    // }
 
     private void cringe()
     {

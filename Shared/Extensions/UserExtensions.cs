@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
+using System.Text;
 using Shared.DB.Classes.User;
 using Shared.Models;
 
@@ -9,47 +10,15 @@ public static partial class UserExtensions
 {
     public static string HashPassword(string password)
     {
-        byte[] salt = new byte[0x10];
-        byte[] buffer2;
-        if (password == null)
+        using (SHA256 sha256Hash = SHA256.Create())
         {
-            throw new ArgumentNullException("password");
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+            return builder.ToString();
         }
-        using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, salt.Length, 10, HashAlgorithmName.SHA256))
-        {
-            salt = bytes.Salt;
-            buffer2 = bytes.GetBytes(0x20);
-        }
-        byte[] dst = new byte[0x31];
-        Buffer.BlockCopy(salt, 0, dst, 1, 0x10);
-        Buffer.BlockCopy(buffer2, 0, dst, 0x11, 0x20);
-        return Convert.ToBase64String(dst);
-    }
-    
-    public static bool VerifyHashedPassword(string hashedPassword, string password)
-    {
-        byte[] buffer4;
-        if (hashedPassword == null)
-        {
-            return false;
-        }
-        if (password == null)
-        {
-            throw new ArgumentNullException("password");
-        }
-        byte[] src = Convert.FromBase64String(hashedPassword);
-        if ((src.Length != 0x31) || (src[0] != 0))
-        {
-            return false;
-        }
-        byte[] dst = new byte[0x10];
-        Buffer.BlockCopy(src, 1, dst, 0, 0x10);
-        byte[] buffer3 = new byte[0x20];
-        Buffer.BlockCopy(src, 0x11, buffer3, 0, 0x20);
-        using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, dst, 10, HashAlgorithmName.SHA256))
-        {
-            buffer4 = bytes.GetBytes(0x20);
-        }
-        return buffer3.SequenceEqual(buffer4);
     }
 }

@@ -1,20 +1,17 @@
-﻿using System.Diagnostics;
-using System.Text.Json;
-using Shared.DB.Classes.User;
+﻿using Shared.DB.Classes.User;
 using Shared.Extensions;
 using MyTest = Shared.DB.Classes.Test.Test;
+using System.Net;
+using Shared.Models;
 
 namespace WebApp.Services;
 
 public class ApiService
 {
     private HttpClient _httpClient;
-    private CookieManagerService _cookieManager;
-    HttpContext httpContext = new DefaultHttpContext();
-
-    public ApiService(IConfiguration configuration, CookieManagerService cookieManager)
+    
+    public ApiService(IConfiguration configuration)
     {
-        _cookieManager = cookieManager;
         var baseUrl = configuration?.GetConnectionString("ApiUrl");
 
         _httpClient = new HttpClient()
@@ -31,9 +28,10 @@ public class ApiService
         {
             tests = await responseMessage.Content.ReadFromJsonAsync<List<MyTest>>();
         }
+
         return tests;
     }
-    
+
     public async Task<MyTest> GetTest(string testId)
     {
         MyTest? test = null;
@@ -42,6 +40,7 @@ public class ApiService
         {
             test = await responseMessage.Content.ReadFromJsonAsync<MyTest>();
         }
+
         return test;
     }
 
@@ -53,13 +52,15 @@ public class ApiService
         {
             user = await responseMessage.Content.ReadFromJsonAsync<User>();
         }
+
         return user;
-    } 
-    
+    }
+
     public async Task<bool> PostTest(MyTest test)
     {
         var user = await GetUser();
-        test.CreatorId = user!.Id; //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
+        test.CreatorId =
+            user!.Id; //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
         if (test.Tasks is not null)
         {
             foreach (var task in test.Tasks)
@@ -67,7 +68,7 @@ public class ApiService
                 task.CreatorId = test.CreatorId;
             }
         }
-        
+
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test);
         return responseMessage.IsSuccessStatusCode;
     }
@@ -75,12 +76,14 @@ public class ApiService
     public async Task<bool> Auth_user(string login, string password)
     {
         var hash = UserExtensions.HashPassword(password);
-        var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", (login, hash));
-        var user = await responseMessage.Content.ReadFromJsonAsync<(bool success, string userId)>();
-        if (!user.success) return false;
-        _cookieManager.SetUserIdCookie(httpContext, user.userId);
+        var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", new AuthData
+        {
+            Login = login,
+            HashedPassword = WebUtility.UrlEncode(hash)
+        });
+        if (!responseMessage.IsSuccessStatusCode) return false;
+        var userId = await responseMessage.Content.ReadFromJsonAsync<string>();
+        // _cookieManager.SetUserIdCookie(userId!);
         return true;
-
     }
-
 }

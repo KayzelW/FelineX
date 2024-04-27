@@ -1,7 +1,9 @@
 ﻿using APIServer.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.CompilerServices;
 using Shared.DB.Classes.User;
+using Shared.Extensions;
 using Shared.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -62,15 +64,21 @@ public class UserController : Controller
         return NotFound();
     }
 
-    [HttpGet("auth")]
-    public async Task<ActionResult<(bool, string)>> TryAuth((string login, string hashedPassword) data)
+    [HttpPost("auth")]
+    public async Task<IActionResult> TryAuth(AuthData auth)
     {
-        var _user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == data.login);
-        if (_user.PasswordHash == data.hashedPassword)
+        var _user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == auth.Login);
+        if (_user.PasswordHash == auth.HashedPassword)
         {
-            return Ok((true, _user.Id));
+            return Ok(_user.Id);
         }
 
-        return NotFound((false, (string)default!));
+        return NotFound(false);
+    }
+
+    [HttpGet("test_hash")]
+    public async Task<string> TestHash(string password)
+    {
+        return UserExtensions.HashPassword(password);
     }
 }

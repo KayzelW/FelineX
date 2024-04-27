@@ -17,7 +17,7 @@ public class Program
             .AddInteractiveServerComponents();
 
         builder.Services.AddTransient<ApiService>();
-        builder.Services.AddTransient<CookieManagerService>();
+
 
         var app = builder.Build();
 
