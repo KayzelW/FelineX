@@ -2,6 +2,7 @@
 using Shared.Extensions;
 using MyTest = Shared.DB.Classes.Test.Test;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using Shared.Models;
 
 namespace WebApp.Services;
@@ -73,7 +74,7 @@ public class ApiService
         return responseMessage.IsSuccessStatusCode;
     }
 
-    public async Task<bool> Auth_user(string login, string password)
+    public async Task<string> AuthUser(string login, string password) 
     {
         var hash = UserExtensions.HashPassword(password);
         var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", new AuthData
@@ -81,9 +82,15 @@ public class ApiService
             Login = login,
             HashedPassword = WebUtility.UrlEncode(hash)
         });
-        if (!responseMessage.IsSuccessStatusCode) return false;
+        if (!responseMessage.IsSuccessStatusCode) return null;
         var userId = await responseMessage.Content.ReadFromJsonAsync<string>();
-        // _cookieManager.SetUserIdCookie(userId!);
-        return true;
+        return userId;
+    }
+
+    public async Task<uint?> GetUserAccessById(string id){
+        var responseMessage = await _httpClient.GetAsync($"User/get_user_access_by_id/{id}");
+        if (!responseMessage.IsSuccessStatusCode) return null;
+        var access = await responseMessage.Content.ReadFromJsonAsync<uint>();
+        return access;
     }
 }

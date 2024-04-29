@@ -1,0 +1,30 @@
+﻿@using WebApp.Services
+
+@inject AuthService authService
+@inject NavigationManager nav
+@rendermode InteractiveServer
+@inject IHttpContextAccessor HttpContextAccessor
+
+@code {
+
+    private async Task CheckCookie()
+    {
+        var userId = HttpContextAccessor.HttpContext!.Request.Cookies["UserId"];
+        if (!await authService.CheckExistsAsync(userId))
+        {
+            Console.WriteLine("not CheckCookie  ");
+            if (!nav.Uri.Contains("/auth"))
+            {
+                nav.NavigateTo("/auth", true);
+            }
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        
+        await CheckCookie();
+        Console.WriteLine("OnAfterRenderAsync on CC");
+    }
+
+}

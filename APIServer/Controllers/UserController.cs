@@ -76,6 +76,18 @@ public class UserController : Controller
         return NotFound(false);
     }
 
+    [HttpGet("get_user_access_by_id/{id:guid}")]
+    public async Task<ActionResult> GetUserAccessById(Guid id)
+    {
+        var _user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+        if (_user != null)
+        {
+            return Ok(_user.AccessFlags);
+        }
+
+        return NotFound();
+    }
+
     [HttpGet("test_hash")]
     public async Task<string> TestHash(string password)
     {

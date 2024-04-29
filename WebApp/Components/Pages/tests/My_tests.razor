@@ -1,10 +1,12 @@
 ﻿@page "/my_tests"
 @using WebApp.Services
 @using MyTest = Shared.DB.Classes.Test.Test;
-@using MyTask = Shared.DB.Classes.Test.Task.Task;
 @inject NavigationManager nav
 @inject ApiService _ApiService
+
 @rendermode InteractiveServer
+
+
 
 
 
@@ -73,6 +75,7 @@
     protected override async Task OnInitializedAsync()
     {
         base.OnInitializedAsync();
+        
         try
         {
             tests = await _ApiService.GetTests();
@@ -84,8 +87,6 @@
             throw;
         }
         await InvokeAsync(StateHasChanged);
-        
-        
     }
     
     private void Navigate_to_create_test()

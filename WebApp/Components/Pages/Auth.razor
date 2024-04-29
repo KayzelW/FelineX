@@ -1,9 +1,10 @@
-﻿@page "/Auth"
-@using Shared.Extensions
+﻿@page "/auth"
 @using WebApp.Services
 @rendermode InteractiveServer
 @inject NavigationManager nav
 @inject ApiService _ApiService
+@inject IJSRuntime JSRuntime
+
 
 <div class="row d-flex justify-content-center h-100">
     <div class="col col-md-4 mb-4 mb-md-0 justify-content-center align-items-center">
@@ -46,7 +47,7 @@
 
                     <div>
                         <p class="mb-0">
-                            У вас нет аккаунта? <a href="#!" class="text-50 fw-bold" style="color: #0F066D;: #0F066D; font-style: italic">Зарегистрироваться</a>
+                            У вас нет аккаунта?<a href="#!" class="text-50 fw-bold" style="color: #0F066D;: #0F066D; font-style: italic">Зарегистрироваться</a>
                         </p>
                     </div>
                 </div>
@@ -61,13 +62,20 @@
 @code {
     string login { get; set; }
     string password { get; set; }
+    private string? userId { get; set; }
+    
 
     private async Task User_auth()
     {
         if (login is null || password is null) return;
-        if (await _ApiService.Auth_user(login, password))
+        userId = await _ApiService.AuthUser(login, password);
+        if ( userId != null)
         {
+    
+            await JSRuntime.InvokeVoidAsync("cookieFunctions.setCookie", "UserId", userId, 1);
+            Console.WriteLine("User_auth");
             nav.NavigateTo($"/profile");
+            Console.WriteLine("Navigated to profile");
         }
     }
 

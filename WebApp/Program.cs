@@ -11,12 +11,15 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<HttpContextAccessor>();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        builder.Services.AddTransient<ApiService>();
+        builder.Services.AddSingleton<ApiService>();
+        builder.Services.AddScoped<AuthService>();
 
 
         var app = builder.Build();
