@@ -1,4 +1,4 @@
-﻿@page "/Create_test"
+﻿@page "/Created_test"
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.Extensions
@@ -9,7 +9,7 @@
 @inject ApiService _apiService
 
 
-<h3 class="text-center">Новый тест</h3>
+<h3 class="text-center">Тест</h3>
 
 <div class="input-group input-group-lg" style="max-width: max-content">
     <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1" @bind="test.TestName" style="background-color: #EFF4FF; box-shadow: none; ">
@@ -48,10 +48,10 @@
                             @foreach (var varAnswer in task.VariableAnswers!)
                             {
                                 <div class="form-check" style="min-height: 50px; box-shadow: #0a3622; outline-color: #0a3622">
-                                    <input class="form-check-input" aria-label="Правдивый" type="checkbox" id="defaultCheck1" @bind="@varAnswer.Truthful" style="box-shadow: none; width: 20px; height: 20px;">
-                                    <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; border-left-color: #BDD3FF; box-shadow: none; height: 30px; margin-left: 5px;">
-                                </div>
+                                    <input class="form-check-input"  aria-label="Правдивый" type="checkbox" id="defaultCheck1" @bind="@varAnswer.Truthful" style="box-shadow: none;" >
+                                    <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; border-left-color: #BDD3FF; box-shadow: none;">
 
+                                </div>
                             }
                         break;
                         
@@ -65,10 +65,9 @@
                                 @foreach (var varAnswer in task.VariableAnswers!)
                                 {
                                     <div class="form-check" style="min-height: 50px">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" @onclick="() => varAnswer.Truthful = true" aria-label="Правдивый" style="box-shadow: none; width: 20px; height: 20px;">
-                                        <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none; height: 30px; margin-left: 5px;">
+                                      <input class="form-check-input" type="radio" name="flexRadioDefault"  @onclick="() => varAnswer.Truthful = true" aria-label="Правдивый" style="box-shadow: none;">
+                                        <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
                                     </div>
-
                                     
                                     
                                 }
