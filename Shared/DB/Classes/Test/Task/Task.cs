@@ -39,8 +39,7 @@ public sealed partial class Task : ITask
     }
 
     public Task(string? question, InteractionType interactionType, params string[] answers) :
-        this(question,
-            interactionType)
+        this(question, interactionType)
     {
         foreach (var answer in answers)
         {
