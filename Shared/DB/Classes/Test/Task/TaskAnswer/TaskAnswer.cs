@@ -14,10 +14,7 @@ public class TaskAnswer
     [JsonIgnore] public Task? AnsweredTask { get; set; }
     public Guid? AnsweredTaskId { get; set; }
     public List<VariableAnswer>? GotVariables { get; set; } = new List<VariableAnswer>();
-    public List<Guid>? GotVariableIds { get; set; } = new List<Guid>();
-    
-    [JsonIgnore] public List<VariableAnswer>? MarkedVariables { get; set; } = new List<VariableAnswer>();
-    public List<Guid>? MarkedVariableIds { get; set; } = new List<Guid>();
+    public List<VariableAnswer>? MarkedVariables { get; set; } = new List<VariableAnswer>();
     [MaxLength(1000)] public string? StringAnswer = "";
 
     public TaskAnswer()

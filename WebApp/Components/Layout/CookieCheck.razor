@@ -13,7 +13,7 @@
         if (!await authService.CheckExistsAsync(userId))
         {
             Console.WriteLine("not CheckCookie  ");
-            if (!nav.Uri.Contains("/auth"))
+            if (!nav.Uri.Contains("/auth") || !nav.Uri.Contains("/test/"))
             {
                 nav.NavigateTo("/auth", true);
             }
