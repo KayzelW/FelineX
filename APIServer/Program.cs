@@ -30,12 +30,13 @@ public sealed class Program
         {
             c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Dev API", Version = "v1" });
         });
+#else
+        builder.Services.AddSwaggerGen();
 #endif
 
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
 
         #endregion
 
@@ -63,10 +64,9 @@ public sealed class Program
 
         #endregion
 
-        Console.WriteLine("Trying to verify DB");
-
+        using (var dbContext = app.Services.GetRequiredService<AppDbContext>())
         {
-            var dbContext = app.Services.GetRequiredService<AppDbContext>();
+            Console.WriteLine("Trying to verify DB");
             dbContext.Database.EnsureCreated();
         }
     }

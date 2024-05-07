@@ -44,6 +44,10 @@ public class TestController : Controller
                 .Include(x => x.Tasks)
                 .ThenInclude(x => x.VariableAnswers)
                 .FirstOrDefaultAsync();
+            foreach (var ans in test.Tasks.SelectMany(task => task.VariableAnswers))
+            {
+                ans.Truthful = false;
+            }
         }
         catch
         {

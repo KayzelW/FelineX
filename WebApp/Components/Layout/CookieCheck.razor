@@ -3,28 +3,33 @@
 @inject AuthService authService
 @inject NavigationManager nav
 @rendermode InteractiveServer
+@inject ILogger<CookieCheck> _logger
 @inject IHttpContextAccessor HttpContextAccessor
 
 @code {
 
     private async Task CheckCookie()
     {
-        var userId = HttpContextAccessor.HttpContext!.Request.Cookies["UserId"];
+        var userIdString = HttpContextAccessor.HttpContext!.Request.Cookies["UserId"];
+
+        if (!Guid.TryParse(userIdString, out var userId))
+        {
+        }
+
         if (!await authService.CheckExistsAsync(userId))
         {
-            Console.WriteLine("not CheckCookie  ");
+            _logger.LogWarning("not check cookie");
             if (!nav.Uri.Contains("/auth") && !nav.Uri.Contains("/test/"))
             {
                 nav.NavigateTo("/auth", true);
             }
         }
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        
         await CheckCookie();
-        Console.WriteLine("OnAfterRenderAsync on CC");
+        _logger.LogInformation("OnAfterRenderAsync on CC");
     }
 
 }

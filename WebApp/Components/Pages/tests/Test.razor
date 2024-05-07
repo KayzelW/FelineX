@@ -1,77 +1,20 @@
 ﻿@page "/test/{test_id}"
 @using WebApp.Services
 @using WebApp.Components.Tasks_Components
-@using MyTask = Shared.DB.Classes.Test.Task.Task;
+
 @using MyTest = Shared.DB.Classes.Test.Test;
-@using Microsoft.AspNetCore.Mvc.TagHelpers.Cache
+@using FinishedTest = Shared.DB.Classes.Test.Task.TaskAnswer.TestAnswer;
+
 @using Shared.DB.Classes.Test.Task
 @using Task = System.Threading.Tasks.Task
 
 @inject ApiService _ApiService
+@rendermode InteractiveServer
 
-    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test.TestName</h3>
 
 
-@* <div class="container mt-5"> *@
-    @* <div class="d-flex justify-content-center row"> *@
-    @*     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
-    @*         <div class="col-md-10 col-lg-10"> *@
-    @* *@
-    @*             <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
-    @*                 <h4 >Задание </h4> *@
-    @*             </div> *@
-    @*         </div> *@
-    @*         <div class="question p-3 border-bottom"> *@
-    @*             <div class="d-flex flex-row align-items-center question-title"> *@
-    @*                 <h5 class="mt-1">"dfgsdfg"</h5> *@
-    @*             </div> *@
-    @*             @for (int j = 1; j <= 4; j++) *@
-    @*             { *@
-    @*                 <div class="ans ml-2"> *@
-    @*                     <label class="radio"> *@
-    @*                         <input type="radio" name="answer-1" value="@j"> <span>@j</span> *@
-    @*                     </label> *@
-    @*                 </div> *@
-    @*             } *@
-    @* *@
-    @*         </div> *@
-    @*     </div> *@
-    @* </div> *@
-    
-    @* <ManyVariantsTask></ManyVariantsTask> *@
-    @* <OneVariantTask></OneVariantTask> *@
-    @* <ShortStringTask></ShortStringTask> *@
-    
+<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test.TestName</h3>
 
-    @* <div class="d-flex justify-content-center row"> *@
-    @*     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
-    @*         <div class="col-md-10 col-lg-10"> *@
-    @* *@
-    @*             <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
-    @*                 <h4 >Задание 1</h4> *@
-    @*             </div> *@
-    @*         </div> *@
-    @*         <div class="question p-3 border-bottom"> *@
-    @*             <div class="d-flex flex-row align-items-center question-title"> *@
-    @*                 <h5 class="mt-1 ml-2"> 132456</h5> *@
-    @*             </div> *@
-    @* *@
-    @*             <div class="form-check"> *@
-    @*                 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> *@
-    @*                 <label class="form-check-label" for="defaultCheck1"> *@
-    @*                     Default checkbox *@
-    @*                 </label> *@
-    @*             </div> *@
-    @*             <div class="form-check"> *@
-    @*                 <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"> *@
-    @*                 <label class="form-check-label" for="defaultCheck1"> *@
-    @*                     Default checkbox *@
-    @*                 </label> *@
-    @*             </div> *@
-    @*         </div> *@
-    @*     </div> *@
-    @* </div> *@
-@* *@
 @for (int i = 0; i < test.Tasks.Count; i++)
 {
     switch (test.Tasks[i].InteractionType)
@@ -92,49 +35,39 @@
 }
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
-        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
+        <button class="btn btn-outline-primary" @onclick="SaveAndSubmit" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
             Сохранить
         </button>
     </div>
 
 
-@* <div class="d-flex justify-content-center row"> *@
-    @*     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
-    @*         <div class="col-md-10 col-lg-10"> *@
-    @*             <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
-    @*                 <h4 >Задание 1</h4> *@
-    @*             </div> *@
-    @*             <div class="question p-3 border-bottom"> *@
-    @*                 <div class="d-flex flex-row align-items-center question-title"> *@
-    @*                     <h5 class="mt-1 ml-2">s;ljdkfghjng;okljsdnfojihg;nsdxfpoi;jxtgnhiop;ujdxfxn</h5> *@
-    @*                 </div> *@
-    @* *@
-    @*                 <div class="form-floating"> *@
-    @*                     <textarea class="form-control"  id="floatingTextarea2" style="height: 100px"></textarea> *@
-    @*                     <label for="floatingTextarea2"></label> *@
-    @*                 </div> *@
-    @*             </div> *@
-    @*         </div> *@
-    @*     </div> *@
-    @* </div> *@
-    @* </div> *@
-    
-
-
 @code {
+    public ManyVariantsTask mvTask;
     [Parameter]
     public string test_id { get; set; }
 
     MyTest test = new MyTest();
+    FinishedTest finTest = new FinishedTest();
+    
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitializedAsync();
+        await base.OnInitializedAsync();
         
         test = await _ApiService.GetTest(test_id);
 
         await InvokeAsync(StateHasChanged);
         
+        
+    }
+
+    private void SaveAndSubmit()
+    {
+
+        foreach (var task in test.Tasks)
+        {
+            
+        }
         
     }
 

@@ -10,7 +10,7 @@ namespace WebApp.Services;
 public class ApiService
 {
     private HttpClient _httpClient;
-    
+
     public ApiService(IConfiguration configuration)
     {
         var baseUrl = configuration?.GetConnectionString("ApiUrl");
@@ -74,7 +74,7 @@ public class ApiService
         return responseMessage.IsSuccessStatusCode;
     }
 
-    public async Task<string> AuthUser(string login, string password) 
+    public async Task<Guid?> AuthUser(string login, string password)
     {
         var hash = UserExtensions.HashPassword(password);
         var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", new AuthData
@@ -83,11 +83,18 @@ public class ApiService
             HashedPassword = WebUtility.UrlEncode(hash)
         });
         if (!responseMessage.IsSuccessStatusCode) return null;
+
         var userId = await responseMessage.Content.ReadFromJsonAsync<string>();
-        return userId;
+        if (!Guid.TryParse(userId, out var userGuid))
+        {
+            return null;
+        }
+
+        return userGuid;
     }
 
-    public async Task<uint?> GetUserAccessById(string id){
+    public async Task<uint?> GetUserAccessById(Guid? id)
+    {
         var responseMessage = await _httpClient.GetAsync($"User/get_user_access_by_id/{id}");
         if (!responseMessage.IsSuccessStatusCode) return null;
         var access = await responseMessage.Content.ReadFromJsonAsync<uint>();

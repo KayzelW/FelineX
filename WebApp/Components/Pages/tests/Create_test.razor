@@ -142,7 +142,11 @@
         var t = new MyTask(null, interactionType);
         if (t.InteractionType is InteractionType.LongStringTask or InteractionType.ShortStringTask)
         {
-            t.VariableAnswers!.Add(new VariableAnswer());
+            var v = new VariableAnswer
+            {
+                Truthful = true
+            };
+            t.VariableAnswers!.Add(v);
             
         }
         test.Tasks!.Add(t);
@@ -151,9 +155,7 @@
 
     private async void Save()
     {
-
         await _apiService.PostTest(test);
-        Console.WriteLine(test.TestName);
     }
 
     private void Delete(MyTask task)

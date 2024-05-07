@@ -1,9 +1,12 @@
 ﻿@page "/auth"
 @using WebApp.Services
+@using Microsoft.AspNetCore.Authentication
 @rendermode InteractiveServer
 @inject NavigationManager nav
-@inject ApiService _ApiService
+@inject AuthService _authService
 @inject IJSRuntime JSRuntime
+@inject ILogger<Auth> _logger
+@inject HttpContextAccessor _HttpContextAccessor
 
 
 <div class="row d-flex justify-content-center h-100">
@@ -60,22 +63,32 @@
 
 
 @code {
-    string login { get; set; }
-    string password { get; set; }
-    private string? userId { get; set; }
-    
+    string login { get; set; } = "";
+    string password { get; set; } = "";
+    private Guid? userId { get; set; }
+    private HttpClient _httpClient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var conn = _HttpContextAccessor.HttpContext.Connection;
+        _httpClient = new HttpClient()
+        {
+            BaseAddress = new Uri($"http://localhost:{conn.LocalPort.ToString()}")
+        };
+    }
 
     private async Task User_auth()
     {
-        if (login is null || password is null) return;
-        userId = await _ApiService.AuthUser(login, password);
-        if ( userId != null)
+        if (login is "" || password is "") return;
+        userId = await _authService.AuthenticateAsync(login, password);
+        if (userId != null)
         {
-    
-            await JSRuntime.InvokeVoidAsync("cookieFunctions.setCookie", "UserId", userId, 1);
-            Console.WriteLine("User_auth");
-            nav.NavigateTo($"/profile");
-            Console.WriteLine("Navigated to profile");
+            _logger.LogInformation($"Try to set cookies. Request: {_httpClient.BaseAddress}");
+            
+            nav.NavigateTo($"api/setcookie/{userId}", true);
+            // _HttpContextAccessor.HttpContext.Response.Cookies.Append("UserId", userId.ToString());
+
         }
     }
 

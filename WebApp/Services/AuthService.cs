@@ -1,8 +1,8 @@
 ﻿namespace WebApp.Services;
 
-public class AuthService 
+public class AuthService
 {
-    private Dictionary<string, uint?> _usersData = new();
+    private Dictionary<Guid?, uint?> _usersData = new();
     private readonly ILogger<AuthService> _logger;
     private readonly ApiService _apiService;
 
@@ -12,36 +12,41 @@ public class AuthService
         _apiService = apiService;
     }
 
-    public async Task<string?> AuthenticateAsync(string username, string password)
+    public async Task<Guid?> AuthenticateAsync(string username, string password)
     {
         var userId = await _apiService.AuthUser(username, password);
+        _logger.LogInformation($"Get {userId} from {nameof(_apiService.AuthUser)} at {nameof(this.AuthenticateAsync)}");
+
         if (userId != null)
         {
             await SyncAccessAsync(userId);
         }
+
         return userId;
     }
 
-    private async Task<bool> SyncAccessAsync(string userId)
+    private async Task<bool> SyncAccessAsync(Guid? userId)
     {
         var access = await _apiService.GetUserAccessById(userId);
+        _logger.LogInformation($"Access for {userId} is {access}");
+
         if (access == null) return false;
         _usersData[userId] = access;
+
+        _logger.LogInformation($"Access for {userId} add in {nameof(this._usersData)}");
         return true;
     }
 
-    public async Task<bool> CheckExistsAsync(string? userId)
+    public async Task<bool> CheckExistsAsync(Guid? userId)
     {
-        if (userId == null)
+        if (userId is null || userId == Guid.Empty)
         {
             return false;
         }
 
         if (_usersData.ContainsKey(userId)) return true;
-        
-        return await SyncAccessAsync(userId);
-        
-    }
-    
 
+        _logger.LogInformation($"{userId} doesn't exist in {nameof(this._usersData)}");
+        return await SyncAccessAsync(userId);
+    }
 }
