@@ -1,4 +1,6 @@
-﻿@using WebApp.Services
+﻿@using System.IdentityModel.Tokens.Jwt
+@using Shared.Extensions
+@using WebApp.Services
 
 @inject AuthService authService
 @inject NavigationManager nav
@@ -10,16 +12,13 @@
 
     private async Task CheckCookie()
     {
-        var userIdString = HttpContextAccessor.HttpContext!.Request.Cookies["UserId"];
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName]);
 
-        if (!Guid.TryParse(userIdString, out var userId))
+        if (!await authService.CheckExistsAsync(token))
         {
-        }
-
-        if (!await authService.CheckExistsAsync(userId))
-        {
-            _logger.LogWarning("not check cookie");
-            if (!nav.Uri.Contains("/auth") && !nav.Uri.Contains("/test/"))
+            _logger.LogInformation($"Not authtorized: {handler.WriteToken(token)}");
+            if (!nav.Uri.Contains("/auth") && !nav.Uri.Contains("/test"))
             {
                 nav.NavigateTo("/auth", true);
             }

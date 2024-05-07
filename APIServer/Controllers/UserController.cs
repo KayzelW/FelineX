@@ -36,13 +36,13 @@ public class UserController : Controller
         };
         if (_user.Id != null)
         {
-            if (await _dbContext.Users.FindAsync(_user.Id) != null)
+            if (await _dbContext.Users!.FindAsync(_user.Id) != null)
             {
                 return Conflict(_user);
             }
         }
 
-        await _dbContext.Users.AddAsync(_user);
+        await _dbContext.Users!.AddAsync(_user);
         await _dbContext.SaveChangesAsync();
 
         return Ok(_user.Id);
@@ -67,7 +67,7 @@ public class UserController : Controller
     [HttpPost("auth")]
     public async Task<IActionResult> TryAuth(AuthData auth)
     {
-        var _user = await _dbContext.Users.FirstOrDefaultAsync(x => x.UserName == auth.Login);
+        var _user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login);
         if (_user.PasswordHash == auth.HashedPassword)
         {
             return Ok(_user.Id);
@@ -75,11 +75,11 @@ public class UserController : Controller
 
         return NotFound(false);
     }
-
+    
     [HttpGet("get_user_access_by_id/{id:guid}")]
     public async Task<ActionResult> GetUserAccessById(Guid id)
     {
-        var _user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+        var _user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == id);
         if (_user != null)
         {
             return Ok(_user.AccessFlags);

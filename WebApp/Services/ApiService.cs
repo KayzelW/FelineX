@@ -17,7 +17,7 @@ public class ApiService
 
         _httpClient = new HttpClient()
         {
-            BaseAddress = new Uri(baseUrl ?? "http://26.96.214.129:5071/")
+            BaseAddress = new Uri(baseUrl!)
         };
     }
 
@@ -85,18 +85,18 @@ public class ApiService
         if (!responseMessage.IsSuccessStatusCode) return null;
 
         var userId = await responseMessage.Content.ReadFromJsonAsync<string>();
-        if (!Guid.TryParse(userId, out var userGuid))
-        {
-            return null;
-        }
+        if (!Guid.TryParse(userId, out var userGuid)) return null;
 
         return userGuid;
     }
 
     public async Task<uint?> GetUserAccessById(Guid? id)
     {
+        if (id is null || id == Guid.Empty) return null;
+
         var responseMessage = await _httpClient.GetAsync($"User/get_user_access_by_id/{id}");
         if (!responseMessage.IsSuccessStatusCode) return null;
+
         var access = await responseMessage.Content.ReadFromJsonAsync<uint>();
         return access;
     }

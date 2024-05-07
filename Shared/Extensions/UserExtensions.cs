@@ -18,7 +18,10 @@ public static partial class UserExtensions
             {
                 builder.Append(bytes[i].ToString("x2"));
             }
+
             return builder.ToString();
         }
     }
+
+    public static bool HasAccess(this uint access, AccessLevel level) => (access & (uint)level) != 0;
 }
