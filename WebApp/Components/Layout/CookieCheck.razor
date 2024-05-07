@@ -13,15 +13,21 @@
     private async Task CheckCookie()
     {
         var handler = new JwtSecurityTokenHandler();
-        var token = handler.ReadJwtToken(HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName]);
-
-        if (!await authService.CheckExistsAsync(token))
+        try
         {
-            _logger.LogInformation($"Not authtorized: {handler.WriteToken(token)}");
-            if (!nav.Uri.Contains("/auth") && !nav.Uri.Contains("/test"))
+            var cookieToken = HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName];
+            if (string.IsNullOrEmpty(cookieToken) || !await authService.CheckExistsAsync(handler.ReadJwtToken(cookieToken)))
             {
-                nav.NavigateTo("/auth", true);
+                _logger.LogInformation($"Not authtorized or cookie were null|empty");
+                if (!nav.Uri.Contains("/auth") && !nav.Uri.Contains("/test"))
+                {
+                    nav.NavigateTo("/auth", true);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception while try get token");
         }
     }
 

@@ -1,13 +1,13 @@
 ﻿@page "/auth"
+@using System.IdentityModel.Tokens.Jwt
+@using Shared.Extensions
 @using WebApp.Services
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @rendermode InteractiveServer
 @inject NavigationManager nav
 @inject AuthService _authService
 @inject IJSRuntime JSRuntime
 @inject ILogger<Auth> _logger
-@inject HttpContextAccessor _HttpContextAccessor
+@inject IHttpContextAccessor _HttpContextAccessor
 
 
 <div class="row d-flex justify-content-center h-100">
@@ -78,8 +78,9 @@
             //TODO: work with null JWT
             return;
         }
-
-        await _authService.RegisterJwtToken(token);
+        await _authService.RegisterJwtToken(JSRuntime, token);
+        
+        nav.NavigateTo("/profile");
     }
 
 }

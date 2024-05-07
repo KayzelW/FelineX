@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.JSInterop;
 using WebApp.Components;
 using WebApp.Interceptors;
 using WebApp.Services;
@@ -26,14 +28,14 @@ public class Program
     private static void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpContextAccessor();
-        services.AddScoped<HttpContextAccessor>();
 
         // Add services to the container.
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
         services.AddSingleton<ApiService>();
-        services.AddScoped<AuthService>();
+        services.AddSingleton<AuthService>();
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {

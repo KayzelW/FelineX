@@ -16,20 +16,18 @@ public class AuthService
     private Dictionary<Guid, uint> _usersData = new();
     private readonly ILogger<AuthService> _logger;
     private readonly ApiService _apiService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IConfiguration _configuration;
-    private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
-    private readonly JSRuntime _jsRuntime;
+    private readonly JwtSecurityTokenHandler _jwtTokenHandler;
 
-    public AuthService(ILogger<AuthService> logger, ApiService apiService, HttpContextAccessor httpContextAccessor,
-        IConfiguration configuration, JwtSecurityTokenHandler jwtSecurityTokenHandler, JSRuntime jsRuntime)
+    public AuthService(ILogger<AuthService> logger, ApiService apiService, IHttpContextAccessor httpContextAccessor,
+        IConfiguration configuration)
     {
         _logger = logger;
         _apiService = apiService;
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
-        _jwtSecurityTokenHandler = jwtSecurityTokenHandler;
-        _jsRuntime = jsRuntime;
+        _jwtTokenHandler = new JwtSecurityTokenHandler();
     }
 
     public uint? GetAccess(JwtSecurityToken token)
@@ -53,7 +51,7 @@ public class AuthService
                 return null;
             }
 
-            var token = _jwtSecurityTokenHandler.ReadJwtToken(
+            var token = _jwtTokenHandler.ReadJwtToken(
                 GenerateJwtToken(userId.Value)
             );
             return token;
@@ -65,15 +63,26 @@ public class AuthService
         }
     }
 
-    public async Task RegisterJwtToken(JwtSecurityToken token)
+    public async Task RegisterJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
     {
-        await SetJwtToken(token);
+        await SetJwtToken(_jsRuntime, token);
         await CheckExistsAsync(token);
     }
 
-    private async Task SetJwtToken(JwtSecurityToken token)
+    public async Task<bool> CheckExistsAsync(JwtSecurityToken? token)
     {
-        await CookieInterop.SetJwtToken(_jsRuntime, _jwtSecurityTokenHandler.WriteToken(token));
+        if (token is null) return false;
+        var userId = token.GetGuidFromToken();
+
+        if (_usersData.ContainsKey(userId)) return true;
+
+        _logger.LogInformation($"{userId} doesn't exist in {nameof(this._usersData)}");
+        return await SyncAccessAsync(token);
+    }
+
+    private async Task SetJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
+    {
+        await CookieInterop.SetJwtToken(_jsRuntime, _jwtTokenHandler.WriteToken(token));
     }
 
     private async Task<Guid?> AuthorizeAsync(string username, string password)
@@ -101,15 +110,6 @@ public class AuthService
         return true;
     }
 
-    public async Task<bool> CheckExistsAsync(JwtSecurityToken token)
-    {
-        var userId = token.GetGuidFromToken();
-
-        if (_usersData.ContainsKey(userId)) return true;
-
-        _logger.LogInformation($"{userId} doesn't exist in {nameof(this._usersData)}");
-        return await SyncAccessAsync(token);
-    }
 
     private string GenerateJwtToken(Guid userId)
     {
@@ -119,7 +119,7 @@ public class AuthService
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+                new Claim(JWTClaimNames.UserId, userId.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])),
             SigningCredentials =
