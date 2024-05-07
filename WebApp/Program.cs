@@ -1,13 +1,6 @@
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.JSInterop;
 using WebApp.Components;
-using WebApp.Interceptors;
 using WebApp.Services;
 
 namespace WebApp;
