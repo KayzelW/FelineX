@@ -73,6 +73,15 @@ public class ApiService
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test);
         return responseMessage.IsSuccessStatusCode;
     }
+    
+    public async Task<bool> SubmitTest(MyTest test)
+    {
+
+        var responseMessage = await _httpClient.PostAsJsonAsync("Test/submit_test", test);
+        return responseMessage.IsSuccessStatusCode;
+    }
+    
+    
 
     public async Task<Guid?> AuthUser(string login, string password)
     {

@@ -17,6 +17,7 @@ public sealed partial class Task : ITask
     [JsonIgnore] public User.User? Creator { get; set; }
     public Guid? CreatorId { get; set; }
     [JsonIgnore] public List<Test>? Tests { get; set; } = new List<Test>();
+     
 
     [NotMapped, JsonIgnore]
     public int CountVariables

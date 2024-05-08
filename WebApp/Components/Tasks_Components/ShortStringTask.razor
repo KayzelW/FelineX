@@ -1,30 +1,42 @@
-﻿@using MyTask =  Shared.DB.Classes.Test.Task.Task
-
-<div class="d-flex justify-content-center row">
-        <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
-            <div class="col-md-10 col-lg-10">
-                <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                    <h4 >Задание @number</h4>
-                </div>
-                <div class="question p-3 border-bottom">
-                    <div class="d-flex flex-row align-items-center question-title">
-                        <h5 class="mt-1 ml-2"> @task.Question</h5>
-                    </div>
-
-                    <div class="input-group mb-3">
-                        <span class="input-group-text" id="basic-addon1"></span>
-                        <input type="text" class="form-control" aria-describedby="basic-addon1">
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-@code {
-    [Parameter] 
-    public int number { get; set; }
-    [Parameter] 
-    public MyTask task { get; set; }
-    
-}
+﻿@* @using MyTask = Shared.DB.Classes.Test.Task.Task *@
+@* @using MyTaskAnswer = Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer *@
+@* @using Shared.DB.Classes.User *@
+@* @rendermode InteractiveServer *@
+@* *@
+@* *@
+@* <div class="d-flex justify-content-center row"> *@
+@*         <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;"> *@
+@*             <div class="col-md-10 col-lg-10"> *@
+@*                 <div class="d-flex flex-row justify-content-between  align-items-center mcq"> *@
+@*                     <h4 >Задание @Number</h4> *@
+@*                 </div> *@
+@*                 <div class="question p-3 border-bottom"> *@
+@*                     <div class="d-flex flex-row align-items-center question-title"> *@
+@*                         <h5 class="mt-1 ml-2"> @Task_obj.Question</h5> *@
+@*                     </div> *@
+@* *@
+@*                     <div class="input-group mb-3"> *@
+@*                         <input type="text" class="form-control" value="@TaskToSave.StringAnswer" @oninput="e => TaskToSave.StringAnswer = e.Value.ToString()" aria-describedby="basic-addon1"> *@
+@*                     </div> *@
+@* *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* *@
+@* @code { *@
+@*     [Parameter] public int Number { get; set; } *@
+@*     [Parameter] public MyTask Task_obj { get; set; }  *@
+@* *@
+@* *@
+@*     private MyTaskAnswer TaskToSave { get; set; }= new MyTaskAnswer(); *@
+@* *@
+@*     public MyTaskAnswer MakeTaskToSave() *@
+@*     { *@
+@*         TaskToSave.Student = new User("Student"); *@
+@*         TaskToSave.AnsweredTask = Task_obj; *@
+@* *@
+@*         return TaskToSave; *@
+@*     } *@
+@* *@
+@* } *@
