@@ -26,4 +26,11 @@
       <None Include="wwwroot\js\jsfunctions.js" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Tasks_Components\LongStringTask.razor" />
+      <_ContentIncludedByDefault Remove="Components\Tasks_Components\ManyVariantsTask.razor" />
+      <_ContentIncludedByDefault Remove="Components\Tasks_Components\OneVariantTask.razor" />
+      <_ContentIncludedByDefault Remove="Components\Tasks_Components\ShortStringTask.razor" />
+    </ItemGroup>
+
 </Project>
