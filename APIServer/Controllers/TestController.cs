@@ -152,7 +152,7 @@ public class TestController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, $"Exception while saving new test from user with session: {HttpContext.Session.Id}");
+            _logger.LogWarning(e, $"Exception while saving new test from user");
             return BadRequest(submitedTest);
         }
 
