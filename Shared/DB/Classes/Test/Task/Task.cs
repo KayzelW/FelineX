@@ -17,7 +17,7 @@ public sealed partial class Task : ITask
     [JsonIgnore] public User.User? Creator { get; set; }
     public Guid? CreatorId { get; set; }
     [JsonIgnore] public List<Test>? Tests { get; set; } = new List<Test>();
-     
+
 
     [NotMapped, JsonIgnore]
     public int CountVariables
@@ -25,6 +25,11 @@ public sealed partial class Task : ITask
         get => VariableAnswers!.Count;
         set => FixCountVariables(value);
     }
+
+    public bool IsStringTask() => this.InteractionType is
+        InteractionType.LongStringTask or
+        InteractionType.ShortStringTask or
+        InteractionType.SqlQueryTask;
 
     #region Constructors
 

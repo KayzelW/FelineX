@@ -7,7 +7,6 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
 using Shared.Extensions;
-using LoginRequest = Shared.SupportClasses.LoginRequest;
 
 namespace WebApp.Services;
 

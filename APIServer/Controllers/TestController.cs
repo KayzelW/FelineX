@@ -8,8 +8,6 @@ using Shared.DB.Classes;
 using Shared.DB.Classes.Test;
 using Shared.DB.Classes.Test.Task;
 using Shared.DB.Classes.Test.Task.TaskAnswer;
-using FinishedTest = Shared.DB.Classes.Test.Task.TaskAnswer.TestAnswer;
-using MyTaskAnswer = Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer;
 using Shared.DB.Classes.User;
 using Shared.Extensions;
 using Swashbuckle.AspNetCore.Annotations;
@@ -78,7 +76,7 @@ public class TestController : Controller
         if (test is null)
         {
             _logger.LogWarning(
-                $"test is null while executing CreateTest from user with session: {HttpContext.Session.Id}");
+                $"test is null while executing CreateTest from user");
             return BadRequest();
         }
 
@@ -89,7 +87,7 @@ public class TestController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, $"Exception while saving new test from user with session: {HttpContext.Session.Id}");
+            _logger.LogError(e, $"Exception while saving new test from user");
             return BadRequest(test);
         }
 
@@ -97,63 +95,40 @@ public class TestController : Controller
     }
 
     [HttpPost("submit_test")]
-    public async Task<IActionResult> SubmitTest(Test? submitedTest)
+    public async Task<IActionResult> SubmitTest(Test? solvedTest)
     {
         Test? test;
-        var FinishedTest = new FinishedTest();
-        if (submitedTest is null)
+        var testAnswer = new TestAnswer();
+
+        if (solvedTest?.Tasks is null)
         {
-            _logger.LogWarning(
-                $"test is null while executing CreateTest from user with session: {HttpContext.Session.Id}");
+            _logger.LogError(
+                $"test or tasks are null while executing CreateTest from user");
             return BadRequest();
         }
 
         try
         {
-            test = await _dbContext.Tests.Where(x => x.Id == submitedTest.Id)
-                .Include(x => x.Tasks)
-                .ThenInclude(x => x.VariableAnswers).Include(test => test.Creator)
-                .FirstOrDefaultAsync();
+            testAnswer.AnsweredTestId = solvedTest.Id;
 
-            FinishedTest.AnsweredTest = test;
-
-            foreach (var submitedTask in submitedTest.Tasks)
+            foreach (var task in solvedTest.Tasks!)
             {
-                var taskToSave = new MyTaskAnswer
-                {
-                    Student = test.Creator,
-                    StudentId = test.Creator.Id,
-                    AnsweredTaskId = submitedTask.Id,
-                    AnsweredTask = submitedTask,
-                    GotVariables = submitedTask.VariableAnswers
-                };
-                if (submitedTask.InteractionType is InteractionType.LongStringTask or InteractionType.ShortStringTask
-                    or InteractionType.SqlQueryTask)
-                {
-                    taskToSave.StringAnswer = submitedTask.VariableAnswers[0].StringAnswer;
-                }
-                else
-                {
-                    foreach (var varAns in submitedTask.VariableAnswers)
-                    {
-                        if (varAns.Truthful is true)
-                        {
-                            taskToSave.MarkedVariables!.Add(varAns);
-                        }
-                    }
-                }
+                if (task.VariableAnswers is not null)
+                    _dbContext.AttachRange(task.VariableAnswers);
 
-                FinishedTest.TaskAnswers.Add(taskToSave);
+                var taskToSave = new TaskAnswer(solvedTest.CreatorId, task);
+                // TODO: WTF???? WHY CREATOR IS SOLVER????
+
+                testAnswer.TaskAnswers!.Add(taskToSave);
             }
 
-
-            await _dbContext.TestAnswers.AddAsync(FinishedTest);
+            await _dbContext.TestAnswers!.AddAsync(testAnswer);
             await _dbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {
             _logger.LogWarning(e, $"Exception while saving new test from user");
-            return BadRequest(submitedTest);
+            return BadRequest(solvedTest);
         }
 
         return Ok();
