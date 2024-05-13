@@ -99,10 +99,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.Entity<TestAnswer>()
             .HasMany(testAns => testAns.TaskAnswers)
             .WithMany();
-
-        modelBuilder.Entity<TaskAnswer>()
-            .HasMany(taskAns => taskAns.GotVariables)
-            .WithMany();
         modelBuilder.Entity<TaskAnswer>()
             .HasMany(x => x.MarkedVariables)
             .WithMany();

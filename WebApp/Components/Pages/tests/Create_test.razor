@@ -1,4 +1,4 @@
-﻿@page "/Create_test"
+﻿@page "/create_test"
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.Extensions
@@ -10,6 +10,7 @@
 @using Shared.DB.Interfaces
 
 @inject ApiService _apiService
+@inject NavigationManager nav
 
 
 <h3 class="text-center">Новый тест</h3>
@@ -155,18 +156,12 @@
         test.Tasks!.Add(t);
         InvokeAsync(StateHasChanged);
     }
-    void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
+
+    static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
     {
         foreach (var varAns in task.VariableAnswers)
         {
-            if (varAns == selectedAnswer)
-            {
-                varAns.Truthful = true;
-            }
-            else
-            {
-                varAns.Truthful = false;
-            }
+            varAns.Truthful = varAns == selectedAnswer;
         }
 
     }
@@ -174,6 +169,7 @@
     private async void Save()
     {
         await _apiService.PostTest(test);
+        nav.NavigateTo("/my_tests");
     }
 
     private void Delete(MyTask task)

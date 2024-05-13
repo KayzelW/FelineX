@@ -44,6 +44,19 @@ public class ApiService
 
         return test;
     }
+    
+    public async Task<Tuple<Guid, double>> GeTestResult(Guid testId, Guid userId)
+    {
+        var score = 0;
+        var responseMessage = await _httpClient.GetAsync($"Test/get_test_result/{testId}/{userId}");
+        Tuple<Guid, double> ansTestData = null;
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            ansTestData = await responseMessage.Content.ReadFromJsonAsync<Tuple<Guid, double>>();
+        }
+    
+        return ansTestData;
+    }
 
     public async Task<User?> GetUser()
     {

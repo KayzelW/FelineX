@@ -139,9 +139,7 @@ namespace APIServer.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     StudentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     AnsweredTaskId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    GotVariableIds = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    MarkedVariableIds = table.Column<string>(type: "longtext", nullable: true)
+                    StringAnswer = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -259,12 +257,12 @@ namespace APIServer.Migrations
                 name: "TaskAnswerVariableAnswer",
                 columns: table => new
                 {
-                    GotVariablesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    MarkedVariablesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     TaskAnswerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskAnswerVariableAnswer", x => new { x.GotVariablesId, x.TaskAnswerId });
+                    table.PrimaryKey("PK_TaskAnswerVariableAnswer", x => new { x.MarkedVariablesId, x.TaskAnswerId });
                     table.ForeignKey(
                         name: "FK_TaskAnswerVariableAnswer_TaskAnswers_TaskAnswerId",
                         column: x => x.TaskAnswerId,
@@ -272,32 +270,7 @@ namespace APIServer.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswer_VariableAnswers_GotVariablesId",
-                        column: x => x.GotVariablesId,
-                        principalTable: "VariableAnswers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TaskAnswerVariableAnswer1",
-                columns: table => new
-                {
-                    MarkedVariablesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TaskAnswer1Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskAnswerVariableAnswer1", x => new { x.MarkedVariablesId, x.TaskAnswer1Id });
-                    table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswer1_TaskAnswers_TaskAnswer1Id",
-                        column: x => x.TaskAnswer1Id,
-                        principalTable: "TaskAnswers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswer1_VariableAnswers_MarkedVariablesId",
+                        name: "FK_TaskAnswerVariableAnswer_VariableAnswers_MarkedVariablesId",
                         column: x => x.MarkedVariablesId,
                         principalTable: "VariableAnswers",
                         principalColumn: "Id",
@@ -344,11 +317,6 @@ namespace APIServer.Migrations
                 name: "IX_TaskAnswerVariableAnswer_TaskAnswerId",
                 table: "TaskAnswerVariableAnswer",
                 column: "TaskAnswerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TaskAnswerVariableAnswer1_TaskAnswer1Id",
-                table: "TaskAnswerVariableAnswer1",
-                column: "TaskAnswer1Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskAnswers_AnsweredTaskId",
@@ -415,9 +383,6 @@ namespace APIServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "TaskAnswerVariableAnswer");
-
-            migrationBuilder.DropTable(
-                name: "TaskAnswerVariableAnswer1");
 
             migrationBuilder.DropTable(
                 name: "TaskTest");

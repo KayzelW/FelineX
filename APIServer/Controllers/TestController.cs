@@ -6,11 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.DB.Classes;
 using Shared.DB.Classes.Test;
-using Shared.DB.Classes.Test.Task;
 using Shared.DB.Classes.Test.Task.TaskAnswer;
 using Shared.DB.Classes.User;
 using Shared.Extensions;
-using Swashbuckle.AspNetCore.Annotations;
 using MyTask = Shared.DB.Classes.Test.Task.Task;
 
 namespace APIServer.Controllers;
@@ -47,10 +45,10 @@ public class TestController : Controller
                 .FirstOrDefaultAsync();
             foreach (var task in test.Tasks)
             {
-                if (task.InteractionType is InteractionType.LongStringTask or InteractionType.ShortStringTask
-                    or InteractionType.SqlQueryTask)
+                if (task.IsStringTask())
                 {
                     task.VariableAnswers[0].StringAnswer = "";
+                    task.VariableAnswers[0].Truthful = false;
                 }
                 else
                 {
@@ -69,6 +67,57 @@ public class TestController : Controller
 
         return Ok(test);
     }
+
+
+    [HttpGet("get_test_result/{test_id:guid}/{user_id:guid}")]
+    public async Task<IActionResult> GetTestResult(Guid test_id, Guid user_id) //TODO improve checking of correctness
+    {
+        try
+        {
+            var answeredTest = await _dbContext.TestAnswers.Where(x => x.StudentId == user_id)
+                .Where(x => x.AnsweredTestId == test_id)
+                .Include(x => x.TaskAnswers)
+                .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
+                .FirstOrDefaultAsync();
+
+            if (answeredTest is null)
+            {
+                return NotFound();
+            }
+
+            var taskweight = 100 / answeredTest.TaskAnswers.Count;
+
+            var score = 0;
+
+            foreach (var task in answeredTest.TaskAnswers)
+            {
+                var correctTask = await _dbContext.Tasks.Where(x => x.Id == task.AnsweredTaskId)
+                    .Include(x => x.VariableAnswers).FirstOrDefaultAsync();
+                if (correctTask!.IsStringTask())
+                {
+                    if (task.StringAnswer == correctTask.VariableAnswers.FirstOrDefault().StringAnswer)
+                    {
+                        score += taskweight;
+                    }
+                }
+                else
+                {
+                    if (task.MarkedVariables.All( x => x.Truthful == true))
+                    {
+                        score += taskweight;
+                    }
+                }
+            }
+            return Ok(new Tuple<Guid, double>(answeredTest.Id, score));
+        }
+        catch
+        {
+            _logger.Log(LogLevel.Error, $"Fail to get answerecd test with id");
+            return NotFound();
+        }
+        
+    }
+
 
     [HttpPost("create_test")]
     public async Task<IActionResult> CreateTest(Test? test)
@@ -94,6 +143,7 @@ public class TestController : Controller
         return Ok();
     }
 
+
     [HttpPost("submit_test")]
     public async Task<IActionResult> SubmitTest(Test? solvedTest)
     {
@@ -110,14 +160,14 @@ public class TestController : Controller
         try
         {
             testAnswer.AnsweredTestId = solvedTest.Id;
+            testAnswer.StudentId = solvedTest.CreatorId;
 
             foreach (var task in solvedTest.Tasks!)
             {
-                if (task.VariableAnswers is not null)
-                    _dbContext.AttachRange(task.VariableAnswers);
+                if (task is not null)
+                    _dbContext.Attach(task);
 
                 var taskToSave = new TaskAnswer(solvedTest.CreatorId, task);
-                // TODO: WTF???? WHY CREATOR IS SOLVER????
 
                 testAnswer.TaskAnswers!.Add(taskToSave);
             }

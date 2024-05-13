@@ -5,11 +5,15 @@
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Interfaces
+@using Shared.Extensions
 @using Task = System.Threading.Tasks.Task
+@using System.IdentityModel.Tokens.Jwt
 
 
 @inject ApiService _ApiService
 @inject ILogger<Auth> _logger
+@inject NavigationManager nav
+@inject IHttpContextAccessor HttpContextAccessor
 @rendermode InteractiveServer
 
 
@@ -158,6 +162,13 @@
     private async void SaveAndSubmit()
     {
         await _ApiService.SubmitTest(test);
+        var handler = new JwtSecurityTokenHandler();
+        var token = HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName];
+        var user_id = handler.ReadJwtToken(token).GetGuidFromToken();
+
+        var ansTestData = await _ApiService.GeTestResult(test.Id, user_id);
+       
+        nav.NavigateTo($"result_test/{ansTestData.Item1}/{ansTestData.Item2}");  //Todo Remove and refactor this cringe
         
     }
 

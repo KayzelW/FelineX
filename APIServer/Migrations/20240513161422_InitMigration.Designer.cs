@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240502092307_fixGuidListInAnswers")]
-    partial class fixGuidListInAnswers
+    [Migration("20240513161422_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,6 +56,10 @@ namespace APIServer.Migrations
 
                     b.Property<Guid?>("AnsweredTaskId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("StringAnswer")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<Guid?>("StudentId")
                         .HasColumnType("char(36)");
@@ -212,32 +216,17 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
                 {
-                    b.Property<Guid>("GotVariablesId")
+                    b.Property<Guid>("MarkedVariablesId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("TaskAnswerId")
                         .HasColumnType("char(36)");
 
-                    b.HasKey("GotVariablesId", "TaskAnswerId");
+                    b.HasKey("MarkedVariablesId", "TaskAnswerId");
 
                     b.HasIndex("TaskAnswerId");
 
                     b.ToTable("TaskAnswerVariableAnswer");
-                });
-
-            modelBuilder.Entity("TaskAnswerVariableAnswer1", b =>
-                {
-                    b.Property<Guid>("MarkedVariablesId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("TaskAnswer1Id")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("MarkedVariablesId", "TaskAnswer1Id");
-
-                    b.HasIndex("TaskAnswer1Id");
-
-                    b.ToTable("TaskAnswerVariableAnswer1");
                 });
 
             modelBuilder.Entity("TaskTest", b =>
@@ -368,28 +357,13 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.Classes.Test.Task.VariableAnswer", null)
                         .WithMany()
-                        .HasForeignKey("GotVariablesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer", null)
-                        .WithMany()
-                        .HasForeignKey("TaskAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TaskAnswerVariableAnswer1", b =>
-                {
-                    b.HasOne("Shared.DB.Classes.Test.Task.VariableAnswer", null)
-                        .WithMany()
                         .HasForeignKey("MarkedVariablesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer", null)
                         .WithMany()
-                        .HasForeignKey("TaskAnswer1Id")
+                        .HasForeignKey("TaskAnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -1,6 +1,10 @@
-﻿@page "/Result_test"
+﻿@page "/result_test/{anwered_test_id}/{score}/"
 <h3 class="text-center">Ваши результаты</h3>
+<h3 class="text-center">@score</h3>
 
 @code {
+    [Parameter] public string anwered_test_id { get; set; }
+    [Parameter] public string score { get; set; }
     
+
 }
