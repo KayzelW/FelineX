@@ -77,15 +77,24 @@
                                         <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
                                         
                                     </div>
-
-                                    
                                     
                                 }
                             break;
                             
                         case InteractionType.ShortStringTask:
-                            <input type="text" class="form-control"  aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
-                                   style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
+                        <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF">
+                            <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF; box-shadow: none; ">кол-во</span>
+                            <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
+                                   @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
+                        </div>
+                        @foreach (var varAnswer in task.VariableAnswers!)
+                        {
+                            <div class="form-check" style="min-height: 50px">
+                                <input type="text" class="form-control"  aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
+                                                                   style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">    
+                            </div>
+                                    
+                        }
                         break;
                         
                         case InteractionType.LongStringTask:

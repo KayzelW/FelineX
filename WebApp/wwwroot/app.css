@@ -5,6 +5,14 @@ html, body {
 a, .btn-link {
     color: #006bb7;
 }
+.btn {
+    border-radius: .5rem; 
+    border-color: #00003A; 
+    background-color: #EFF4FF; 
+    --bs-btn-color: #00003A; 
+    height: 40px;
+    box-shadow: none;
+}
 
 .btn-primary {
     color: #fff;
@@ -48,4 +56,81 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+
+
+
+
+
+.input-group-lg input {
+    background-color: #EFF4FF;
+    box-shadow: none;
+}
+
+.card {
+    border-radius: 5px;
+    border-color: #00003A;
+    background-color: #EFF4FF;
+    -webkit-text-fill-color: #00003A;
+    box-shadow: none;
+}
+
+.mcq {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input-group-md input {
+    background-color: #EFF4FF;
+    border-color: #BDD3FF;
+    box-shadow: none;
+}
+
+.input-group-sm input {
+    background-color: #EFF4FF;
+    border-color: #BDD3FF;
+    box-shadow: none;
+}
+
+.form-check {
+    min-height: 50px;
+    box-shadow: #0a3622;
+    outline-color: #0a3622;
+}
+
+.form-check input[type="checkbox"],
+.form-check input[type="radio"] {
+    box-shadow: none;
+}
+
+.container-md {
+    min-height: 20px;
+}
+
+.btn-outline-primary {
+    border-radius: .5rem;
+    border-color: #00003A;
+    background-color: #EFF4FF;
+    --bs-btn-color: #00003A;
+    height: 40px;
+    box-shadow: none;
+}
+
+.dropdown-menu {
+    background-color: #DDE8FF;
+    box-shadow: none;
+}
+
+.dropdown-menu a {
+    color: #000;
+}
+
+.d-grid button {
+    border-radius: .5rem;
+    border-color: #00003A;
+    background-color: #EFF4FF;
+    --bs-btn-color: #00003A;
+    height: 40px;
+    box-shadow: none;
 }
