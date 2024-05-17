@@ -1,8 +1,10 @@
 ﻿@page "/my_tests"
 @using WebApp.Services
 @using MyTest = Shared.DB.Classes.Test.Test;
-@inject NavigationManager nav
+@using Shared.DB.Classes.User
+@* @inject NavigationManager nav *@
 @inject ApiService _ApiService
+@inherits CookieCheck
 
 @rendermode InteractiveServer
 
@@ -72,6 +74,11 @@ else
 
 @code {
 
+    public My_tests()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+
     List<MyTest> tests = new List<MyTest>();
 
     protected override async Task OnInitializedAsync()
@@ -93,12 +100,12 @@ else
 
     private void Navigate_to_create_test()
     {
-        nav.NavigateTo("/create_test");
+        navigationManager.NavigateTo("/create_test");
     }
 
     private void Navigate_to_test(string testId)
     {
-        nav.NavigateTo($"/test/{testId}");
+        navigationManager.NavigateTo($"/test/{testId}");
     }
 
 

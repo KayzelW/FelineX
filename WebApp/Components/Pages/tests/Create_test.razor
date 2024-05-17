@@ -1,6 +1,7 @@
 ﻿@page "/create_test"
 
 @using Shared.DB.Classes.Test.Task
+@using Shared.DB.Classes.User
 @using Shared.Extensions
 @using WebApp.Services
 @rendermode InteractiveServer
@@ -8,9 +9,12 @@
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
 
 @using Shared.DB.Interfaces
+@using WebApp.Components.Pages.classes
 
 @inject ApiService _apiService
-@inject NavigationManager nav
+@* @inject NavigationManager nav *@
+
+@inherits CookieCheck
 
 
 <h3 class="text-center">Новый тест</h3>
@@ -141,6 +145,12 @@
 
 
 @code {
+
+    public Create_test()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+
     MyTest test = new MyTest();
 
     private void Plus(InteractionType interactionType)
@@ -171,7 +181,7 @@
     private async void Save()
     {
         await _apiService.PostTest(test);
-        nav.NavigateTo("/my_tests");
+        navigationManager.NavigateTo("/my_tests");
     }
 
     private void Delete(MyTask task)

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
+using Shared.DB.Classes.User;
 using Shared.Extensions;
 
 namespace WebApp.Services;
@@ -27,6 +28,18 @@ public class AuthService
         _httpContextAccessor = httpContextAccessor;
         _configuration = configuration;
         _jwtTokenHandler = new JwtSecurityTokenHandler();
+    }
+
+    public bool HasAccess(Guid userId, AccessLevel accessLevel)
+    {
+        if (!_usersData.ContainsKey(userId)) return false;
+        var access = (AccessLevel)_usersData[userId];
+        return access.HasFlag(accessLevel) || access.HasFlag(AccessLevel.AllAccess);
+    }
+
+    public bool HasUser(Guid userId)
+    {
+        return _usersData.ContainsKey(userId);
     }
 
     public uint? GetAccess(JwtSecurityToken token)

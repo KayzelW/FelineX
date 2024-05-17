@@ -45,17 +45,30 @@ public class ApiService
         return test;
     }
     
-    public async Task<Tuple<Guid, double>> GeTestResult(Guid testId, Guid userId)
+    public async Task<double> GetTestResult(Guid testAnswerId)
     {
         var score = 0;
-        var responseMessage = await _httpClient.GetAsync($"Test/get_test_result/{testId}/{userId}");
-        Tuple<Guid, double> ansTestData = null;
+        var responseMessage = await _httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
+        double ansTestScore = 0;
         if (responseMessage.IsSuccessStatusCode)
         {
-            ansTestData = await responseMessage.Content.ReadFromJsonAsync<Tuple<Guid, double>>();
+            ansTestScore = await responseMessage.Content.ReadFromJsonAsync<double>();
         }
     
-        return ansTestData;
+        return ansTestScore;
+    }
+    
+    public async Task<Guid> GetTestAnswerId(Guid testId, Guid userId)
+    {
+        var score = 0;
+        var responseMessage = await _httpClient.GetAsync($"Test/get_test_answer_id/{testId}/{userId}");
+        var ansTestId = Guid.Empty;
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            ansTestId = await responseMessage.Content.ReadFromJsonAsync<Guid>();
+        }
+    
+        return ansTestId;
     }
 
     public async Task<User?> GetUser()
@@ -93,7 +106,6 @@ public class ApiService
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/submit_test", test);
         return responseMessage.IsSuccessStatusCode;
     }
-    
     
 
     public async Task<Guid?> AuthUser(string login, string password)

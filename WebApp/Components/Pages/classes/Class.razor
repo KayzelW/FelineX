@@ -1,5 +1,7 @@
 ﻿@page "/Class"
 @inject NavigationManager nav
+@using Shared.DB.Classes.User
+@inherits CookieCheck
 
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-center" style="height: 40px; -webkit-text-fill-color: #00003A">
@@ -49,6 +51,11 @@
 
 @code {
 
+    public Class()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+
     public class TestData
     {
         public int Id { get; set; }
@@ -80,7 +87,6 @@
     {
         nav.NavigateTo("/Student");
     }
-
 
 
 }

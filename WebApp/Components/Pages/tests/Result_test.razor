@@ -1,10 +1,28 @@
-﻿@page "/result_test/{anwered_test_id}/{score}/"
+﻿@page "/result_test/{anwered_test_id}/"
+@using WebApp.Services
+@using Shared.Extensions
+@using Shared.DB.Classes.User
+@inject ApiService _ApiService
+@inherits CookieCheck
+
 <h3 class="text-center">Ваши результаты</h3>
 <h3 class="text-center">@score</h3>
 
 @code {
+
+    public Result_test()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+
     [Parameter] public string anwered_test_id { get; set; }
-    [Parameter] public string score { get; set; }
-    
+    private double score { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        score = await _ApiService.GetTestResult(anwered_test_id.ToGuid());
+
+    }
 
 }

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Shared.DB.Classes.User;
 using WebApp.Components;
 using WebApp.Services;
+
 
 namespace WebApp;
 
@@ -26,6 +28,7 @@ public class Program
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        
         services.AddSingleton<ApiService>();
         services.AddSingleton<AuthService>();
 
@@ -41,6 +44,9 @@ public class Program
                     ClockSkew = TimeSpan.FromMinutes(1)
                 };
             });
+        
+
+
 
         services.Configure<CookiePolicyOptions>(options =>
         {
@@ -49,7 +55,7 @@ public class Program
         });
 
         services.AddControllers();
-
+        
         services.AddLogging(logging =>
         {
             logging.AddConsole();
@@ -78,7 +84,7 @@ public class Program
 
         app.UseStaticFiles();
         app.UseAntiforgery();
-
+        
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
     }

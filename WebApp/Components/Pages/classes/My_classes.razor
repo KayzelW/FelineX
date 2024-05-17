@@ -1,5 +1,8 @@
 ﻿@page "/My_class"
+
 @inject NavigationManager nav
+@using Shared.DB.Classes.User
+@inherits CookieCheck
 
 <h2>Temporary unavailable</h2>
 
@@ -51,7 +54,11 @@
 
 
 @code {
-    
+
+    public My_classes()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
 
     public class TestData
     {

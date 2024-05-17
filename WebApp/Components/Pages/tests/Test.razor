@@ -162,13 +162,11 @@
     private async void SaveAndSubmit()
     {
         await _ApiService.SubmitTest(test);
-        var handler = new JwtSecurityTokenHandler();
         var token = HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName];
-        var user_id = handler.ReadJwtToken(token).GetGuidFromToken();
+        var user_id = new JwtSecurityToken(token).GetGuidFromToken();
 
-        var ansTestData = await _ApiService.GeTestResult(test.Id, user_id);
-       
-        nav.NavigateTo($"result_test/{ansTestData.Item1}/{ansTestData.Item2}");  //Todo Remove and refactor this cringe
+        var ansTestId = await _ApiService.GetTestAnswerId(test.Id, user_id);
+        nav.NavigateTo($"result_test/{ansTestId}");  
         
     }
 

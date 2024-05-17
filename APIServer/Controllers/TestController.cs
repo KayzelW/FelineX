@@ -68,18 +68,34 @@ public class TestController : Controller
         return Ok(test);
     }
 
+    [HttpGet("get_test_answer_id/{test_id:guid}/{user_id:guid}")]
+    public async Task<IActionResult> GetTestAnswerId(Guid test_id, Guid user_id)
+    {
+        var answeredTest = await _dbContext.TestAnswers.Where(x => x.StudentId == user_id)
+            .Where(x => x.AnsweredTestId == test_id)
+            .Include(x => x.TaskAnswers)
+            .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
+            .FirstOrDefaultAsync();
 
-    [HttpGet("get_test_result/{test_id:guid}/{user_id:guid}")]
-    public async Task<IActionResult> GetTestResult(Guid test_id, Guid user_id) //TODO improve checking of correctness
+        if (answeredTest is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(answeredTest.Id);
+    }
+
+
+    [HttpGet("get_test_result/{test_answer_id:guid}")]
+    public async Task<IActionResult> GetTestResult(Guid test_answer_id) //TODO improve checking of correctness
     {
         try
         {
-            var answeredTest = await _dbContext.TestAnswers.Where(x => x.StudentId == user_id)
-                .Where(x => x.AnsweredTestId == test_id)
+            var answeredTest = await _dbContext.TestAnswers.Where(x => x.Id == test_answer_id)
                 .Include(x => x.TaskAnswers)
                 .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
                 .FirstOrDefaultAsync();
-
+            
             if (answeredTest is null)
             {
                 return NotFound();
@@ -108,13 +124,18 @@ public class TestController : Controller
                     }
                 }
             }
-            return Ok(new Tuple<Guid, double>(answeredTest.Id, score));
+            
+            
+            return Ok(score);
         }
+        
+        
         catch
         {
-            _logger.Log(LogLevel.Error, $"Fail to get answerecd test with id");
+            _logger.Log(LogLevel.Error, $"Fail to get score for test_answer with id {test_answer_id}");
             return NotFound();
         }
+        
         
     }
 
