@@ -220,10 +220,11 @@ public class TestController : Controller
             
             testAnswer.PassingDate = DateTime.Now;
 
+            testAnswer.Score = await CalculateScore(testAnswer);
             await _dbContext.TestAnswers!.AddAsync(testAnswer);
             await _dbContext.SaveChangesAsync();
             
-            testAnswer.Score = await CalculateScore(testAnswer);
+            
             return Ok(testAnswer.Id);
         }
         catch (Exception e)
