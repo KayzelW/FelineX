@@ -1,7 +1,7 @@
 ﻿@page "/"
 @rendermode InteractiveServer
-@inherits CookieCheck
-@* @inject NavigationManager nav *@
+@* @inherits CookieCheck *@
+@inject NavigationManager nav
 
 
 
@@ -9,7 +9,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        navigationManager.NavigateTo("/my_tests");
+        // nav.NavigateTo("/my_tests");
     }
     
 }

@@ -18,9 +18,14 @@ public class CookieCheck : ComponentBase
     {
         await base.OnInitializedAsync();
         var token = HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName];
+        if (token is null)
+        {
+            navigationManager.NavigateTo("/auth", true);
+            return;
+        }
         var userId = new JwtSecurityToken(token).GetGuidFromToken();
         
-        if (userId == Guid.Empty || !authService.HasAccess(userId, RequiredAccessLevel))
+        if (userId == Guid.Empty || !authService.HasAccess(userId, RequiredAccessLevel).Result)
         {
             navigationManager.NavigateTo("/auth", true);
         }

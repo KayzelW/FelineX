@@ -9,7 +9,7 @@ public static class CookieInterop
         => jsRuntime.InvokeVoidAsync("setCookie", name, value, days);
 
     public static async Task<string> getCookie(IJSRuntime jsRuntime, string name) =>
-        await jsRuntime.InvokeAsync<string>("getCookie");
+        await jsRuntime.InvokeAsync<string>("getCookie", name);
 
     public static ValueTask SetJwtToken(IJSRuntime jsRuntime, string value)
         => SetCookie(jsRuntime, JWTExtensions.JwtCookieName, value, 7);

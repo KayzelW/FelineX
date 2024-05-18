@@ -10,7 +10,6 @@ namespace WebApp.Services;
 
 public class AuthService
 {
-    private Dictionary<Guid, uint> _usersData = new();
     private readonly ILogger<AuthService> _logger;
     private readonly ApiService _apiService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -27,22 +26,17 @@ public class AuthService
         _jwtTokenHandler = new JwtSecurityTokenHandler();
     }
 
-    public bool HasAccess(Guid userId, AccessLevel accessLevel)
+    public async Task<bool> HasAccess(Guid userId, AccessLevel accessLevel)
     {
-        if (!HasUser(userId)) return false;
-        var access = (AccessLevel)_usersData[userId];
-        return access.HasFlag(accessLevel) || access.HasFlag(AccessLevel.AllAccess);
+        var access = await CheckExistsAsync(userId);
+        if (access is null)
+        {
+            return false;
+        }
+
+        return ((AccessLevel)access).HasFlag(accessLevel);
     }
 
-    private bool HasUser(Guid userId)
-    {
-        return _usersData.ContainsKey(userId);
-    }
-
-    public uint? GetAccess(JwtSecurityToken token)
-        => _usersData.ContainsKey(token.GetGuidFromToken())
-            ? _usersData[token.GetGuidFromToken()]
-            : null;
 
     /// <summary>
     /// This func will authorize user and return the JwtToken
@@ -75,23 +69,18 @@ public class AuthService
     public async Task RegisterJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
     {
         await SetJwtToken(_jsRuntime, token);
-        await CheckExistsAsync(token);
     }
-    
-    private async Task<bool> CheckExistsAsync(JwtSecurityToken? token)
+
+    private async Task<uint?> CheckExistsAsync(Guid userId)
     {
-        if (token is null) return false;
-        var userId = token.GetGuidFromToken();
-
-        if (_usersData.ContainsKey(userId)) return true;
-
-        _logger.LogInformation($"{userId} doesn't exist in {nameof(this._usersData)}");
-        return await SyncAccessAsync(token);
+        _logger.LogInformation($"Try get access for {userId} from {nameof(_apiService.GetUserAccessById)}");
+        return await _apiService.GetUserAccessById(userId);
     }
 
     private async Task SetJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
     {
         await CookieInterop.SetJwtToken(_jsRuntime, _jwtTokenHandler.WriteToken(token));
+        // Task.Delay(1500).Wait();
     }
 
     private async Task<Guid?> AuthorizeAsync(string username, string password)
@@ -99,24 +88,6 @@ public class AuthService
         var userId = await _apiService.AuthUser(username, password);
         _logger.LogInformation($"Get {userId} from {nameof(_apiService.AuthUser)}");
         return userId;
-    }
-
-    private async Task<bool> SyncAccessAsync(JwtSecurityToken token)
-    {
-        var userId = token.GetGuidFromToken();
-        try
-        {
-            var access = await _apiService.GetUserAccessById(userId);
-            if (access == null) return false;
-            _usersData[userId] = access.Value;
-            _logger.LogInformation($"Access for {userId} is {access}");
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Exception while add access to _usersData in {nameof(SyncAccessAsync)}");
-        }
-
-        return true;
     }
 
 

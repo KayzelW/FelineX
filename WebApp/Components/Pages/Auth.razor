@@ -67,6 +67,15 @@
     string Login { get; set; } = "";
     string Password { get; set; } = "";
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        // var token= _HttpContextAccessor.HttpContext.Request.Cookies[JWTExtensions.JwtCookieName];
+        // if (token is not null)
+        // {
+        //     nav.NavigateTo("/profile");
+        // }
+    }
 
     private async Task User_auth()
     {

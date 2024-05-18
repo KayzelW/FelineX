@@ -16,6 +16,8 @@ public class Test
     public DateTime? CreationTime { get; set; } = DateTime.Now;
     public List<Task.Task>? Tasks { get; set; } = new List<Task.Task>();
 
+    [NotMapped] public string FantomName { get; set; } = "";
+
     public Test()
     {
     }

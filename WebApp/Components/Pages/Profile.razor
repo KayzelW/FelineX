@@ -1,8 +1,8 @@
 ﻿@page "/profile"
-@inherits CookieCheck
+@* @inherits CookieCheck *@
 
 @rendermode InteractiveServer
-@* @inject NavigationManager nav *@
+@inject NavigationManager nav
 
 
 <h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль, @userId</h1>
@@ -35,24 +35,19 @@
 
 @code {
 
-    public Profile()
-    {
-        RequiredAccessLevel = 0;
-    }
+    // public Profile()
+    // {
+    //     RequiredAccessLevel = 0;
+    // }
 
     public string userId { get; set; }
     
     private int acces { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    }
-
 
     private void cringe()
     {
-        navigationManager.NavigateTo("/auth");
+        nav.NavigateTo("/auth");
     }
 
 }

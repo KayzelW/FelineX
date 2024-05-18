@@ -15,6 +15,8 @@ public class TestAnswer
     [JsonIgnore] public Test? AnsweredTest { get; set; }
     public Guid? AnsweredTestId { get; set; }
     public List<TaskAnswer>? TaskAnswers { get; set; } = new List<TaskAnswer>();
+    
+    public string FantomName { get; set; } = "";
 
     public TestAnswer()
     {
