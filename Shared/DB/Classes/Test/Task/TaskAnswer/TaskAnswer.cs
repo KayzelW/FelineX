@@ -12,7 +12,7 @@ public class TaskAnswer
 
     [JsonIgnore] public User.User? Student { get; set; }
     public Guid? StudentId { get; set; }
-    [JsonIgnore] public MyTask? AnsweredTask { get; set; }
+    public MyTask? AnsweredTask { get; set; }
     public Guid? AnsweredTaskId { get; set; }
     
     public List<VariableAnswer>? MarkedVariables { get; set; } = new List<VariableAnswer>();

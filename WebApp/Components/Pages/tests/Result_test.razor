@@ -1,13 +1,12 @@
 ﻿@page "/result_test/{AnweredTestId}/"
-@using Shared.DB.Classes.User
 @using WebApp.Services
 @using Shared.Extensions
-@using System.Formats.Asn1
+@using Shared.DB.Classes.Test.Task.TaskAnswer
 @inject ApiService _ApiService
 @inject ILogger<Result_test> _logger
 
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Ваши результаты:</h3>
-<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@Score %</h3>
+<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@TestAnswer.Score%</h3>
 <div class="d-flex justify-content-center" style="min-height: 60px">
 <img src="@catScoreString" alt="Фото">
 </div>
@@ -16,19 +15,19 @@
 @code {
 
     [Parameter] public string AnweredTestId { get; set; }
-    private double? Score { get; set; }
+    private TestAnswer? TestAnswer { get; set; } = new();
     private double catScore;
-    private string catScoreString;
+    private string catScoreString = "";
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         try
         {
-            Score = await _ApiService.GetTestResult(AnweredTestId.ToGuid());
-            if (Score != null)
+            TestAnswer = await _ApiService.GetTestResult(AnweredTestId.ToGuid());
+            if (TestAnswer != null)
             {
-                catScore = (int)Math.Floor(Score.Value / 10);
+                catScore = (int)Math.Floor(TestAnswer.Score / 10);
                 catScoreString = $"cats/{catScore}.png";
 
             }

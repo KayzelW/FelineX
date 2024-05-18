@@ -19,6 +19,28 @@
 
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test.TestName</h3>
 
+@if (token is null)
+{
+    <div class="d-flex justify-content-center row">
+        <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+            <div class="col-md-10 col-lg-10">
+                <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                    <h4 >Задание 0</h4>
+                </div>
+                <div class="question p-3 border-bottom">
+                    <div class="d-flex flex-row align-items-center question-title">
+                        <h5 class="mt-1 ml-2"> Введите имя</h5>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" @bind="@test.FantomName" aria-describedby="basic-addon1">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @foreach (var task in test.Tasks)
 {
     var number = test.Tasks.IndexOf(task) + 1;
@@ -131,9 +153,10 @@
 
 @code {
     [Parameter] public string test_id { get; set; }
-    
-    MyTest test = new MyTest();
 
+    private string token { get; set; }
+
+    MyTest test = new MyTest();
     
     void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
     {
@@ -155,17 +178,20 @@
     {
         await base.OnInitializedAsync();
 
+        token = HttpContextAccessor.HttpContext.Request.Cookies[JWTExtensions.JwtCookieName];
+
         test = await _ApiService.GetTest(test_id);
         
     }
 
     private async void SaveAndSubmit()
     {
-        await _ApiService.SubmitTest(test);
-        var token = HttpContextAccessor.HttpContext!.Request.Cookies[JWTExtensions.JwtCookieName];
-        var user_id = new JwtSecurityToken(token).GetGuidFromToken();
-
-        var ansTestId = await _ApiService.GetTestAnswerId(test.Id, user_id);
+        if (token is not null)
+        {
+            var user_id = new JwtSecurityToken(token).GetGuidFromToken();
+            test.StudentId = user_id;
+        }
+        var ansTestId = await _ApiService.SubmitTest(test);
         nav.NavigateTo($"result_test/{ansTestId}");  
         
     }

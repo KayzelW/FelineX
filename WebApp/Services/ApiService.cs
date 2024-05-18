@@ -2,6 +2,7 @@
 using Shared.Extensions;
 using MyTest = Shared.DB.Classes.Test.Test;
 using System.Net;
+using Shared.DB.Classes.Test.Task.TaskAnswer;
 using Shared.Models;
 
 namespace WebApp.Services;
@@ -44,31 +45,18 @@ public class ApiService
         return test;
     }
 
-    public async Task<double?> GetTestResult(Guid testAnswerId)
+    public async Task<TestAnswer?> GetTestResult(Guid testAnswerId)
     {
         var responseMessage = await _httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
-        double? ansTestData = null;
+        TestAnswer? testAnswer = null;
         if (responseMessage.IsSuccessStatusCode)
         {
-            ansTestData = await responseMessage.Content.ReadFromJsonAsync<double>();
+            testAnswer = await responseMessage.Content.ReadFromJsonAsync<TestAnswer>();
         }
 
-        return ansTestData;
+        return testAnswer;
     }
-
-    public async Task<Guid> GetTestAnswerId(Guid testId, Guid userId)
-    {
-        var score = 0;
-        var responseMessage = await _httpClient.GetAsync($"Test/get_test_answer_id/{testId}/{userId}");
-        var ansTestId = Guid.Empty;
-        if (responseMessage.IsSuccessStatusCode)
-        {
-            ansTestId = await responseMessage.Content.ReadFromJsonAsync<Guid>();
-        }
-
-        return ansTestId;
-    }
-
+    
     public async Task<User?> GetUser()
     {
         User? user = null;
@@ -98,10 +86,11 @@ public class ApiService
         return responseMessage.IsSuccessStatusCode;
     }
 
-    public async Task<bool> SubmitTest(MyTest test)
+    public async Task<Guid> SubmitTest(MyTest test)
     {
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/submit_test", test);
-        return responseMessage.IsSuccessStatusCode;
+        var testAnswerId = await responseMessage.Content.ReadFromJsonAsync<string>();
+        return testAnswerId.ToGuid();
     }
 
 
@@ -131,5 +120,15 @@ public class ApiService
         var access = await responseMessage.Content.ReadFromJsonAsync<uint>();
 
         return access;
+    }
+
+    public async Task<List<TestAnswer>> GetListStudentsTestAnswers(string testId)
+    {
+        var responseMessage = await _httpClient.GetAsync($"Test/get_list_students_testanswers/{testId}");
+        if (!responseMessage.IsSuccessStatusCode) return null;
+
+        var testAnswers = await responseMessage.Content.ReadFromJsonAsync<List<TestAnswer>>();
+
+        return testAnswers;
     }
 }
