@@ -1,4 +1,4 @@
-﻿@page "/test/{test_id}"
+﻿@page "/test/{TestId}"
 
 @using Desktop.Services
 @using MyTest = Shared.DB.Classes.Test.Test;
@@ -181,6 +181,8 @@ else
     {
         await base.OnInitializedAsync();
 
+        _logger.LogInformation($"Now at {nameof(this.OnInitializedAsync)}");
+        
         Token = await SecureStorage.GetAsync(JWTExtensions.JwtCookieName);
 
         test = await _ApiService.GetTest(TestId);
