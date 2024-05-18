@@ -2,16 +2,23 @@
 @using Shared.DB.Classes.User
 @using WebApp.Services
 @using Shared.Extensions
+@using System.Formats.Asn1
 @inject ApiService _ApiService
 @inject ILogger<Result_test> _logger
 
-<h3 class="text-center">Ваши результаты</h3>
-<h3 class="text-center">@Score</h3>
+<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Ваши результаты:</h3>
+<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@Score %</h3>
+<div class="d-flex justify-content-center" style="min-height: 60px">
+<img src="@catScoreString" alt="Фото">
+</div>
+
 
 @code {
 
     [Parameter] public string AnweredTestId { get; set; }
     private double? Score { get; set; }
+    private double catScore;
+    private string catScoreString;
 
     protected override async Task OnInitializedAsync()
     {
@@ -19,6 +26,12 @@
         try
         {
             Score = await _ApiService.GetTestResult(AnweredTestId.ToGuid());
+            if (Score != null)
+            {
+                catScore = (int)Math.Floor(Score.Value / 10);
+                catScoreString = $"cats/{catScore}.png";
+
+            }
         }
         catch (Exception e)
         {

@@ -1,0 +1,71 @@
+﻿@page "/result_test_students"
+@using WebApp.Services
+@using MyTest = Shared.DB.Classes.Test.Test;
+@using Shared.DB.Classes.User
+@* @inject NavigationManager nav *@
+@inherits CookieCheck
+@inject ApiService _ApiService
+
+@rendermode InteractiveServer
+
+<div>
+    <h2 class="text-left">Тесты: название</h2>
+    <h1> </h1>
+</div>
+
+
+<table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
+    <thead>
+    <tr>
+        <th scope="col" style="-webkit-text-fill-color: #00003A">Имя студента</th>
+        <th scope="col" style=" -webkit-text-fill-color: #00003A">Баллы</th>
+        <th scope="col" style="-webkit-text-fill-color: #00003A">Дата прохождения</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    @foreach (var test in tests)
+    {
+        <tr>
+            <th scope="row">@test.Id</th>
+            <td >
+                <p>
+                    <a class="link-opacity-100-hover" href="" @onclick="() => Navigate_to_test(test.Id.ToString())">@test.TestName</a>
+                </p>
+            </td>
+            <td >@test.CreationTime.ToString()</td>
+            
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+
+@code {
+    
+
+    List<MyTest> tests = new List<MyTest>();
+    
+    private void Navigate_to_test(string testId)
+    {
+        navigationManager.NavigateTo($"/test/{testId}");
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            tests = await _ApiService.GetTests();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+    
+}
