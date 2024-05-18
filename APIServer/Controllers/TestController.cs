@@ -126,7 +126,7 @@ public class TestController : Controller
             }
             
             
-            return Ok(score);
+            return Ok(new TestResultsData{Score = score, testAnswer = answeredTest});
         }
         
         
@@ -174,7 +174,7 @@ public class TestController : Controller
         if (solvedTest?.Tasks is null)
         {
             _logger.LogError(
-                $"test or tasks are null while executing CreateTest from user");
+                $"test or tasks are null while executing SubmitTest");
             return BadRequest();
         }
 
