@@ -23,9 +23,10 @@ public class CookieCheck : ComponentBase
             navigationManager.NavigateTo("/auth", true);
             return;
         }
+
         var userId = new JwtSecurityToken(token).GetGuidFromToken();
-        
-        if (userId == Guid.Empty || !authService.HasAccess(userId, RequiredAccessLevel).Result)
+
+        if (userId == Guid.Empty || !await authService.HasAccess(userId, RequiredAccessLevel))
         {
             navigationManager.NavigateTo("/auth", true);
         }
