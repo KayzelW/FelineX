@@ -1,38 +1,27 @@
-﻿using Shared.DB.Classes;
+﻿using System.Runtime.Intrinsics.Arm;
+using System.Security.Cryptography;
+using System.Text;
+using Shared.DB.Classes.User;
 using Shared.Models;
 
 namespace Shared.Extensions;
 
 public static partial class UserExtensions
 {
-    /// <summary>
-    /// Возвращает UserDTO из User
-    /// </summary>
-    /// <param name="user"></param>
-    /// <returns>UserDTO</returns>
-    public static UserDTO ToDTO(this User user)
+    public static string HashPassword(string password)
     {
-        return new UserDTO()
+        using (SHA256 sha256Hash = SHA256.Create())
         {
-            Id = user.Id,
-            UserName = user.UserName,
-            Access = user.Access,
-        };
+            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+
+            return builder.ToString();
+        }
     }
 
-    /// <summary>
-    /// Возвращает User из UserDTO
-    /// </summary>
-    /// <param name="dto"></param>
-    /// <returns>User</returns>
-    public static User FromDto(this UserDTO dto)
-    {
-        return new User()
-        {
-            Id = dto.Id,
-            UserName = dto.UserName,
-            Access = dto.Access
-        };
-    }
-    
+    public static bool HasAccess(this uint access, AccessLevel level) => (access & (uint)level) != 0;
 }

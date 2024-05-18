@@ -16,19 +16,27 @@ public sealed class Program
                                throw new InvalidOperationException(
                                    "Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(connectionString));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+
+        builder.Services.AddLogging(logging =>
+        {
+            logging.AddConsole();
+            logging.AddDebug();
+        });
 
 #if DEBUG
         builder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo(){ Title = "Dev API", Version = "v1"});
+            c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Dev API", Version = "v1" });
         });
+#else
+        builder.Services.AddSwaggerGen();
 #endif
 
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
 
         #endregion
 
@@ -41,17 +49,11 @@ public sealed class Program
         {
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dev API v1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dev API v1"); });
         }
 
         app.UseHttpsRedirection();
-
-        app.UseAuthorization();
         app.MapControllers();
-
 
 #if DEBUG
         app.UseDeveloperExceptionPage();
@@ -61,5 +63,11 @@ public sealed class Program
         app.Run();
 
         #endregion
+
+        using (var dbContext = app.Services.GetRequiredService<AppDbContext>())
+        {
+            Console.WriteLine("Trying to verify DB");
+            dbContext.Database.EnsureCreated();
+        }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using APIServer.Database;
-using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.DB.Classes;
+using Microsoft.VisualBasic.CompilerServices;
+using Shared.DB.Classes.User;
 using Shared.Extensions;
+using Shared.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace APIServer.Controllers;
@@ -12,40 +13,84 @@ namespace APIServer.Controllers;
 public class UserController : Controller
 {
     private readonly AppDbContext _dbContext;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(AppDbContext dbContext)
+    public UserController(AppDbContext dbContext, ILogger<UserController> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
-    
+
     [HttpPost(Name = "PostUser")]
     [SwaggerOperation("Post a new user from UserDTO")]
     [SwaggerResponse(409, "Already Exists")]
     [SwaggerResponse(201, "Success")]
-    public async Task<ActionResult> PostUser(UserDTO user)
+    public async Task<ActionResult> PostUser(UserDto user)
     {
         var _user = new User()
         {
             Id = user.Id,
             UserName = user.UserName,
-            Access = new() { AccessLevel.Student },
+            Access = AccessLevel.Student
         };
         if (_user.Id != null)
         {
-            if (await _dbContext.Users.FindAsync(_user.Id) != null)
+            if (await _dbContext.Users!.FindAsync(_user.Id) != null)
             {
-                return Conflict(_user.ToDTO());
+                return Conflict(_user);
             }
         }
-        else
-        {
-            _user.Id = Guid.NewGuid().ToString();
-        }
 
-        await _dbContext.Users.AddAsync(_user);
+        await _dbContext.Users!.AddAsync(_user);
         await _dbContext.SaveChangesAsync();
 
         return Ok(_user.Id);
+    }
+
+    [HttpGet("get_user")]
+    public async Task<ActionResult> GetUser()
+    {
+        try
+        {
+            var user = _dbContext.Users!.FirstOrDefault();
+            return Ok(user ?? null);
+        }
+        catch (Exception e)
+        {
+            _logger.Log(LogLevel.Debug, e, "There was an error while selecting a user");
+        }
+
+        return NotFound();
+    }
+
+    [HttpPost("auth")]
+    public async Task<IActionResult> TryAuth(AuthData auth)
+    {
+        var _user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login);
+        if (_user.PasswordHash == auth.HashedPassword)
+        {
+            return Ok(_user.Id);
+        }
+
+        return NotFound(false);
+    }
+    
+    [HttpGet("get_user_access_by_id/{id:guid}")]
+    public async Task<ActionResult> GetUserAccessById(Guid id)
+    {
+        var _user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == id);
+        if (_user != null)
+        {
+            return Ok(_user.AccessFlags);
+        }
+
+        return NotFound();
+    }
+
+    [HttpGet("test_hash")]
+    public async Task<string> TestHash(string password)
+    {
+        return UserExtensions.HashPassword(password);
     }
 }

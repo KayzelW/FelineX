@@ -1,14 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Shared.DB.Classes;
+using Shared.DB.Classes.User;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shared.Models;
 
-public class UserDTO
+public class UserDto
 {
     [SwaggerSchema("Id пользователя")]
-    public string? Id { get; set; }
+    public Guid Id { get; set; }
     [Required ,SwaggerSchema("Login пользователя")]
     public string? UserName { get; set; }
-    public List<AccessLevel> Access { get; set; } = new();
+    public uint AccessFlags { get; set; } = new();
+    public AccessLevel Access
+    {
+        get => (AccessLevel)AccessFlags;
+        set => AccessFlags = (uint)value;
+    }
 }

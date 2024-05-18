@@ -1,0 +1,177 @@
+﻿@page "/result_test_students/{AnsweredTestId}"
+
+@using WebApp.Services
+@using Shared.DB.Classes.Test.Task
+@using Shared.DB.Classes.Test.Task.TaskAnswer
+@using Shared.DB.Classes.User
+@using Shared.Extensions
+@using Task = System.Threading.Tasks.Task
+
+
+
+@inject ApiService _ApiService
+@inject NavigationManager nav
+@inject IHttpContextAccessor HttpContextAccessor
+
+@inherits CookieCheck
+@rendermode InteractiveServer
+
+
+@if (_testAnswer?.TaskAnswers == null || _testAnswer?.AnsweredTest == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @_testAnswer.AnsweredTest.TestName</h3>
+    @if (_testAnswer.Student is null)
+    {
+        <h3 class="text-start" style="-webkit-text-fill-color: #00003A;">Имя: @_testAnswer.FantomName</h3>
+    }
+    else
+    {
+        <h3 class="text-start" style="-webkit-text-fill-color: #00003A;">Имя: @_testAnswer.Student.NormalizedUserName</h3>
+    }
+
+    <h3 class="text-start" style="-webkit-text-fill-color: #00003A;">Баллы: @_testAnswer.Score</h3>
+
+    @foreach (var task in _testAnswer.TaskAnswers)
+    {
+        var number = _testAnswer.TaskAnswers.IndexOf(task) + 1;
+        @if (task.AnsweredTask == null || task.MarkedVariables == null)
+        {
+            continue;
+        }
+
+        switch (task.AnsweredTask.InteractionType)
+        {
+            case InteractionType.LongStringTask:
+                <div class="d-flex justify-content-center row">
+                    <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+                        <div class="col-md-10 col-lg-10">
+                            <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                                <h4 >Задание @(number)</h4>
+                            </div>
+                            <div class="question p-3 border-bottom">
+                                <div class="d-flex flex-row align-items-center question-title">
+                                    <h5 class="mt-1 ml-2">@task.AnsweredTask.Question</h5>
+                                </div>
+
+                                <div class="form-floating">
+                                    <textarea class="form-control" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case InteractionType.ShortStringTask:
+                <div class="d-flex justify-content-center row">
+                    <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+                        <div class="col-md-10 col-lg-10">
+                            <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                                <h4 >Задание @(number)</h4>
+                            </div>
+                            <div class="question p-3 border-bottom">
+                                <div class="d-flex flex-row align-items-center question-title">
+                                    <h5 class="mt-1 ml-2"> @task.AnsweredTask.Question</h5>
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" @bind="@task.StringAnswer" aria-describedby="basic-addon1">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case InteractionType.ManyVariantsTask:
+                <div class="d-flex justify-content-center row">
+                    <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+                        <div class="col-md-10 col-lg-10">
+
+                            <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                                <h4 >Задание @(number)</h4>
+                            </div>
+                        </div>
+                        <div class="question p-3 border-bottom">
+                            <div class="d-flex flex-row align-items-center question-title">
+                                <h5 class="mt-1 ml-2"> @task.AnsweredTask.Question</h5>
+                            </div>
+
+                            @foreach (var varAns in task.AnsweredTask.VariableAnswers!)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="@($"answer-{task.Id}-{varAns.Id}")" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">
+                                    <label class="form-check-label" for="@($"answer-{task.Id}-{varAns.Id}")">
+                                        @varAns.StringAnswer
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                break;
+            case InteractionType.OneVariantTask:
+                <div class="d-flex justify-content-center row">
+                    <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+                        <div class="col-md-10 col-lg-10">
+
+                            <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                                <h4 >Задание @(number)</h4>
+                            </div>
+                        </div>
+                        <div class="question p-3 border-bottom">
+                            <div class="d-flex flex-row align-items-center question-title">
+                                <h5 class="mt-1">@task.AnsweredTask.Question</h5>
+                            </div>
+                            @foreach (var varAns in task.AnsweredTask.VariableAnswers!)
+                            {
+                                <div class="ans ml-2">
+                                    <label class="radio">
+                                        <input type="radio" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">@varAns.StringAnswer
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                break;
+            case InteractionType.None:
+                continue;
+            case InteractionType.SqlQueryTask:
+                continue;
+            default:
+                continue;
+        }
+    }
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
+        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
+            Закрыть
+        </button>
+    </div>
+}
+
+@code {
+
+    [Parameter] public string AnsweredTestId { get; set; }
+
+    private TestAnswer? _testAnswer { get; set; }
+
+    public TestResultStudents()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _testAnswer = await _ApiService.GetTestResult(AnsweredTestId.ToGuid());
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+}

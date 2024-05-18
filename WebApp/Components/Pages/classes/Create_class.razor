@@ -1,0 +1,13 @@
+﻿@page "/Create_class"
+@using Shared.DB.Classes.User
+@inherits CookieCheck
+<h3 class="text-center">Новый класс</h3>
+
+@code {
+
+    public Create_class()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+    
+}
