@@ -21,7 +21,7 @@
     <h1> </h1>
 </div>
 
-@if (tests.Count == 0)
+@if (Tests.Count == 0)
 {
     <p>No available tests</p>
 }
@@ -39,7 +39,7 @@ else
         </thead>
         <tbody>
 
-        @foreach (var test in tests)
+        @foreach (var test in Tests)
         {
             <tr>
                 <th scope="row">@test.Id</th>
@@ -63,9 +63,8 @@ else
                             <i class="bi bi-trash3 " style="color: #00003A;  box-shadow: none;" title="Удалить"></i>
                         </button>
                         <button type="button" class="btn btn-secondary m-1 btn-transparent" href="" style="background-color: transparent; border: 0px;  box-shadow: none;" @onclick="() => NavigateToTestAnswers(test.Id.ToString())">
-                                                    <i class="bi bi-three-dots-vertical " style="color: #00003A;  box-shadow: none;" title="Решения"></i>
-                                                </button>
-
+                            <i class="bi bi-three-dots-vertical " style="color: #00003A;  box-shadow: none;" title="Решения"></i>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -77,12 +76,13 @@ else
 
 @code {
 
-    public My_tests()
+
+    private List<MyTest> Tests { get; set; } = new List<MyTest>();
+
+    public MyTests()
     {
         RequiredAccessLevel = AccessLevel.Teacher;
     }
-
-    List<MyTest> tests = new List<MyTest>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,7 +90,7 @@ else
 
         try
         {
-            tests = await _ApiService.GetTests();
+            Tests = await _ApiService.GetTests();
         }
         catch (Exception e)
         {

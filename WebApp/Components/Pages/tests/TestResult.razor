@@ -3,41 +3,37 @@
 @using Shared.Extensions
 @using Shared.DB.Classes.Test.Task.TaskAnswer
 @inject ApiService _ApiService
-@inject ILogger<Result_test> _logger
+@inject ILogger<TestResult> _logger
 
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Ваши результаты:</h3>
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@TestAnswer.Score%</h3>
 <div class="d-flex justify-content-center" style="min-height: 60px">
-<img src="@catScoreString" alt="Фото">
+    <img src="@CatScoreString" alt="Фото">
 </div>
 
 
 @code {
 
-    [Parameter] public string AnweredTestId { get; set; }
+    [Parameter] public string AnsweredTestId { get; set; }
     private TestAnswer? TestAnswer { get; set; } = new();
-    private double catScore;
-    private string catScoreString = "";
+    private double CatScore { get; set; }
+    private string CatScoreString { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         try
         {
-            TestAnswer = await _ApiService.GetTestResult(AnweredTestId.ToGuid());
+            TestAnswer = await _ApiService.GetTestResult(AnsweredTestId.ToGuid());
             if (TestAnswer != null)
             {
-                catScore = (int)Math.Floor(TestAnswer.Score / 10);
-                catScoreString = $"cats/{catScore}.png";
-
+                CatScore = (int)Math.Floor(TestAnswer.Score / 10);
+                CatScoreString = $"cats/{CatScore}.png";
             }
         }
         catch (Exception e)
         {
-            _logger.LogError($"Exception while getting test results with id {AnweredTestId}:{e}");
+            _logger.LogError($"Exception while getting test results with id {AnsweredTestId}:{e}");
         }
-
-        Console.Write("");
     }
-
 }

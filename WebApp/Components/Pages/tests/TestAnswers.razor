@@ -1,10 +1,12 @@
 ﻿@page "/test_answers/{TestId}"
+@using System.Globalization
 @using WebApp.Services
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using Shared.DB.Classes.User
 @using Shared.DB.Classes.Test.Task.TaskAnswer
 @inherits CookieCheck
 @inject ApiService _ApiService
+@inject ILogger<TestAnswers> _logger
 
 @rendermode InteractiveServer
 
@@ -42,7 +44,7 @@
                 <th scope="row">@test.Student.NormalizedUserName</th>
             }
             <td >@test.Score</td>
-            <td >@test.PassingDate.ToString()</td>
+            <td >@test.PassingDate.ToString(CultureInfo.CurrentCulture)</td>
         </tr>
     }
     </tbody>
@@ -52,10 +54,10 @@
 @code {
 
     [Parameter] public string TestId { get; set; }
-    List<TestAnswer> _testAnswers { get; set; } = new List<TestAnswer>();
+    private List<TestAnswer> _testAnswers = [];
 
 
-    public Test_answers()
+    public TestAnswers()
     {
         RequiredAccessLevel = AccessLevel.Teacher;
     }
@@ -70,8 +72,7 @@
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            _logger.LogError(e, $"Exception were occured while loading {nameof(_ApiService.GetListStudentsTestAnswers)} with Id: {TestId}");
         }
 
         await InvokeAsync(StateHasChanged);

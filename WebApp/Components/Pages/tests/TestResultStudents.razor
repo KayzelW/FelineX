@@ -17,7 +17,7 @@
 @rendermode InteractiveServer
 
 
-@if (_testAnswer == null)
+@if (_testAnswer?.TaskAnswers == null || _testAnswer?.AnsweredTest == null)
 {
     <p>Loading...</p>
 }
@@ -38,6 +38,11 @@ else
     @foreach (var task in _testAnswer.TaskAnswers)
     {
         var number = _testAnswer.TaskAnswers.IndexOf(task) + 1;
+        @if (task.AnsweredTask == null || task.MarkedVariables == null)
+        {
+            continue;
+        }
+
         switch (task.AnsweredTask.InteractionType)
         {
             case InteractionType.LongStringTask:
@@ -134,15 +139,20 @@ else
                     </div>
                 </div>
                 break;
+            case InteractionType.None:
+                continue;
+            case InteractionType.SqlQueryTask:
+                continue;
+            default:
+                continue;
         }
     }
-    
+
     <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
         <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
             Закрыть
         </button>
     </div>
-
 }
 
 @code {
@@ -151,7 +161,7 @@ else
 
     private TestAnswer? _testAnswer { get; set; }
 
-    public Result_test_students()
+    public TestResultStudents()
     {
         RequiredAccessLevel = AccessLevel.Teacher;
     }
@@ -160,7 +170,7 @@ else
     {
         await base.OnInitializedAsync();
         _testAnswer = await _ApiService.GetTestResult(AnsweredTestId.ToGuid());
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
 

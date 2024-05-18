@@ -1,4 +1,4 @@
-﻿@page "/Created_test"
+﻿@page "/create_test"
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Classes.User
@@ -7,11 +7,17 @@
 @rendermode InteractiveServer
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
+
+@using Shared.DB.Interfaces
+@using WebApp.Components.Pages.classes
+
 @inject ApiService _apiService
+@* @inject NavigationManager nav *@
+
 @inherits CookieCheck
 
 
-<h3 class="text-center">Тест</h3>
+<h3 class="text-center">Новый тест</h3>
 
 <div class="input-group input-group-lg" style="max-width: max-content">
     <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1" @bind="test.TestName" style="background-color: #EFF4FF; box-shadow: none; ">
@@ -53,6 +59,7 @@
                                     <input class="form-check-input" aria-label="Правдивый" type="checkbox" id="defaultCheck1" @bind="@varAnswer.Truthful" style="box-shadow: none; width: 20px; height: 20px;">
                                     <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; border-left-color: #BDD3FF; box-shadow: none; height: 30px; margin-left: 5px;">
                                 </div>
+
                             }
                         break;
                         
@@ -66,18 +73,28 @@
                                 @foreach (var varAnswer in task.VariableAnswers!)
                                 {
                                     <div class="form-check" style="min-height: 50px">
-                                        <input class="form-check-input" type="radio" name="flexRadioDefault" @onclick="() => varAnswer.Truthful = true" aria-label="Правдивый" style="box-shadow: none; width: 20px; height: 20px;">
-                                        <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none; height: 30px; margin-left: 5px;">
+                                      <input class="form-check-input" type="radio" name="flexRadioDefault"  checked="@varAnswer.Truthful" @onchange="@(e => UpdateOneAnswer(task, varAnswer))" aria-label="Правдивый" style="box-shadow: none;">
+                                        <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
+                                        
                                     </div>
-
-                                    
                                     
                                 }
                             break;
                             
                         case InteractionType.ShortStringTask:
-                            <input type="text" class="form-control"  aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
-                                   style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
+                        <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF">
+                            <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF; box-shadow: none; ">кол-во</span>
+                            <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
+                                   @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
+                        </div>
+                        @foreach (var varAnswer in task.VariableAnswers!)
+                        {
+                            <div class="form-check" style="min-height: 50px">
+                                <input type="text" class="form-control"  aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
+                                                                   style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">    
+                            </div>
+                                    
+                        }
                         break;
                         
                         case InteractionType.LongStringTask:
@@ -138,7 +155,7 @@
 
 @code {
 
-    public Created_test()
+    public CreateTest()
     {
         RequiredAccessLevel = AccessLevel.Teacher;
     }
@@ -150,18 +167,30 @@
         var t = new MyTask(null, interactionType);
         if (t.InteractionType is InteractionType.LongStringTask or InteractionType.ShortStringTask)
         {
-            t.VariableAnswers!.Add(new VariableAnswer());
+            var v = new VariableAnswer
+            {
+                Truthful = true
+            };
+            t.VariableAnswers!.Add(v);
             
         }
         test.Tasks!.Add(t);
         InvokeAsync(StateHasChanged);
     }
 
+    static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
+    {
+        foreach (var varAns in task.VariableAnswers)
+        {
+            varAns.Truthful = varAns == selectedAnswer;
+        }
+
+    }
+
     private async void Save()
     {
-
         await _apiService.PostTest(test);
-        Console.WriteLine(test.TestName);
+        navigationManager.NavigateTo("/my_tests");
     }
 
     private void Delete(MyTask task)

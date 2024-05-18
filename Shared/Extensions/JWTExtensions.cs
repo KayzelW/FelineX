@@ -8,8 +8,12 @@ public static class JWTExtensions
     public static string JwtCookieName { get; } = "jwtToken";
     private static readonly JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
 
-    public static Guid GetGuidFromToken(this JwtSecurityToken token) =>
-        token.GetValueFromToken(JWTClaimNames.UserId)!.ToGuid();
+    public static Guid GetGuidFromToken(this JwtSecurityToken token)
+    {
+        return token.ValidTo <= DateTime.UtcNow
+            ? token.GetValueFromToken(JWTClaimNames.UserId)!.ToGuid()
+            : Guid.Empty;
+    }
 
     /// <param name="token">JwtToken</param>
     /// <param name="type">Choice from types in ClaimTypes</param>

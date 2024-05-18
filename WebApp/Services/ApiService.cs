@@ -33,7 +33,7 @@ public class ApiService
         return tests;
     }
 
-    public async Task<MyTest> GetTest(string testId)
+    public async Task<MyTest?> GetTest(string testId)
     {
         MyTest? test = null;
         HttpResponseMessage responseMessage = await _httpClient.GetAsync($"Test/get_test/{testId}");
@@ -86,7 +86,7 @@ public class ApiService
         return responseMessage.IsSuccessStatusCode;
     }
 
-    public async Task<Guid> SubmitTest(MyTest test)
+    public async Task<Guid> SubmitTest(MyTest? test)
     {
         var responseMessage = await _httpClient.PostAsJsonAsync("Test/submit_test", test);
         var testAnswerId = await responseMessage.Content.ReadFromJsonAsync<string>();
