@@ -126,7 +126,7 @@ public class TestController : Controller
             }
             
             
-            return Ok(new TestResultsData{Score = score, testAnswer = answeredTest});
+            return Ok(score);
         }
         
         

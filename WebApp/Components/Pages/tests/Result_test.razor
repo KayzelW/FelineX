@@ -1,32 +1,23 @@
 ﻿@page "/result_test/{AnweredTestId}/"
 @using WebApp.Services
 @using Shared.Extensions
-@using Shared.DB.Classes.User
-@using Shared.DB.Classes.Test.Task.TaskAnswer
-@using Shared.Models
 @inject ApiService _ApiService
 @inject ILogger<Result_test> _logger
-@inherits CookieCheck
 
 <h3 class="text-center">Ваши результаты</h3>
-<h3 class="text-center">@TestData.Score</h3>
+<h3 class="text-center">@Score</h3>
 
 @code {
-
-    public Result_test()
-    {
-        RequiredAccessLevel = AccessLevel.Student;
-    }
-
+    
     [Parameter] public string AnweredTestId { get; set; }
-    private TestResultsData? TestData { get; set; } = new();
+    private double? Score { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         try
         {
-            TestData = await _ApiService.GetTestResult(AnweredTestId.ToGuid());
+            Score = await _ApiService.GetTestResult(AnweredTestId.ToGuid());
         }
         catch (Exception e)
         {

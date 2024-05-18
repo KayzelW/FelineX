@@ -2,8 +2,6 @@
 using Shared.Extensions;
 using MyTest = Shared.DB.Classes.Test.Test;
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Shared.DB.Classes.Test.Task.TaskAnswer;
 using Shared.Models;
 
 namespace WebApp.Services;
@@ -46,13 +44,13 @@ public class ApiService
         return test;
     }
     
-    public async Task<TestResultsData?> GetTestResult(Guid testAnswerId)
+    public async Task<double?> GetTestResult(Guid testAnswerId)
     {
         var responseMessage = await _httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
-        TestResultsData? ansTestData = null;
+        double? ansTestData = null;
         if (responseMessage.IsSuccessStatusCode)
         {
-            ansTestData = await responseMessage.Content.ReadFromJsonAsync<TestResultsData>();
+            ansTestData = await responseMessage.Content.ReadFromJsonAsync<double>();
         }
     
         return ansTestData;

@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Shared.Models;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -32,12 +29,12 @@ public class AuthService
 
     public bool HasAccess(Guid userId, AccessLevel accessLevel)
     {
-        if (!_usersData.ContainsKey(userId)) return false;
+        if (!HasUser(userId)) return false;
         var access = (AccessLevel)_usersData[userId];
         return access.HasFlag(accessLevel) || access.HasFlag(AccessLevel.AllAccess);
     }
 
-    public bool HasUser(Guid userId)
+    private bool HasUser(Guid userId)
     {
         return _usersData.ContainsKey(userId);
     }
@@ -80,8 +77,8 @@ public class AuthService
         await SetJwtToken(_jsRuntime, token);
         await CheckExistsAsync(token);
     }
-
-    public async Task<bool> CheckExistsAsync(JwtSecurityToken? token)
+    
+    private async Task<bool> CheckExistsAsync(JwtSecurityToken? token)
     {
         if (token is null) return false;
         var userId = token.GetGuidFromToken();
