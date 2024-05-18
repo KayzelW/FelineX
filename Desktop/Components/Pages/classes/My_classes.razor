@@ -1,0 +1,98 @@
+﻿@page "/My_class"
+
+@inject NavigationManager nav
+@using Shared.DB.Classes.User
+@inherits CookieCheck
+
+<h2>Temporary unavailable</h2>
+
+@* <div class="d-grid gap-2 d-md-flex justify-content-md-center" style="height: 40px; -webkit-text-fill-color: #00003A"> *@
+@*     <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button" @onclick="cringe">  Создать новый класс  </button> *@
+@* </div> *@
+@* <div class="text-success" style="border-color:  #00003A; height: 1px"> *@
+@*       <hr> *@
+@*     </div> *@
+@* *@
+@* *@
+@* <h3>Мои классы</h3> *@
+@* *@
+@* <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A"> *@
+@*     <thead> *@
+@*     <tr> *@
+@*         <th scope="col" style=" border-radius: .5rem;"></th> *@
+@*         <th scope="col" >Название</th> *@
+@*         <th scope="col" >Кол-во человек</th> *@
+@*         <th scope="col" ></th> *@
+@*     </tr> *@
+@*     </thead> *@
+@*     <tbody> *@
+@*     @foreach (var testData in testDataList) *@
+@*     { *@
+@*         <tr> *@
+@*              *@
+@*             <th scope="row" >@testData.Id</th> *@
+@*             <td>@testData.Name</td> *@
+@*             <td>@testData.TaskCount</td> *@
+@*             <td > *@
+@*                 <div class="btn-group" role="group" aria-label="Basic example"> *@
+@*                     <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px"> *@
+@*                         <i class="bi bi-link-45deg" style="color: #00003A" title="Менеджер ссылок"></i> *@
+@*                     </button> *@
+@*                     <button type="button" class="btn btn-secondary m-1 " style="background-color: transparent; border: 0px"> *@
+@*                         <i class="bi bi-pencil-square" style="color: #00003A" title="Изменить" @onclick="cringe1"></i> *@
+@*                     </button> *@
+@*                     <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px"> *@
+@*                         <i class="bi bi-trash3 " style="color: #00003A" title="Удалить"></i> *@
+@*                     </button> *@
+@* *@
+@*                 </div> *@
+@*             </td> *@
+@*         </tr> *@
+@*     } *@
+@*     </tbody> *@
+@* </table> *@
+
+
+@code {
+
+    public My_classes()
+    {
+        RequiredAccessLevel = AccessLevel.Teacher;
+    }
+
+    public class TestData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int TaskCount { get; set; }
+    }
+    
+    List<TestData> testDataList = new List<TestData>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        for (var i = 1; i <= 10; i++)
+        {
+            testDataList.Add(new TestData
+            {
+                Id = i,
+                Name = "Name" + i,
+                TaskCount = 20 + 10 * i 
+            });
+        }
+    }
+    
+    private void cringe()
+    {
+        nav.NavigateTo("/Create_class");
+    }
+    
+    private void cringe1()
+    {
+        nav.NavigateTo("/Class");
+    }
+    
+    
+
+}
