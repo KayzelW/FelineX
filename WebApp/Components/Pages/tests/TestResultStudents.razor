@@ -8,7 +8,6 @@
 @using Task = System.Threading.Tasks.Task
 
 
-
 @inject ApiService _ApiService
 @inject NavigationManager nav
 @inject IHttpContextAccessor HttpContextAccessor
@@ -57,8 +56,8 @@ else
                                     <h5 class="mt-1 ml-2">@task.AnsweredTask.Question</h5>
                                 </div>
 
-                                <div class="form-floating">
-                                    <textarea class="form-control" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
+                                <div class="form-floating ">
+                                    <textarea class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer==task.StringAnswer)" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
                                 </div>
 
                             </div>
@@ -78,8 +77,8 @@ else
                                     <h5 class="mt-1 ml-2"> @task.AnsweredTask.Question</h5>
                                 </div>
 
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" @bind="@task.StringAnswer" aria-describedby="basic-addon1">
+                                <div class="input-group mb-3 ">
+                                    <input type="text" class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer==task.StringAnswer)" @bind="@task.StringAnswer" aria-describedby="basic-addon1">
                                 </div>
 
                             </div>
@@ -103,7 +102,7 @@ else
 
                             @foreach (var varAns in task.AnsweredTask.VariableAnswers!)
                             {
-                                <div class="form-check">
+                                <div class="form-check @GetAnswerCssClass(varAns)">
                                     <input class="form-check-input" type="checkbox" id="@($"answer-{task.Id}-{varAns.Id}")" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">
                                     <label class="form-check-label" for="@($"answer-{task.Id}-{varAns.Id}")">
                                         @varAns.StringAnswer
@@ -130,7 +129,7 @@ else
                             @foreach (var varAns in task.AnsweredTask.VariableAnswers!)
                             {
                                 <div class="ans ml-2">
-                                    <label class="radio">
+                                    <label class="radio @GetAnswerCssClass(varAns)">
                                         <input type="radio" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">@varAns.StringAnswer
                                     </label>
                                 </div>
@@ -160,6 +159,16 @@ else
     [Parameter] public string AnsweredTestId { get; set; }
 
     private TestAnswer? _testAnswer { get; set; }
+
+    private string GetAnswerCssClass(VariableAnswer varAns)
+    {
+        return varAns.Truthful is true ? "correct-answer" : "incorrect-answer";
+    }
+
+    private string  GetAnswerCssClass(bool flag)
+    {
+        return flag ? "correct-answer" : "incorrect-answer";
+    }
 
     public TestResultStudents()
     {
