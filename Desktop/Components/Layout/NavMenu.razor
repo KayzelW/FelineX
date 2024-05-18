@@ -1,27 +1,31 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Desktop</a>
-    </div>
-</div>
+﻿
+<nav class="navbar navbar-expand-lg" style="height: 40px; display: flex">
+    <div class="container">
+        <button style="border: none; background: none; padding: 0; cursor: pointer;" href="/game">
+            <img class="img-fluid my-5" style="max-width: 40px;" src="icon1.png" alt="" />
+        </button>
+        <a class="navbar-brand" href="" style="-webkit-text-fill-color: #DDE8FF; font-size: 24px; ; display: flex">FelineX</a>
+        <div class="collapse navbar-collapse " id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
+                <li class="nav-item" style="-webkit-text-fill-color: #EFF4FF; font-size: 16px; display: flex">
+                    <NavLink class="nav-link" href="/my_tests">
+                        Мои тесты
+                    </NavLink>
+                </li>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/My_class" style=" font-size: 16px;">
+                        Классы
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="/profile" style="font-size: 16px; ">
+                        Профиль
+                    </NavLink>
+                </li>
+            </ul>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    </div> 
+</nav>
+

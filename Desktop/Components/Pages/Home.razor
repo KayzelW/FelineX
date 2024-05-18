@@ -1,5 +1,14 @@
 ﻿@page "/"
+@* @rendermode InteractiveServer *@
+@* @inherits CookieCheck *@
+@inject NavigationManager nav
 
-<h1>Hello, world!</h1>
+<h3>We're working</h3>
 
-Welcome to your new app.
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        // nav.NavigateTo("/my_tests");
+    }
+}
