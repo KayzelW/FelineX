@@ -1,7 +1,8 @@
-﻿<nav class="navbar navbar-expand-lg" style="height: 40px; display: flex">
+﻿@inject NavigationManager nav
+<nav class="navbar navbar-expand-lg" style="height: 40px; display: flex">
     <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
         <button style="border: none; background: none; padding: 0; cursor: pointer;" onclick="location.href='/game'">
-            <img class="img-fluid my-5" style="max-width: 40px;" src="icon1.png" alt="" />
+            <img class="img-fluid my-5" style="max-width: 40px;" src="icon1.png" alt=""/>
         </button>
         <a class="navbar-brand" href="" style="-webkit-text-fill-color: #DDE8FF; font-size: 24px; display: flex">FelineX</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -25,9 +26,24 @@
                 </li>
             </ul>
         </div>
-         <div style="display: flex; justify-content: flex-end; width: 220px">
-             <input type="text" placeholder="Введите id теста" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none; justify-content: flex-end; width: 200px">
-             
-                </div>
+        <div style="display: flex; justify-content: flex-end; align-items: center; width: 300px; gap: 5px;">
+            <input type="text" @bind="TestId" placeholder="Введите id теста" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none; width: 200px;">
+            <button @onclick="NavigateToTest" style="background-color: #EFF4FF; border-color: #BDD3FF;">Go</button>
+        </div>
     </div>
 </nav>
+
+@code {
+    private string TestId { get; set; }
+
+    [Inject] NavigationManager Navigation { get; set; }
+
+    private void NavigateToTest()
+    {
+        if (!string.IsNullOrWhiteSpace(TestId))
+        {
+            Navigation.NavigateTo($"test/{TestId}");
+        }
+    }
+
+}

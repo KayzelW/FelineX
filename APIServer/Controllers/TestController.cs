@@ -86,6 +86,7 @@ public class TestController : Controller
             {
                 return NotFound();
             }
+
             return Ok(answeredTest);
         }
         catch
@@ -124,9 +125,9 @@ public class TestController : Controller
                 {
                     score += taskWeight;
                 }
-
             }
         }
+
         _logger.LogInformation("Calculated score inside CalculateScore: {Score}", score);
         return score;
     }
@@ -142,8 +143,8 @@ public class TestController : Controller
                 .ToListAsync();
             foreach (var test in listTestAnswers)
             {
-                
             }
+
             return Ok(listTestAnswers);
         }
         catch (Exception e)
@@ -151,7 +152,6 @@ public class TestController : Controller
             _logger.LogError(e, $"Exception while getting list of students for test with id {test_id}");
             return BadRequest();
         }
-        
     }
 
     [HttpGet("get_test_answer_id_by_id/{test_answer_id:guid}")]
@@ -161,14 +161,15 @@ public class TestController : Controller
             .Include(x => x.TaskAnswers)
             .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
             .FirstOrDefaultAsync();
-        
+
         if (answeredTest is null)
         {
             return NotFound();
         }
+
         return Ok(answeredTest);
     }
-    
+
     [HttpPost("create_test")]
     public async Task<IActionResult> CreateTest(Test? test)
     {
@@ -210,8 +211,18 @@ public class TestController : Controller
         try
         {
             testAnswer.AnsweredTestId = solvedTest.Id;
-            testAnswer.StudentId = solvedTest.StudentId;
-            testAnswer.Student = await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
+
+            testAnswer.PassingDate = DateTime.Now;
+            if (solvedTest.StudentId != Guid.Empty && solvedTest.StudentId != null)
+            {
+                testAnswer.StudentId = solvedTest.StudentId;
+                testAnswer.Student =
+                    await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
+            }
+            else
+            {
+                testAnswer.FantomName = solvedTest.FantomName;
+            }
 
             foreach (var task in solvedTest.Tasks!)
             {
@@ -222,27 +233,15 @@ public class TestController : Controller
 
                 testAnswer.TaskAnswers!.Add(taskToSave);
             }
-            
-            testAnswer.PassingDate = DateTime.Now;
-            if (solvedTest.StudentId != Guid.Empty)
-            {
-                testAnswer.Student = await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
-            }
 
-            _logger.LogInformation("Calculating score for test answer with ID: {AnsweredTestId}", testAnswer.AnsweredTestId);
-
-            // Вызываем CalculateScore и логируем возвращаемое значение
             var score = await CalculateScore(testAnswer);
             _logger.LogInformation("Calculated score: {Score}", score);
-            
+
             testAnswer.Score = score;
-            
+
             await _dbContext.TestAnswers!.AddAsync(testAnswer);
             await _dbContext.SaveChangesAsync();
-            
-            _logger.LogWarning("Saved test answer with ID: {AnsweredTestId}, Score: {Score}", testAnswer.AnsweredTestId, testAnswer.Score);
-            
-            
+
             return Ok(testAnswer.Id);
         }
         catch (Exception e)
@@ -250,6 +249,5 @@ public class TestController : Controller
             _logger.LogWarning(e, $"Exception while saving new test from user");
             return BadRequest(solvedTest);
         }
-        
     }
 }
