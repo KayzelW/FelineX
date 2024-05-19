@@ -42,4 +42,8 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E1D8068C-FFAC-4019-94E8-A389E925960B}
 	EndGlobalSection
+	GlobalSection(RiderSharedRunConfigurations) = postSolution
+		File = RunConfigs.run\Desktop + API_ https.run.xml
+		File = RunConfigs.run\Web + API _ https.run.xml
+	EndGlobalSection
 EndGlobal

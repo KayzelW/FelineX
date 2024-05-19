@@ -1,0 +1,7 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Web + API : http" type="CompoundRunConfigurationType">
+    <toRun name="APIServer: http" type="LaunchSettings" />
+    <toRun name="WebApp: http" type="LaunchSettings" />
+    <method v="2" />
+  </configuration>
+</component>

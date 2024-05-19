@@ -1,0 +1,7 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Desktop + API: http" type="CompoundRunConfigurationType">
+    <toRun name="APIServer: http" type="LaunchSettings" />
+    <toRun name="Desktop" type="UwpProject" />
+    <method v="2" />
+  </configuration>
+</component>

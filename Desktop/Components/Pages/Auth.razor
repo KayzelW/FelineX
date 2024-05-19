@@ -4,7 +4,6 @@
 @* @rendermode InteractiveServer *@
 @inject NavigationManager nav
 @inject AuthService _authService
-@inject IJSRuntime JSRuntime
 @inject ILogger<Auth> _logger
 
 
@@ -75,7 +74,7 @@
             //TODO: work with null JWT
             return;
         }
-        await _authService.RegisterJwtToken(JSRuntime, token);
+        await _authService.RegisterJwtToken(token);
         
         nav.NavigateTo("/profile");
     }

@@ -58,7 +58,7 @@ public class AuthService(
         }
     }
 
-    public async Task RegisterJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
+    public async Task RegisterJwtToken(JwtSecurityToken token)
     {
         await SecureStorage.SetAsync(JWTExtensions.JwtCookieName, _jwtTokenHandler.WriteToken(token));
     }
