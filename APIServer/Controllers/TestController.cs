@@ -219,6 +219,10 @@ public class TestController : Controller
             }
             
             testAnswer.PassingDate = DateTime.Now;
+            if (solvedTest.StudentId != Guid.Empty)
+            {
+                testAnswer.Student = await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
+            }
 
             testAnswer.Score = await CalculateScore(testAnswer);
             await _dbContext.TestAnswers!.AddAsync(testAnswer);
