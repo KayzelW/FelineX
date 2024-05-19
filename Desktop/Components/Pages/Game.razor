@@ -18,6 +18,8 @@ canvas {
     <canvas id="gameCanvas" width="800" height="200"></canvas>
 </div>
 
+<div class="Sticker" style="width: 104px; height: 104px;"><img src="https://media.tenor.com/9fBgVWrDYs0AAAAi/run-busy.gif" width="88" height="79.44444444444444" alt="Run Busy Sticker - Run Busy Coko Stickers" style="max-width: 104px; background-color: unset;"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/gifler/gifler.min.js"></script>
 
 <script>
@@ -26,6 +28,15 @@ canvas {
 
     const gif = new Image();
     gif.src = 'cat-running.gif'; // путь к вашему GIF с бегущим котом
+    
+    function loaded()
+    {
+        console.log(gif.width);
+        document.body.appendChild(gif);
+    }
+     
+    gif.onload=loaded; // когда загрузится запускается функция
+
 
     const dino = {
         x: 50,
