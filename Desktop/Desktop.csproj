@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-<!--        <TargetFrameworks>net8.0-android;</TargetFrameworks>-->
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+        <!--        <TargetFrameworks>net8.0-android;</TargetFrameworks>-->
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0;net8.0-windows10.0.19041.0;</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
 
@@ -20,6 +20,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
         <Nullable>enable</Nullable>
+        
+<!--        <WindowsPackageType>None</WindowsPackageType>-->
 
         <!-- Display name -->
         <ApplicationTitle>Desktop</ApplicationTitle>
@@ -33,10 +35,11 @@
 
         <!--<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>-->
-<!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>-->
+        <!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>-->
+        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-<!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
+        <!--        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
     </PropertyGroup>
 
     <ItemGroup>
@@ -55,21 +58,21 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
-	</ItemGroup>
+    </ItemGroup>
 
-	<!--<ItemGroup>
-		<Content Include="appsettings.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="appsettings.Development.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>-->
+    <!--<ItemGroup>
+        <Content Include="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="appsettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>-->
 
 
-	<ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.5.2" />
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5"/>
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.5.2"/>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)"/>
@@ -77,43 +80,43 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shared\Shared.csproj" />
+        <ProjectReference Include="..\Shared\Shared.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Components\Pages\Home.razor">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </Content>
-      <Content Update="Components\Layout\MainLayout.razor">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </Content>
-      <Content Update="Components\Layout\NavMenu.razor">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </Content>
-      <Content Update="Components\Layout\MainLayout.razor">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </Content>
-      <Content Update="Components\Layout\NavMenu.razor">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </Content>
+        <Content Update="Components\Pages\Home.razor">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </Content>
+        <Content Update="Components\Layout\MainLayout.razor">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </Content>
+        <Content Update="Components\Layout\NavMenu.razor">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </Content>
+        <Content Update="Components\Layout\MainLayout.razor">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </Content>
+        <Content Update="Components\Layout\NavMenu.razor">
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\NavMenu.razor" />
-      <AdditionalFiles Include="Components\Layout\NavMenuStudent.razor" />
-      <AdditionalFiles Include="Components\Pages\classes\Class.razor" />
-      <AdditionalFiles Include="Components\Pages\classes\Create_class.razor" />
-      <AdditionalFiles Include="Components\Pages\classes\Create_student.razor" />
-      <AdditionalFiles Include="Components\Pages\classes\My_classes.razor" />
-      <AdditionalFiles Include="Components\Pages\classes\Student.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\CreatedTest.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\CreateTest.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\MyTests.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\Test.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\TestAnswers.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\TestResult.razor" />
-      <AdditionalFiles Include="Components\Pages\tests\TestResultStudents.razor" />
+        <AdditionalFiles Include="Components\Layout\MainLayout.razor"/>
+        <AdditionalFiles Include="Components\Layout\NavMenu.razor"/>
+        <AdditionalFiles Include="Components\Layout\NavMenuStudent.razor"/>
+        <AdditionalFiles Include="Components\Pages\classes\Class.razor"/>
+        <AdditionalFiles Include="Components\Pages\classes\Create_class.razor"/>
+        <AdditionalFiles Include="Components\Pages\classes\Create_student.razor"/>
+        <AdditionalFiles Include="Components\Pages\classes\My_classes.razor"/>
+        <AdditionalFiles Include="Components\Pages\classes\Student.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\CreatedTest.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\CreateTest.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\MyTests.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\Test.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\TestAnswers.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\TestResult.razor"/>
+        <AdditionalFiles Include="Components\Pages\tests\TestResultStudents.razor"/>
     </ItemGroup>
 
 </Project>

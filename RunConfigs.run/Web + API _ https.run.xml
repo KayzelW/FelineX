@@ -1,0 +1,7 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Web + API : https" type="CompoundRunConfigurationType">
+    <toRun name="APIServer: https" type="LaunchSettings" />
+    <toRun name="WebApp: https" type="LaunchSettings" />
+    <method v="2" />
+  </configuration>
+</component>
