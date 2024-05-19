@@ -57,6 +57,7 @@
 
     private void Logout()
     {
+        SecureStorage.Remove(JWTExtensions.JwtCookieName);
         nav.NavigateTo("/auth");
     }
 
