@@ -62,7 +62,7 @@ public class ApiService
     public async Task<User?> GetUser(Guid userId)
     {
         User? user = null;
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync("User/get_user");
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"User/get_user/{userId}");
         if (responseMessage.IsSuccessStatusCode)
         {
             user = await responseMessage.Content.ReadFromJsonAsync<User>();
