@@ -97,7 +97,7 @@ public class TestController : Controller
 
     private async Task<double> CalculateScore(TestAnswer answeredTest)
     {
-        var taskweight = 100 / answeredTest.TaskAnswers.Count;
+        var taskWeight = 100 / answeredTest.TaskAnswers.Count;
 
         var score = 0;
 
@@ -111,18 +111,23 @@ public class TestController : Controller
             {
                 if (task.StringAnswer == correctTask.VariableAnswers.FirstOrDefault().StringAnswer)
                 {
-                    score += taskweight;
+                    score += taskWeight;
                 }
             }
             else
             {
-                if (task.MarkedVariables.All(x => x.Truthful == true))
+                var allMarkedVariablesMatch = task.MarkedVariables
+                    .All(markedVar => correctTask.VariableAnswers
+                        .Any(varAnswer => varAnswer.Id == markedVar.Id && varAnswer.Truthful == true));
+
+                if (allMarkedVariablesMatch)
                 {
-                    score += taskweight;
+                    score += taskWeight;
                 }
+
             }
         }
-
+        _logger.LogInformation("Calculated score inside CalculateScore: {Score}", score);
         return score;
     }
 
@@ -224,9 +229,18 @@ public class TestController : Controller
                 testAnswer.Student = await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
             }
 
-            testAnswer.Score = await CalculateScore(testAnswer);
+            _logger.LogInformation("Calculating score for test answer with ID: {AnsweredTestId}", testAnswer.AnsweredTestId);
+
+            // Вызываем CalculateScore и логируем возвращаемое значение
+            var score = await CalculateScore(testAnswer);
+            _logger.LogInformation("Calculated score: {Score}", score);
+            
+            testAnswer.Score = score;
+            
             await _dbContext.TestAnswers!.AddAsync(testAnswer);
             await _dbContext.SaveChangesAsync();
+            
+            _logger.LogWarning("Saved test answer with ID: {AnsweredTestId}, Score: {Score}", testAnswer.AnsweredTestId, testAnswer.Score);
             
             
             return Ok(testAnswer.Id);
