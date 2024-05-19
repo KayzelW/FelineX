@@ -184,6 +184,9 @@
 
     private async void Save()
     {
+        var token = await SecureStorage.GetAsync(JWTExtensions.JwtCookieName);
+        var userId = JWTExtensions.GetGuidFromToken(JWTExtensions.TokenFromString(token));
+        test.CreatorId = userId;
         await _apiService.PostTest(test);
         navigationManager.NavigateTo("/my_tests");
     }
