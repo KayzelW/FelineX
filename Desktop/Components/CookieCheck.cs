@@ -11,7 +11,7 @@ public class CookieCheck : ComponentBase
 {
     [Inject] protected NavigationManager navigationManager { get; set; }
     [Inject] protected AuthService authService { get; set; }
-    [Parameter] public AccessLevel RequiredAccessLevel { get; set; }
+    [Parameter] public AccessLevel? RequiredAccessLevel { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -25,7 +25,9 @@ public class CookieCheck : ComponentBase
 
         var userId = new JwtSecurityToken(token).GetGuidFromToken();
 
-        if (userId == Guid.Empty || !await authService.HasAccess(userId, RequiredAccessLevel))
+        if (userId == Guid.Empty || (RequiredAccessLevel == null
+                ? !await authService.HasUser(userId)
+                : !await authService.HasAccess(userId, RequiredAccessLevel.Value)))
         {
             navigationManager.NavigateTo("/auth", true);
         }

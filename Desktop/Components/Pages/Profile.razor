@@ -4,7 +4,7 @@
 @using Shared.Extensions
 @using Desktop.Services
 @using Microsoft.AspNetCore.Http
-@* @inherits CookieCheck *@
+@inherits CookieCheck
 @* @rendermode InteractiveServer *@
 @inject NavigationManager nav
 
@@ -43,6 +43,11 @@
     public string UserId { get; set; }
 
     private AccessLevel? AccessLevel { get; set; }
+
+    public Profile()
+    {
+        RequiredAccessLevel = null;
+    }
 
     protected override async Task OnInitializedAsync()
     {

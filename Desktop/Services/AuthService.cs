@@ -29,6 +29,12 @@ public class AuthService(
         return ((AccessLevel)access).HasFlag(accessLevel);
     }
 
+    public async Task<bool> HasUser(Guid userId)
+    {
+        var access = await apiService.GetUserAccessById(userId);
+        return access != null;
+    }
+
 
     /// <summary>
     /// This func will authorize user and return the JwtToken
