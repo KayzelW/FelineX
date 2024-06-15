@@ -58,11 +58,11 @@ public class ApiService
 
         return testAnswer;
     }
-    
-    public async Task<User?> GetUser()
+
+    public async Task<User?> GetUser(Guid userId)
     {
         User? user = null;
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync("User/get_user");
+        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"User/get_user/{userId}");
         if (responseMessage.IsSuccessStatusCode)
         {
             user = await responseMessage.Content.ReadFromJsonAsync<User>();
@@ -73,10 +73,7 @@ public class ApiService
 
     public async Task<bool> PostTest(MyTest test)
     {
-        var user = await GetUser();
-        test.CreatorId =
-            user!.Id; //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
-        if (test.Tasks is not null)
+        if (test.Tasks is not null && test.CreatorId is not null)
         {
             foreach (var task in test.Tasks)
             {
@@ -115,7 +112,7 @@ public class ApiService
     public async Task<uint?> GetUserAccessById(Guid? id)
     {
         if (id is null || id == Guid.Empty) return null;
-        
+
         var responseMessage = await _httpClient.GetAsync($"User/get_user_access_by_id/{id}");
         if (!responseMessage.IsSuccessStatusCode) return null;
 

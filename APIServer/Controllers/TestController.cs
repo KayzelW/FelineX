@@ -86,6 +86,7 @@ public class TestController : Controller
             {
                 return NotFound();
             }
+
             return Ok(answeredTest);
         }
         catch
@@ -97,7 +98,7 @@ public class TestController : Controller
 
     private async Task<double> CalculateScore(TestAnswer answeredTest)
     {
-        var taskweight = 100 / answeredTest.TaskAnswers.Count;
+        var taskWeight = 100 / answeredTest.TaskAnswers.Count;
 
         var score = 0;
 
@@ -111,18 +112,23 @@ public class TestController : Controller
             {
                 if (task.StringAnswer == correctTask.VariableAnswers.FirstOrDefault().StringAnswer)
                 {
-                    score += taskweight;
+                    score += taskWeight;
                 }
             }
             else
             {
-                if (task.MarkedVariables.All(x => x.Truthful == true))
+                var allMarkedVariablesMatch = task.MarkedVariables
+                    .All(markedVar => correctTask.VariableAnswers
+                        .Any(varAnswer => varAnswer.Id == markedVar.Id && varAnswer.Truthful == true));
+
+                if (allMarkedVariablesMatch)
                 {
-                    score += taskweight;
+                    score += taskWeight;
                 }
             }
         }
 
+        _logger.LogInformation("Calculated score inside CalculateScore: {Score}", score);
         return score;
     }
 
@@ -137,8 +143,8 @@ public class TestController : Controller
                 .ToListAsync();
             foreach (var test in listTestAnswers)
             {
-                
             }
+
             return Ok(listTestAnswers);
         }
         catch (Exception e)
@@ -146,7 +152,6 @@ public class TestController : Controller
             _logger.LogError(e, $"Exception while getting list of students for test with id {test_id}");
             return BadRequest();
         }
-        
     }
 
     [HttpGet("get_test_answer_id_by_id/{test_answer_id:guid}")]
@@ -156,14 +161,15 @@ public class TestController : Controller
             .Include(x => x.TaskAnswers)
             .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
             .FirstOrDefaultAsync();
-        
+
         if (answeredTest is null)
         {
             return NotFound();
         }
+
         return Ok(answeredTest);
     }
-    
+
     [HttpPost("create_test")]
     public async Task<IActionResult> CreateTest(Test? test)
     {
@@ -205,8 +211,18 @@ public class TestController : Controller
         try
         {
             testAnswer.AnsweredTestId = solvedTest.Id;
-            testAnswer.StudentId = solvedTest.StudentId;
-            testAnswer.Student = await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
+
+            testAnswer.PassingDate = DateTime.Now;
+            if (solvedTest.StudentId != Guid.Empty && solvedTest.StudentId != null)
+            {
+                testAnswer.StudentId = solvedTest.StudentId;
+                testAnswer.Student =
+                    await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
+            }
+            else
+            {
+                testAnswer.FantomName = solvedTest.FantomName;
+            }
 
             foreach (var task in solvedTest.Tasks!)
             {
@@ -217,14 +233,15 @@ public class TestController : Controller
 
                 testAnswer.TaskAnswers!.Add(taskToSave);
             }
-            
-            testAnswer.PassingDate = DateTime.Now;
 
-            testAnswer.Score = await CalculateScore(testAnswer);
+            var score = await CalculateScore(testAnswer);
+            _logger.LogInformation("Calculated score: {Score}", score);
+
+            testAnswer.Score = score;
+
             await _dbContext.TestAnswers!.AddAsync(testAnswer);
             await _dbContext.SaveChangesAsync();
-            
-            
+
             return Ok(testAnswer.Id);
         }
         catch (Exception e)
@@ -232,6 +249,5 @@ public class TestController : Controller
             _logger.LogWarning(e, $"Exception while saving new test from user");
             return BadRequest(solvedTest);
         }
-        
     }
 }

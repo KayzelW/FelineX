@@ -20,118 +20,145 @@ canvas {
 
 
 <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-        const dino = {
-            x: 50,
-            y: 150,
-            width: 50,
-            height: 50,
-            dy: 0,
-            gravity: 0.5,
-            jumpPower: -10,
-            isJumping: false
-        };
+    const sprite = new Image();
+    sprite.src = 'cat-sprite.png'; // путь к вашему спрайту кота
 
-        const obstacle = {
-            x: 800,
-            y: 150,
-            width: 50,
-            height: 50,
-            speed: 5
-        };
+    const spriteWidth = 128; // ширина одного кадра спрайта
+    const spriteHeight = 128; // высота одного кадра спрайта
+    const totalFrames = 8; // общее количество кадров в спрайте
+    let currentFrame = 0; // текущий кадр анимации
+    const frameRate = 5; // скорость смены кадров (чем больше, тем медленнее смена кадров)
 
-        let gameOver = false;
-        let speedIncrement = 0.01;  // начальное увеличение скорости
-        let speedMultiplier = 1;  // множитель скорости
+    const dino = {
+        x: 50,
+        y: 150,
+        width: 50,
+        height: 50,
+        dy: 0,
+        gravity: 0.5,
+        jumpPower: -10,
+        isJumping: false
+    };
 
-        function drawDino() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+    const obstacle = {
+        x: 800,
+        y: 150,
+        width: 50,
+        height: 50,
+        speed: 5
+    };
+
+    let gameOver = false;
+    let speedIncrement = 0.01;  // начальное увеличение скорости
+    let speedMultiplier = 1;  // множитель скорости
+    let frameCount = 0;
+
+    function drawDino() {
+        ctx.drawImage(
+            sprite,
+            currentFrame * spriteWidth,
+            0,
+            spriteWidth,
+            spriteHeight,
+            dino.x,
+            dino.y - dino.height, // выравнивание по нижнему краю
+            dino.width,
+            dino.height
+        );
+
+        frameCount++;
+        if (frameCount >= frameRate) {
+            currentFrame = (currentFrame + 1) % totalFrames;
+            frameCount = 0;
         }
+    }
 
-        function drawObstacle() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-        }
+    function drawObstacle() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    }
 
-        function updateDino() {
-            if (dino.isJumping) {
-                dino.dy += dino.gravity;
-                dino.y += dino.dy;
+    function updateDino() {
+        if (dino.isJumping) {
+            dino.dy += dino.gravity;
+            dino.y += dino.dy;
 
-                if (dino.y >= 150) {
-                    dino.y = 150;
-                    dino.dy = 0;
-                    dino.isJumping = false;
-                }
+            if (dino.y >= 150) {
+                dino.y = 150;
+                dino.dy = 0;
+                dino.isJumping = false;
             }
         }
+    }
 
-        function updateObstacle() {
-            obstacle.x -= obstacle.speed * speedMultiplier;
+    function updateObstacle() {
+        obstacle.x -= obstacle.speed * speedMultiplier;
 
-            if (obstacle.x + obstacle.width < 0) {
-                obstacle.x = canvas.width;
-            }
-        }
-
-        function detectCollision() {
-            if (
-                dino.x < obstacle.x + obstacle.width &&
-                dino.x + dino.width > obstacle.x &&
-                dino.y < obstacle.y + obstacle.height &&
-                dino.y + dino.height > obstacle.y
-            ) {
-                gameOver = true;
-            }
-        }
-
-        function restartGame() {
-            dino.y = 150;
+        if (obstacle.x + obstacle.width < 0) {
             obstacle.x = canvas.width;
-            gameOver = false;
-            speedMultiplier = 1;  // сброс скорости
+        }
+    }
+
+    function detectCollision() {
+        if (
+            dino.x < obstacle.x + obstacle.width &&
+            dino.x + dino.width > obstacle.x &&
+            dino.y < obstacle.y + obstacle.height &&
+            dino.y + dino.height > obstacle.y
+        ) {
+            gameOver = true;
+        }
+    }
+
+    function restartGame() {
+        dino.y = 150;
+        obstacle.x = canvas.width;
+        gameOver = false;
+        speedMultiplier = 1;  // сброс скорости
+    }
+
+    function increaseSpeed() {
+        speedMultiplier += speedIncrement;
+    }
+
+    function gameLoop() {
+        if (gameOver) {
+            ctx.font = '30px Arial';
+            ctx.fillText('Game Over! Press Enter to restart', 150, 100);
+            return;
         }
 
-        function increaseSpeed() {
-            speedMultiplier += speedIncrement;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawDino();
+        drawObstacle();
+
+        updateDino();
+        updateObstacle();
+        detectCollision();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' && !dino.isJumping) {
+            dino.isJumping = true;
+            dino.dy = dino.jumpPower;
         }
 
-        function gameLoop() {
-            if (gameOver) {
-                ctx.font = '30px Arial';
-                ctx.fillText('Game Over! Press Enter to restart', 150, 100);
-                return;
-            }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            drawDino();
-            drawObstacle();
-
-            updateDino();
-            updateObstacle();
-            detectCollision();
-
-            requestAnimationFrame(gameLoop);
+        if (event.code === 'Enter' && gameOver) {
+            restartGame();
+            gameLoop();
         }
+    });
 
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'Space' && !dino.isJumping) {
-                dino.isJumping = true;
-                dino.dy = dino.jumpPower;
-            }
+    // Увеличение скорости каждые 1000 миллисекунд (1 секунда)
+    setInterval(increaseSpeed, 1000);
 
-            if (event.code === 'Enter' && gameOver) {
-                restartGame();
-                gameLoop();
-            }
-        });
-
-        // Увеличение скорости каждые 1000 миллисекунд (1 секунда)
-        setInterval(increaseSpeed, 1000);
-
+    sprite.onload = () => {
         gameLoop();
-    </script>
+    };
+</script>
