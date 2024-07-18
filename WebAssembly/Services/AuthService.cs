@@ -1,19 +1,17 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
 using Shared.DB.Classes.User;
 using Shared.Extensions;
 
-namespace Desktop.Services;
+namespace WebAssembly.Services;
 
 public class AuthService(
-    ILogger<AuthService> logger,
-    ApiService apiService)
+    ILogger<AuthService> _logger,
+    ApiService apiService,
+    CookieService _cookieService)
 {
     private readonly JwtSecurityTokenHandler _jwtTokenHandler = new();
 
@@ -34,7 +32,7 @@ public class AuthService(
         return access != null;
     }
 
-
+    
     /// <summary>
     /// This func will authorize user and return the JwtToken
     /// </summary>
@@ -55,26 +53,22 @@ public class AuthService(
         }
         catch (Exception e)
         {
-            logger.LogError(e, $"Error while get token in {this.GetJwtToken}");
+            _logger.LogError(e, $"Error while get token in {this.GetJwtToken}");
             return null;
         }
     }
 
-    public async Task RegisterJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
+    public async Task SetJwtToken(JwtSecurityToken token)
     {
-        await SetJwtToken(_jsRuntime, token);
-    }
-
-    private async Task SetJwtToken(IJSRuntime _jsRuntime, JwtSecurityToken token)
-    {
-        await CookieInterop.SetJwtToken(_jsRuntime, _jwtTokenHandler.WriteToken(token));
-        await Task.Delay(1500);
+        await _cookieService.SetJwtTokenAsync(_jwtTokenHandler.WriteToken(token));
     }
 
     private async Task<string?> AuthorizeAsync(string username, string password)
     {
         var token = await apiService.AuthUser(username, password);
-        logger.LogInformation($"Get {token} from {nameof(apiService.AuthUser)}");
+        _logger.LogInformation($"Get {token} from {nameof(apiService.AuthUser)}");
         return token;
     }
+
+
 }

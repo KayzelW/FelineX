@@ -1,21 +1,36 @@
 ﻿// JavaScript функция для установки Cookie
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        let date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-}
+window.cookieHelper = {
+    getCookie: function (name) {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    },
+    setCookie: function (name, value, options = {}) {
+        options = {
+            path: '/',
+            // add other defaults if necessary
+            ...options
+        };
 
-function getCookie(name) {
-    let nameEQ = name + "=";
-    let ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        if (options.expires instanceof Date) {
+            options.expires = options.expires.toUTCString();
+        }
+
+        let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+        for (let optionKey in options) {
+            updatedCookie += "; " + optionKey;
+            let optionValue = options[optionKey];
+            if (optionValue !== true) {
+                updatedCookie += "=" + optionValue;
+            }
+        }
+
+        document.cookie = updatedCookie;
+    },
+    deleteCookie: function (name) {
+        // Set the cookie with an expired date to delete it
+        this.setCookie(name, '', { 'max-age': -1 });
     }
-    return null;
 }

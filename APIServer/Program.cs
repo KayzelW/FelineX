@@ -64,10 +64,8 @@ public sealed class Program
 
         #endregion
 
-        using (var dbContext = app.Services.GetRequiredService<AppDbContext>())
-        {
-            Console.WriteLine("Trying to verify DB");
-            dbContext.Database.EnsureCreated();
-        }
+        using var dbContext = app.Services.GetRequiredService<AppDbContext>();
+        Console.WriteLine("Trying to verify DB");
+        dbContext.Database.EnsureCreated();
     }
 }

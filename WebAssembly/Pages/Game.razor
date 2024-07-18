@@ -1,0 +1,199 @@
+﻿@page "/game"
+<style>
+    
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+</style>
+
+<div class="game-container">
+    <canvas id="gameCanvas" width="800" height="200"></canvas>
+</div>
+
+<div class="Sticker" style="width: 104px; height: 104px; display: flex; justify-content: flex-end"><img src="https://media.tenor.com/9fBgVWrDYs0AAAAi/run-busy.gif" width="88" height="79.44444444444444" alt="Run Busy Sticker - Run Busy Coko Stickers" style="max-width: 104px; background-color: unset;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/gifler/gifler.min.js"></script>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const gif = new Image();
+    gif.src = 'cat-running.gif'; // путь к вашему GIF с бегущим котом
+    
+    function loaded() {
+        console.log(gif.width);
+        document.body.appendChild(gif);
+    }
+    
+    gif.onload = loaded; // когда загрузится запускается функция
+    
+    const dino = {
+        x: 50,
+        y: 150,
+        width: 50,
+        height: 50,
+        dy: 0,
+        gravity: 0.5,
+        jumpPower: -10,
+        isJumping: false
+    };
+    
+    const obstacle = {
+        x: 800,
+        y: 150,
+        width: 50, // Ширина врага (остается постоянной)
+        height: 50, // Высота врага
+        speed: 5,
+        image: null, // Изображение врага
+        imageWidth: 50, // Ширина изображения врага
+        imageHeight: 50 // Высота изображения врага
+    };
+    
+    let gameOver = false;
+    let speedIncrement = 0.01;  // начальное увеличение скорости
+    let speedMultiplier = 1;  // множитель скорости
+    let distance = 0; // переменная для отслеживания пройденного расстояния
+    
+    // Загрузка изображений
+    const obstacleImages = [];
+    for (let i = 1; i <= 4; i++) {
+        const img = new Image();
+        img.src = `${i}.png`;
+        obstacleImages.push(img);
+    }
+    
+    // Функция для выбора случайного изображения
+    function getRandomObstacleImage() {
+        const randomIndex = Math.floor(Math.random() * obstacleImages.length);
+        const randomImage = obstacleImages[randomIndex];
+        // Обновляем размеры препятствия на размеры выбранного изображения
+        obstacle.width = obstacle.imageWidth = randomImage.width;
+        obstacle.height = obstacle.imageHeight = randomImage.height;
+    
+        // Вычисляем вертикальную позицию препятствия с учетом высоты изображения
+        obstacle.y = canvas.height - obstacle.imageHeight;
+    
+        return randomImage;
+    }
+    
+    function drawDino() {
+        ctx.drawImage(gif, dino.x, dino.y, dino.width, dino.height);
+    }
+    
+    // Функция рисования препятствия
+    function drawObstacle() {
+        if (obstacle.image) {
+            ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.imageWidth, obstacle.imageHeight);
+        }
+    }
+    
+    function updateDino() {
+        if (dino.isJumping) {
+            dino.dy += dino.gravity;
+            dino.y += dino.dy;
+    
+            if (dino.y >= 150) {
+                dino.y = 150;
+                dino.dy = 0;
+                dino.isJumping = false;
+            }
+        }
+    }
+    
+    function updateObstacle() {
+        obstacle.x -= obstacle.speed * speedMultiplier;
+    
+        if (obstacle.x + obstacle.width < 0) {
+            obstacle.x = canvas.width;
+            obstacle.image = getRandomObstacleImage(); // назначить новое случайное изображение
+        }
+    }
+    
+    function detectCollision() {
+        if (
+            dino.x < obstacle.x + obstacle.width &&
+            dino.x + dino.width > obstacle.x &&
+            dino.y < obstacle.y + obstacle.height &&
+            dino.y + dino.height > obstacle.y
+        ) {
+            gameOver = true;
+        }
+    }
+    
+    function restartGame() {
+        dino.y = 150;
+        obstacle.x = canvas.width;
+        obstacle.image = getRandomObstacleImage(); // сбросить изображение
+        gameOver = false;
+        speedMultiplier = 1;  // сброс скорости
+        distance = 0; // обнуление пройденного расстояния
+    }
+    
+    function increaseSpeed() {
+        speedMultiplier += speedIncrement;
+    }
+    
+    // Функция для отображения пройденного расстояния
+    function drawDistance() {
+        ctx.fillStyle = 'black';
+        ctx.font = '20px bold';
+        ctx.fillText('Расстояние: ' + Math.floor(distance), canvas.width - 150, 30);
+    }
+    
+    // Функция для обновления пройденного расстояния
+    function updateDistance() {
+        distance += (obstacle.speed * speedMultiplier)/100;
+    }
+    
+    function gameLoop() {
+        if (gameOver) {
+            ctx.font = '30px bold';
+            ctx.fillText('Game Over! Press Enter to restart', 150, 100);
+            return;
+        }
+    
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+        drawDistance(); // добавьте эту строку
+    
+        drawDino();
+        drawObstacle();
+    
+        updateDino();
+        updateObstacle();
+        detectCollision();
+        updateDistance(); // добавьте эту строку
+    
+        requestAnimationFrame(gameLoop);
+    }
+    
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space' && !dino.isJumping) {
+            dino.isJumping = true;
+            dino.dy = dino.jumpPower;
+        }
+    
+        if (event.code === 'Enter' && gameOver) {
+            restartGame();
+            gameLoop();
+        }
+    });
+    
+    // Увеличение скорости каждые 1000 миллисекунд (1 секунда)
+    setInterval(increaseSpeed, 1000);
+    
+    gif.onload = () => {
+        obstacle.image = getRandomObstacleImage(); // инициализировать случайным изображением
+        gameLoop();
+    };
+
+</script>

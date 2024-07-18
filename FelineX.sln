@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIServer", "APIServer\APIS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{3734CA78-1465-429C-B1CC-BC921BCAF195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAssembly", "WebAssembly\WebAssembly.csproj", "{B05AA69B-491F-4A07-8AC6-3EAECD2EB5E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAssembly", "WebAssembly\WebAssembly.csproj", "{E55E2C7D-67B1-4675-B718-7E646FC074FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +37,10 @@ Global
 		{3734CA78-1465-429C-B1CC-BC921BCAF195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3734CA78-1465-429C-B1CC-BC921BCAF195}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3734CA78-1465-429C-B1CC-BC921BCAF195}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B05AA69B-491F-4A07-8AC6-3EAECD2EB5E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B05AA69B-491F-4A07-8AC6-3EAECD2EB5E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B05AA69B-491F-4A07-8AC6-3EAECD2EB5E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B05AA69B-491F-4A07-8AC6-3EAECD2EB5E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,6 +49,6 @@ Global
 		SolutionGuid = {E1D8068C-FFAC-4019-94E8-A389E925960B}
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
-		File = RunConfigs.run\Web + API _ https.run.xml
+		File = RunConfigs.run\Web + API https.run.xml
 	EndGlobalSection
 EndGlobal

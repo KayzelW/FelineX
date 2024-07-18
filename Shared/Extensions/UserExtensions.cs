@@ -8,19 +8,17 @@ namespace Shared.Extensions;
 
 public static partial class UserExtensions
 {
-    public static string HashPassword(string password)
+    public static async Task<string> HashPasswordAsync(string password)
     {
-        using (SHA256 sha256Hash = SHA256.Create())
-        {
-            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                builder.Append(bytes[i].ToString("x2"));
-            }
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
+        var builder = new StringBuilder();
 
-            return builder.ToString();
+        foreach (var t in bytes)
+        {
+            builder.Append(t.ToString("x2"));
         }
+
+        return builder.ToString();
     }
 
     public static bool HasAccess(this uint access, AccessLevel level) => (access & (uint)level) != 0;

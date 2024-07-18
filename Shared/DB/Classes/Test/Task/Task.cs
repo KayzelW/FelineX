@@ -5,7 +5,7 @@ using Shared.DB.Interfaces;
 
 namespace Shared.DB.Classes.Test.Task;
 
-public sealed partial class Task : ITask
+public sealed class Task : ITask
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; } = new Guid();
