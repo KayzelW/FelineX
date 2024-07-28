@@ -21,7 +21,6 @@ public sealed class Program
             {
                 BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
                                       ?? throw new ApplicationException("ApiUrl are not existing")),
-                
             }
         );
 
@@ -36,7 +35,7 @@ public sealed class Program
         {
             Console.WriteLine(e);
         }
-
+        
         tasks.Add(builder.Build().RunAsync());
 
         await Task.WhenAll(tasks);

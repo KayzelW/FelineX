@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Net.Mime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.JSInterop;
 using Shared.DB.Classes.Test.Task.TaskAnswer;
@@ -104,14 +105,16 @@ public class ApiService
     public async Task<string?> AuthUser(string login, string password)
     {
         var hash = await UserExtensions.HashPasswordAsync(password);
+        
+        Console.WriteLine($"User: |{login}| - |{hash}|"); //TODO: REMOVE
         var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", new AuthData
         {
             Login = login,
             HashedPassword = WebUtility.UrlEncode(hash)
         });
         if (!responseMessage.IsSuccessStatusCode) return null;
-        
-        var token = await responseMessage.Content.ReadFromJsonAsync<string>();
+
+        var token = await responseMessage.Content.ReadAsStringAsync();
         Console.WriteLine($"Got |{token}| from User/auth");
         return token;
     }
