@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -32,7 +33,7 @@ public class AuthService(
         return access != null;
     }
 
-    
+
     /// <summary>
     /// This func will authorize user and return the JwtToken
     /// </summary>
@@ -41,21 +42,15 @@ public class AuthService(
     /// <returns></returns>
     public async Task<JwtSecurityToken?> GetJwtToken(string login, string password)
     {
-        try
+        var strToken = await AuthorizeAsync(login, password);
+        if (string.IsNullOrEmpty(strToken))
         {
-            var token = _jwtTokenHandler.ReadJwtToken(await AuthorizeAsync(login, password));
-            // if (userId == null || userId == Guid.Empty)
-            // {
-            //     return null;
-            // }
+            throw new HttpRequestException($"Token from server is {strToken}");
+        }
 
-            return token;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Error while get token in {this.GetJwtToken}");
-            return null;
-        }
+        var token = _jwtTokenHandler.ReadJwtToken(strToken);
+
+        return token;
     }
 
     public async Task SetJwtToken(JwtSecurityToken token)
@@ -69,6 +64,4 @@ public class AuthService(
         _logger.LogInformation($"Get {token} from {nameof(apiService.AuthUser)}");
         return token;
     }
-
-
 }

@@ -8,8 +8,9 @@
 @using Shared.DB.Interfaces
 @using WebAssembly.Services
 
-@inject ApiService _apiService
 @inherits WebAssembly.Components.CookieCheck
+
+@inject ApiService _apiService
 
 <h3 class="text-center">Новый тест</h3>
 
@@ -185,7 +186,7 @@
         var userId = await _cookieService.GetUserIdAsync();
         test.CreatorId = userId;
         await _apiService.PostTest(test);
-        navigationManager.NavigateTo("/my_tests");
+        _navigationManager.NavigateTo("/my_tests");
     }
 
     private void Delete(MyTask task)

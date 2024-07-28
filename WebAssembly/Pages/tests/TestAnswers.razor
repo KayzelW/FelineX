@@ -5,7 +5,9 @@
 @using Shared.DB.Classes.User
 @using Shared.DB.Classes.Test.Task.TaskAnswer
 @using WebAssembly.Services
+
 @inherits WebAssembly.Components.CookieCheck
+
 @inject ApiService _ApiService
 @inject ILogger<TestAnswers> _logger
 
@@ -81,7 +83,7 @@
 
     private void NavigateToResults(string testAnswerId)
     {
-        navigationManager.NavigateTo($"result_test_students/{testAnswerId}");
+        _navigationManager.NavigateTo($"result_test_students/{testAnswerId}");
     }
 
 }

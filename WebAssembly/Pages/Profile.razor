@@ -6,8 +6,8 @@
 @using WebAssembly.Services
 
 @inherits WebAssembly.Components.CookieCheck
-@inject ApiService _ApiService
-@inject NavigationManager nav
+
+@inject ApiService _apiService
 @inject ILogger<Profile> logger
 
 
@@ -58,11 +58,11 @@
 
         if (userId == null)
         {
-            navigationManager.NavigateTo("/auth");
+            _navigationManager.NavigateTo("/auth");
             return;
         }
 
-        user = await _ApiService.GetUser(userId.Value);
+        user = await _apiService.GetUser(userId.Value);
 
         if (user != null)
         {
@@ -79,7 +79,7 @@
     private void Logout()
     {
         _cookieService.RemoveJwtToken();
-        nav.NavigateTo("/auth");
+        _navigationManager.NavigateTo("/auth");
     }
 
 }

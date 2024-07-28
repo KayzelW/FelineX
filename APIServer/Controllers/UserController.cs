@@ -73,6 +73,13 @@ public class UserController : Controller
     [HttpPost("auth")]
     public async Task<IActionResult> TryAuth(AuthData auth)
     {
+        Console.WriteLine($"For {HttpContext.Session.Id}:{HttpContext.Request.PathBase} headers are:");
+        foreach (var header in HttpContext.Request.Headers)
+        {
+            Console.WriteLine($"{header.Key}: {header.Value.ToString()}");
+        }
+        Console.WriteLine("-----------------------");
+        
         var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login);
         if (user == null) throw new ArgumentNullException(nameof(user));
         

@@ -6,9 +6,10 @@
 @using WebAssembly.Services
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
-@inject ApiService _apiService
+
 @inherits WebAssembly.Components.CookieCheck
-@* @rendermode InteractiveServer *@
+
+@inject ApiService _apiService
 
 
 <h3 class="text-center">Тест</h3>
@@ -86,6 +87,9 @@
                                     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;"></textarea>
 
                             </div>
+                            break;
+                        default:
+                            <h1>NONE TASK</h1>
                             break;
                     }
                 </div>

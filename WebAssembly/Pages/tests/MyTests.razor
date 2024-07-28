@@ -2,11 +2,11 @@
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using Shared.DB.Classes.User
 @using WebAssembly.Services
-@* @inject NavigationManager nav *@
+
 @inherits WebAssembly.Components.CookieCheck
+
 @inject ApiService _ApiService
 
-@* @rendermode InteractiveServer *@
 
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-center" style="height: 40px; -webkit-text-fill-color: #00003A">
@@ -77,7 +77,7 @@ else
 @code {
 
 
-    private List<MyTest> Tests { get; set; } = new List<MyTest>();
+    private List<MyTest> Tests { get; set; } = [];
 
     public MyTests()
     {
@@ -103,17 +103,17 @@ else
 
     private void NavigateToCreateTest()
     {
-        navigationManager.NavigateTo("/create_test");
+        _navigationManager.NavigateTo("/create_test");
     }
 
     private void NavigateToTest(string testId)
     {
-        navigationManager.NavigateTo($"test/{testId}");
+        _navigationManager.NavigateTo($"test/{testId}");
     }
     
     private void NavigateToTestAnswers(string testId)
     {
-        navigationManager.NavigateTo($"/test_answers/{testId}");
+        _navigationManager.NavigateTo($"/test_answers/{testId}");
     }
 
 

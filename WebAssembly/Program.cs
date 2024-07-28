@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebAssembly.Services;
 
 namespace WebAssembly;
@@ -20,13 +21,21 @@ public sealed class Program
             {
                 BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
                                       ?? throw new ApplicationException("ApiUrl are not existing")),
+                
             }
         );
 
-        builder.Services.AddMemoryCache();
-        builder.Services.AddTransient<CookieService>();
-        builder.Services.AddScoped<ApiService>();
-        builder.Services.AddTransient<AuthService>();
+        try
+        {
+            builder.Services.AddMemoryCache();
+            builder.Services.TryAddTransient<CookieService>();
+            builder.Services.AddScoped<ApiService>();
+            builder.Services.AddTransient<AuthService>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
 
         tasks.Add(builder.Build().RunAsync());
 

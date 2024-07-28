@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Shared.Extensions;
 
 namespace WebAssembly.Services;
@@ -6,6 +7,11 @@ namespace WebAssembly.Services;
 public class CookieService
 {
     private readonly IJSRuntime _jsRuntime;
+
+    public CookieService(IJSRuntime jsRuntime)
+    {
+        _jsRuntime = jsRuntime;
+    }
 
     public async Task SetCookieAsync(string name, string value, int days = 7)
     {
