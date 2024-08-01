@@ -6,3 +6,4 @@ riderModule.iml
 APIServer/appsettings.Development.json
 .idea/
 .vs/
+WebAssembly/wwwroot/appsettings.json

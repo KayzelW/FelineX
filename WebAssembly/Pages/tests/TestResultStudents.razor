@@ -1,5 +1,5 @@
 ﻿@page "/result_test_students/{AnsweredTestId}"
-@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
+@attribute [AuthorizeLevel(AccessLevel.Teacher)]
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Classes.Test.Task.TaskAnswer

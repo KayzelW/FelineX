@@ -2,8 +2,6 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using Shared.DB.Classes.User
 @using Shared.Extensions
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.Extensions.Logging
 
 @if (_isLoading)
@@ -13,7 +11,6 @@
 else if (_isAuthorized)
 {
     @ChildContent
-    <h1>n ogn ogn ognbotgmnboktmopbm</h1>
 }
 else
 {
@@ -31,31 +28,29 @@ else
 
     private bool _isAuthorized = false;
     private bool _isLoading = true;
-    private string? _redirectUrl;
+    private string? _redirectUrl = null;
 
     protected override async Task OnParametersSetAsync()
     {
-        
         _ApiService.SendMessage($"Try load page {RouteData?.PageType}");
+        _logger.LogInformation($"Try load page {RouteData?.PageType}");
         _isLoading = true;
         _isAuthorized = false;
-        _redirectUrl = null;
 
         if (RouteData == null)
         {
             Failed();
             return;
         }
-        
+
         var pageType = RouteData.PageType;
-        
         var authorizeLevelAttribute = pageType.GetCustomAttribute<AuthorizeLevelAttribute>();
-        
         if (authorizeLevelAttribute == null)
         {
             if (!string.IsNullOrEmpty(_redirectUrl))
             {
-                Navigation.NavigateTo(_redirectUrl);
+                // Navigation.NavigateTo(_redirectUrl);
+                _logger.LogInformation($"Navigated to {_redirectUrl}");
             }
 
             _isLoading = false;
@@ -67,7 +62,6 @@ else
         var requiredLevel = authorizeLevelAttribute!.RequiredLevel;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
         if (user.Identity is { IsAuthenticated: false })
         {
             _logger.LogInformation("User is not authenticated.");
@@ -76,7 +70,6 @@ else
         }
 
         var userId = user.Claims.FirstOrDefault(x => x.Type == JwtExtensions.JwtCookieName)?.Value;
-
         if (string.IsNullOrEmpty(userId))
         {
             _logger.LogInformation($"userId is NullOrEmpty | {userId}");
@@ -106,7 +99,7 @@ else
 
         if (!string.IsNullOrEmpty(_redirectUrl))
         {
-            Navigation.NavigateTo(_redirectUrl);
+            // Navigation.NavigateTo(_redirectUrl);
         }
 
         _logger.LogInformation($"Routing to {pageType}");
@@ -120,4 +113,5 @@ else
         _isLoading = false;
         StateHasChanged();
     }
+
 }

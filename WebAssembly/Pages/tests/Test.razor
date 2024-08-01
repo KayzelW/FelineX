@@ -7,12 +7,14 @@
 @using Task = System.Threading.Tasks.Task
 @using System.IdentityModel.Tokens.Jwt
 @using Microsoft.Extensions.Logging
+@using Shared.DB.Classes.User
 @using WebAssembly.Services
 
 @inject ApiService _ApiService
 @inject ILogger<Auth> _logger
 @inject NavigationManager nav
 @inject LocalStorageService LocalStorageService
+
 
 
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test?.TestName</h3>
@@ -162,11 +164,11 @@ else
 
 @code {
     [Parameter] public string TestId { get; set; }
-
+    
     private Guid? userId { get; set; }
-
+    
     private MyTest? test { get; set; } = new MyTest();
-
+    
     void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
     {
         foreach (var varAns in task.VariableAnswers)
@@ -174,18 +176,20 @@ else
             varAns.Truthful = varAns == selectedAnswer;
         }
     }
-
+    
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        _logger.LogInformation($"Now at {nameof(this.OnInitializedAsync)}");
-
-        userId = await LocalStorageService.GetUserIdAsync();
-
+    
+        _logger.LogInformation($"Now at {this.GetType()}");
+    
+        // userId = await LocalStorageService.GetUserIdAsync();
+        _logger.LogInformation($"Got userId {userId} at {this.GetType()} from LocalStorage");
+    
         test = await _ApiService.GetTest(TestId);
+        _logger.LogInformation($"Got test {TestId}");
     }
-
+    
     private async void SaveAndSubmit()
     {
         if (userId != null)
@@ -193,7 +197,7 @@ else
             _logger.LogInformation($"Token is {this.userId} at {nameof(this.SaveAndSubmit)}");
             test!.StudentId = userId;
         }
-
+    
         var ansTestId = await _ApiService.SubmitTest(test);
         nav.NavigateTo($"result_test/{ansTestId}");
     }
