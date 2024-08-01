@@ -1,7 +1,10 @@
 ﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <AccessLevelRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        @* <AccessLevelRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" /> *@
+        @* <FocusOnNavigate RouteData="@routeData" Selector="h1"/> *@
+        <AuthorizedRouteView RouteData="@routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </AuthorizedRouteView>
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>

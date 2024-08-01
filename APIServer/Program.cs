@@ -11,7 +11,6 @@ public sealed class Program
         var builder = WebApplication.CreateBuilder(args);
         ConfigureServices(builder);
 
-
         var app = builder.Build();
         ConfigureApplication(app);
 
@@ -29,7 +28,7 @@ public sealed class Program
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-
+        builder.Services.AddHttpContextAccessor();
         builder.Services.AddLogging(logging =>
         {
             logging.AddConsole();

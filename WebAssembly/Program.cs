@@ -15,13 +15,14 @@ public sealed class Program
     private static readonly List<Task> _tasks = [];
     
     public static async Task Main(string[] args)
-    {
+    {        
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         
         builder.Services.AddMemoryCache();
         builder.Services.AddSingleton<LocalStorageService>();
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddSingleton<AuthService>();
+        builder.Services.AddLogging();
         
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");

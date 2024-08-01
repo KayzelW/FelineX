@@ -1,5 +1,5 @@
 ﻿@page "/profile"
-@attribute [AuthorizeLevel(AccessLevel.Exists)]
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Exists)]
 
 @using Shared.DB.Classes.User
 
@@ -38,11 +38,6 @@
     private User? User { get; set; }
 
     private AccessLevel? CurAccessLevel { get; set; }
-
-    public Profile()
-    {
-        _logger.LogInformation($"Create type {this.GetType()}");
-    }
     
     protected override async Task OnInitializedAsync()
     {
@@ -52,7 +47,7 @@
 
         if (userId == null)
         {
-            _logger.LogWarning($"userId is null on {this.GetType()}");
+            _logger.LogInformation($"userId is null on {this.GetType()}");
             _navigationManager.NavigateTo("/auth");
             return;
         }
@@ -65,19 +60,13 @@
         }
         else
         {
-            _logger.LogWarning($"User with ID {userId.Value} doesn't exists");
+            _logger.LogInformation($"User with ID {userId.Value} doesn't exists");
         }
 
         _logger.LogInformation($"loading {this.GetType()}");
         await InvokeAsync(StateHasChanged);
     }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        _logger.LogInformation($"Rendered {this.GetType()}");
-        base.OnAfterRender(firstRender);
-    }
-
+    
     private void Logout()
     {
         _localStorageService.RemoveJwtToken();

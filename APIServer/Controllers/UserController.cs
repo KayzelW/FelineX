@@ -27,6 +27,12 @@ public class UserController : Controller
         _configuration = configuration;
     }
 
+    [HttpPatch(Name = "SendMessage")]
+    public async Task<ActionResult> SendMessage([FromBody]string msg)
+    {
+        _logger.LogInformation(msg);
+        return Ok();
+    }
 
     [HttpPost(Name = "PostUser")]
     [SwaggerOperation("Post a new user from UserDTO")]
@@ -59,7 +65,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = _dbContext.Users!.FirstOrDefault(x => x.Id == id);
+            var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == id);
             return Ok(user);
         }
         catch (Exception e)
@@ -73,16 +79,15 @@ public class UserController : Controller
     [HttpPost("auth")]
     public async Task<IActionResult> TryAuth(AuthData auth)
     {
+        _logger.LogInformation($"{HttpContext.Connection.RemoteIpAddress} => {HttpContext.Connection.LocalIpAddress}:\n {HttpContext.Request}");
+        if (auth.HashedPassword == null || auth.Login == null)
+            return NotFound();
         
-        var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login);
-        if (user == null) throw new ArgumentNullException(nameof(user));
+        var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login && x.PasswordHash == auth.HashedPassword);
+        if (user == null) 
+            return NotFound();
         
-        if (user.PasswordHash == auth.HashedPassword)
-        {
-            return Ok(GenerateJwtToken(user.Id));
-        }
-
-        return NotFound(false);
+        return Ok(GenerateJwtToken(user.Id));
     }
 
     [HttpGet("get_user_access_by_id/{id:guid}")]
@@ -105,6 +110,7 @@ public class UserController : Controller
 
     private string GenerateJwtToken(Guid userId)
     {
+        _logger.LogInformation($"Generating Jwt token for {userId}");
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
         var tokenDescriptor = new SecurityTokenDescriptor

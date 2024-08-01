@@ -133,6 +133,11 @@ public class ApiService
         return access;
     }
 
+    public async void SendMessage(string msg)
+    {
+        await _httpClient.PatchAsJsonAsync("User", msg);
+    }
+
     public async Task<List<TestAnswer>?> GetListStudentsTestAnswers(string testId)
     {
         var responseMessage = await _httpClient.GetAsync($"Test/get_list_students_testanswers/{testId}");
