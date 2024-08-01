@@ -54,7 +54,7 @@ public sealed class Program
                         .AllowAnyMethod();
                 });
         });
-
+        
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
     }

@@ -15,13 +15,13 @@ public class ApiService
 {
     private readonly HttpClient _httpClient;
     private readonly IMemoryCache _memoryCache;
-    private readonly CookieService _cookieService;
+    private readonly LocalStorageService _localStorageService;
 
-    public ApiService(HttpClient httpClient, IMemoryCache memoryCache, CookieService cookieService)
+    public ApiService(HttpClient httpClient, IMemoryCache memoryCache, LocalStorageService localStorageService)
     {
         _httpClient = httpClient;
         _memoryCache = memoryCache;
-        _cookieService = cookieService;
+        _localStorageService = localStorageService;
     }
 
     public async Task<List<MyTest>> GetTests()
@@ -73,7 +73,7 @@ public class ApiService
 
     public async Task<bool> PostTest(MyTest test)
     {
-        var userId = await _cookieService.GetUserIdAsync();
+        var userId = await _localStorageService.GetUserIdAsync();
 
         test.CreatorId = userId;
         //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
@@ -121,12 +121,14 @@ public class ApiService
 
     public async Task<uint?> GetUserAccessById(Guid? id)
     {
-        if (id is null || id == Guid.Empty) return null;
-
+        if (id == null || id == Guid.Empty) return null;
+        if (_memoryCache.TryGetValue(id, out uint access)) return access;
+        
         var responseMessage = await _httpClient.GetAsync($"User/get_user_access_by_id/{id}");
         if (!responseMessage.IsSuccessStatusCode) return null;
 
-        var access = await responseMessage.Content.ReadFromJsonAsync<uint>();
+        access = await responseMessage.Content.ReadFromJsonAsync<uint>();
+        _memoryCache.Set(id, access);
 
         return access;
     }

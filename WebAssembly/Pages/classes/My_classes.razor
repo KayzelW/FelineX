@@ -1,8 +1,9 @@
 ﻿@page "/my-classes"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
+
+@using Shared.DB.Classes.User
 
 @inject NavigationManager nav
-@using Shared.DB.Classes.User
-@inherits WebAssembly.Components.CookieCheck
 
 <h2>Temporary unavailable</h2>
 
@@ -55,10 +56,6 @@
 
 @code {
 
-    public My_classes()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
 
     public class TestData
     {

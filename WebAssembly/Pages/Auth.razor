@@ -6,7 +6,6 @@
 @inject NavigationManager nav
 @inject AuthService _authService
 @inject ILogger<Auth> _logger
-@inject IJSRuntime _jsRuntime
 
 
 <div class="row d-flex justify-content-center h-100">
@@ -14,8 +13,6 @@
         <div class="card mb-3 justify-content-center" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF; min-width: 500px;">
             <div class="row g-0">
                 <div class="card-body p-5 text-center">
-
-
                     <h2 style="color: #0F066D; font-style: oblique">Вход</h2>
                     <p class="text-50 mb-5" style="color: #0F066D;: #0F066D; font-style: italic">Пожалуйста, введите свой логин и пароль!</p>
 
@@ -68,17 +65,14 @@
 
     private async Task User_auth()
     {
-        if (Login is "" || Password is "") return;
+        if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
+            return;
 
         var token = await _authService.GetJwtToken(Login, Password);
         if (token is null)
-        {
-            //TODO: work with null JWT
             return;
-        }
+
         await _authService.SetJwtToken(token);
-        
         nav.NavigateTo("/profile");
     }
-
 }

@@ -1,10 +1,9 @@
 ﻿namespace Shared.DB.Classes.User;
 
 [Flags]
-public enum AccessLevel: uint
+public enum AccessLevel : uint
 {
-    Student = 0,
-
-    Teacher = 1 << 0
-    
+    Exists = 0,
+    Student = 1 << 0,
+    Teacher = 1 << 1,
 }

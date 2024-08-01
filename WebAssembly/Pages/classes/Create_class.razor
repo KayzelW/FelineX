@@ -1,13 +1,11 @@
 ﻿@page "/create-class"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
+
 @using Shared.DB.Classes.User
-@inherits WebAssembly.Components.CookieCheck
+
 <h3 class="text-center">Новый класс</h3>
 
 @code {
 
-    public Create_class()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
     
 }

@@ -1,23 +1,20 @@
 ﻿@page "/test_answers/{TestId}"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
+
 @using System.Globalization
 @using Microsoft.Extensions.Logging
-@using MyTest = Shared.DB.Classes.Test.Test;
 @using Shared.DB.Classes.User
 @using Shared.DB.Classes.Test.Task.TaskAnswer
-@using WebAssembly.Services
-
-@inherits WebAssembly.Components.CookieCheck
 
 @inject ApiService _ApiService
 @inject ILogger<TestAnswers> _logger
+@inject NavigationManager _navigationManager
 
-@* @rendermode InteractiveServer *@
 
 <div>
     <h2 class="text-left">Решения:</h2>
     <h1> </h1>
 </div>
-
 
 <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
     <thead>
@@ -30,40 +27,40 @@
     </thead>
     <tbody>
 
-    @foreach (var test in _testAnswers)
+    @if (_testAnswers == null)
     {
-        <tr>
-            <td>
-                <p>
-                    <a class="link-opacity-100-hover" href="" @onclick="() => NavigateToResults(test.Id.ToString())">@test.Id</a>
-                </p>
-            </td>
-            @if (test.Student is null)
-            {
-                <th scope="row">@test.FantomName</th>
-            }
-            else
-            {
-                <th scope="row">@test.Student.NormalizedUserName</th>
-            }
-            <td >@test.Score</td>
-            <td >@test.PassingDate.ToString(CultureInfo.CurrentCulture)</td>
-        </tr>
+        <h1>Никто пока не прошёл этот тест</h1>
+    }
+    else
+    { @foreach (var test in _testAnswers)
+        {
+            <tr>
+                <td>
+                    <p>
+                        <a class="link-opacity-100-hover" href="" @onclick="() => NavigateToResults(test.Id.ToString())">@test.Id</a>
+                    </p>
+                </td>
+                @if (test.Student is null)
+                {
+                    <th scope="row">@test.FantomName</th>
+                }
+                else
+                {
+                    <th scope="row">@test.Student.NormalizedUserName</th>
+                }
+                <td >@test.Score</td>
+                <td >@test.PassingDate.ToString(CultureInfo.CurrentCulture)</td>
+            </tr>
+        }
     }
     </tbody>
 </table>
-
 
 @code {
 
     [Parameter] public string TestId { get; set; }
     private List<TestAnswer> _testAnswers = [];
 
-
-    public TestAnswers()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
 
     protected override async Task OnInitializedAsync()
     {

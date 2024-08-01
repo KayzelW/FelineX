@@ -1,17 +1,14 @@
 ﻿@page "/profile"
+@attribute [AuthorizeLevel(AccessLevel.Exists)]
 
-@using System.IdentityModel.Tokens.Jwt
 @using Shared.DB.Classes.User
-@using Shared.Extensions
-@using WebAssembly.Services
-
-@inherits WebAssembly.Components.CookieCheck
 
 @inject ApiService _apiService
-@inject ILogger<Profile> logger
+@inject ILogger<Profile> _logger
+@inject NavigationManager _navigationManager
+@inject LocalStorageService _localStorageService
 
-
-<h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль @user?.Id</h1>
+<h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль @User?.Id</h1>
 <div class="row d-flex justify-content-center align-items-center h-100">
     <div class="col col-lg-6 mb-4 mb-lg-0">
         <div class="card mb-3" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF">
@@ -23,8 +20,8 @@
                 </div>
                 <div class="col-md-8 justify-content-center" style="-webkit-text-fill-color: #00003A ">
                     <div class="card-body p-5">
-                        <h5>@user?.NormalizedUserName</h5>
-                        <p>@AccessLevel.ToString()</p>
+                        <h5>@User?.NormalizedUserName</h5>
+                        <p>@CurAccessLevel</p>
                     </div>
                 </div>
             </div>
@@ -32,53 +29,58 @@
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A;  box-shadow: none;" type="button" @onclick="Logout"> Выход </button>
         </div>
-        <div>
-
-        </div>
-
     </div>
 </div>
 
 
 @code {
 
-    private User? user { get; set; }
+    private User? User { get; set; }
 
-    private AccessLevel? AccessLevel { get; set; }
+    private AccessLevel? CurAccessLevel { get; set; }
 
     public Profile()
     {
-        RequiredAccessLevel = null;
+        _logger.LogInformation($"Create type {this.GetType()}");
     }
-
+    
     protected override async Task OnInitializedAsync()
     {
+        _logger.LogInformation($"start init {this.GetType()}");
         await base.OnInitializedAsync();
-        var userId = await _cookieService.GetUserIdAsync();
+        var userId = await _localStorageService.GetUserIdAsync();
 
         if (userId == null)
         {
+            _logger.LogWarning($"userId is null on {this.GetType()}");
             _navigationManager.NavigateTo("/auth");
             return;
         }
 
-        user = await _apiService.GetUser(userId.Value);
+        User = await _apiService.GetUser(userId.Value);
 
-        if (user != null)
+        if (User != null)
         {
-            AccessLevel = user.Access;
+            CurAccessLevel = User.Access;
         }
         else
         {
-            logger.LogWarning($"User with ID {userId.Value} doesn't exists");
+            _logger.LogWarning($"User with ID {userId.Value} doesn't exists");
         }
 
+        _logger.LogInformation($"loading {this.GetType()}");
         await InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _logger.LogInformation($"Rendered {this.GetType()}");
+        base.OnAfterRender(firstRender);
     }
 
     private void Logout()
     {
-        _cookieService.RemoveJwtToken();
+        _localStorageService.RemoveJwtToken();
         _navigationManager.NavigateTo("/auth");
     }
 

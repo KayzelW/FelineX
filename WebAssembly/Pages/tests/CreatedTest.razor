@@ -1,13 +1,11 @@
 ﻿@page "/Created_test"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Classes.User
 @using Shared.Extensions
-@using WebAssembly.Services
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
-
-@inherits WebAssembly.Components.CookieCheck
 
 @inject ApiService _apiService
 
@@ -140,11 +138,6 @@
 
 
 @code {
-
-    public CreatedTest()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
 
     private MyTest _test = new MyTest();
 

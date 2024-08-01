@@ -111,7 +111,7 @@ public class UserController : Controller
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                new Claim(JWTClaimNames.UserId, userId.ToString())
+                new Claim(JwtExtensions.JwtCookieName, userId.ToString())
             }),
             Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])),
             SigningCredentials =

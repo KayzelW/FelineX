@@ -1,4 +1,5 @@
 ﻿@page "/test/{TestId}"
+
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Interfaces
@@ -11,10 +12,10 @@
 @inject ApiService _ApiService
 @inject ILogger<Auth> _logger
 @inject NavigationManager nav
-@inject CookieService _cookieService
+@inject LocalStorageService LocalStorageService
 
 
-<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test.TestName</h3>
+<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test?.TestName</h3>
 
 @if (userId is null)
 {
@@ -180,7 +181,7 @@ else
 
         _logger.LogInformation($"Now at {nameof(this.OnInitializedAsync)}");
 
-        userId = await _cookieService.GetUserIdAsync();
+        userId = await LocalStorageService.GetUserIdAsync();
 
         test = await _ApiService.GetTest(TestId);
     }

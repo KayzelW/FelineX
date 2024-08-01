@@ -1,15 +1,12 @@
 ﻿@page "/create-student"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
+
 @using Shared.DB.Classes.User
-@inherits WebAssembly.Components.CookieCheck
 
 <h3>Create_student</h3>
 
 
 @code {
 
-    public Create_student()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
     
 }

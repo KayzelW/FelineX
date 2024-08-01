@@ -1,4 +1,5 @@
 ﻿@page "/create_test"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Classes.User
@@ -6,11 +7,10 @@
 @using MyTest = Shared.DB.Classes.Test.Test;
 @using MyTask = Shared.DB.Classes.Test.Task.Task;
 @using Shared.DB.Interfaces
-@using WebAssembly.Services
-
-@inherits WebAssembly.Components.CookieCheck
 
 @inject ApiService _apiService
+@inject NavigationManager _navigationManager
+@inject LocalStorageService _localStorageService
 
 <h3 class="text-center">Новый тест</h3>
 
@@ -150,11 +150,6 @@
 
 @code {
 
-    public CreateTest()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
-
     MyTest test = new MyTest();
 
     private void Plus(InteractionType interactionType)
@@ -183,7 +178,7 @@
 
     private async void Save()
     {
-        var userId = await _cookieService.GetUserIdAsync();
+        var userId = await _localStorageService.GetUserIdAsync();
         test.CreatorId = userId;
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");

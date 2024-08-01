@@ -12,7 +12,7 @@ namespace WebAssembly.Services;
 public class AuthService(
     ILogger<AuthService> _logger,
     ApiService apiService,
-    CookieService _cookieService)
+    LocalStorageService localStorageService)
 {
     private readonly JwtSecurityTokenHandler _jwtTokenHandler = new();
 
@@ -55,7 +55,7 @@ public class AuthService(
 
     public async Task SetJwtToken(JwtSecurityToken token)
     {
-        await _cookieService.SetJwtTokenAsync(_jwtTokenHandler.WriteToken(token));
+        await localStorageService.SetJwtTokenAsync(_jwtTokenHandler.WriteToken(token));
     }
 
     private async Task<string?> AuthorizeAsync(string username, string password)

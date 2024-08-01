@@ -1,18 +1,14 @@
 ﻿@page "/result_test_students/{AnsweredTestId}"
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Classes.Test.Task.TaskAnswer
 @using Shared.DB.Classes.User
 @using Shared.Extensions
-@using WebAssembly.Services
 @using Task = System.Threading.Tasks.Task
-
-@inherits WebAssembly.Components.CookieCheck
 
 @inject ApiService _ApiService
 @inject NavigationManager nav
-
-@* @rendermode InteractiveServer *@
 
 
 @if (_testAnswer?.TaskAnswers == null || _testAnswer?.AnsweredTest == null)
@@ -56,7 +52,7 @@ else
                                 </div>
 
                                 <div class="form-floating">
-                                    <textarea class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer==task.StringAnswer)" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
+                                    <textarea class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer)" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
                                 </div>
 
                             </div>
@@ -167,11 +163,6 @@ else
     private string GetAnswerCssClass(bool flag)
     {
         return flag ? "correct-answer" : "incorrect-answer";
-    }
-
-    public TestResultStudents()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
     }
 
     protected override async Task OnInitializedAsync()

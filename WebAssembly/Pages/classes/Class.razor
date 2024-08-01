@@ -1,7 +1,9 @@
 ﻿@page "/my-class"
-@inject NavigationManager nav
+@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
+
 @using Shared.DB.Classes.User
-@inherits WebAssembly.Components.CookieCheck
+
+@inject NavigationManager nav
 
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-center" style="height: 40px; -webkit-text-fill-color: #00003A">
@@ -50,11 +52,6 @@
 
 
 @code {
-
-    public Class()
-    {
-        RequiredAccessLevel = AccessLevel.Teacher;
-    }
 
     public class TestData
     {
