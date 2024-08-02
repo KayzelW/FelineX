@@ -24,7 +24,8 @@
             </ul>
         </div>
         <div style="display: flex; justify-content: flex-end; align-items: center; width: 300px; gap: 5px;">
-            <input type="text" @bind="TestId" placeholder="Введите id теста" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none; width: 200px;">
+            <input type="text" @bind="TestId" placeholder="Введите id теста" @onkeydown="KeyboardEventHandler"
+                   style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none; width: 200px;">
             <button @onclick="NavigateToTest" style="background-color: #EFF4FF; border-color: #BDD3FF;">Go</button>
         </div>
     </div>
@@ -35,6 +36,12 @@
 
     [Inject] NavigationManager Navigation { get; set; }
 
+    private async void KeyboardEventHandler(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+            NavigateToTest();
+    }
+    
     private void NavigateToTest()
     {
         if (!string.IsNullOrWhiteSpace(TestId))

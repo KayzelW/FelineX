@@ -27,7 +27,7 @@ canvas {
     const ctx = canvas.getContext('2d');
     
     const gif = new Image();
-    gif.src = 'cat-running.gif'; // путь к вашему GIF с бегущим котом
+    gif.src = 'images/cats/game/cat-running.gif';
     
     function loaded() {
         console.log(gif.width);
@@ -63,23 +63,20 @@ canvas {
     let speedMultiplier = 1;  // множитель скорости
     let distance = 0; // переменная для отслеживания пройденного расстояния
     
-    // Загрузка изображений
     const obstacleImages = [];
     for (let i = 1; i <= 4; i++) {
         const img = new Image();
-        img.src = `${i}.png`;
+        img.src = `images/cats/game/${i}.png`;
         obstacleImages.push(img);
     }
     
-    // Функция для выбора случайного изображения
     function getRandomObstacleImage() {
         const randomIndex = Math.floor(Math.random() * obstacleImages.length);
         const randomImage = obstacleImages[randomIndex];
-        // Обновляем размеры препятствия на размеры выбранного изображения
+        
         obstacle.width = obstacle.imageWidth = randomImage.width;
         obstacle.height = obstacle.imageHeight = randomImage.height;
     
-        // Вычисляем вертикальную позицию препятствия с учетом высоты изображения
         obstacle.y = canvas.height - obstacle.imageHeight;
     
         return randomImage;
@@ -89,7 +86,6 @@ canvas {
         ctx.drawImage(gif, dino.x, dino.y, dino.width, dino.height);
     }
     
-    // Функция рисования препятствия
     function drawObstacle() {
         if (obstacle.image) {
             ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.imageWidth, obstacle.imageHeight);
@@ -163,7 +159,7 @@ canvas {
     
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-        drawDistance(); // добавьте эту строку
+        drawDistance();
     
         drawDino();
         drawObstacle();
@@ -171,7 +167,7 @@ canvas {
         updateDino();
         updateObstacle();
         detectCollision();
-        updateDistance(); // добавьте эту строку
+        updateDistance();
     
         requestAnimationFrame(gameLoop);
     }
@@ -188,11 +184,10 @@ canvas {
         }
     });
     
-    // Увеличение скорости каждые 1000 миллисекунд (1 секунда)
     setInterval(increaseSpeed, 1000);
     
     gif.onload = () => {
-        obstacle.image = getRandomObstacleImage(); // инициализировать случайным изображением
+        obstacle.image = getRandomObstacleImage();
         gameLoop();
     };
 

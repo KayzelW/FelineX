@@ -97,11 +97,6 @@ else
             Failed();
         }
 
-        if (!string.IsNullOrEmpty(_redirectUrl))
-        {
-            // Navigation.NavigateTo(_redirectUrl);
-        }
-
         _logger.LogInformation($"Routing to {pageType}");
         _isLoading = false;
         StateHasChanged();
@@ -111,7 +106,13 @@ else
     {
         _redirectUrl = "/auth";
         _isLoading = false;
+        
+        _logger.LogInformation($"RedirectUrl is {_redirectUrl}");
+        if (!string.IsNullOrEmpty(_redirectUrl))
+        {
+            Navigation.NavigateTo(_redirectUrl);
+        }
+        
         StateHasChanged();
     }
-
 }
