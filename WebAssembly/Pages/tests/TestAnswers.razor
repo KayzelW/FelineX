@@ -37,7 +37,7 @@
             <tr>
                 <td>
                     <p>
-                        <a class="link-opacity-100-hover" href="" @onclick="() => NavigateToResults(test.Id.ToString())">@test.Id</a>
+                        <a class="link-opacity-100-hover" @onclick="() => NavigateToResults(test.Id.ToString())">@test.Id</a>
                     </p>
                 </td>
                 @if (test.Student is null)
