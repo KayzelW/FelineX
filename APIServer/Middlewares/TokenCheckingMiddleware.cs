@@ -11,9 +11,10 @@ public class TokenCheckingMiddleware(RequestDelegate next, ILogger<TokenChecking
 
         logger.LogInformation($"User with token({token}) are checking");
         
-        if (tokenService.TryGetToken(token, out var userId))
+        if (tokenService.TryGetUserId(token, out var userId))
         {
             context.Items["User"] = userId;
+            logger.LogCritical($"HttpContext modified with {userId}");
         }
         else
         {

@@ -91,7 +91,7 @@ public class AuthController : Controller
         _logger.LogInformation(
             $"{HttpContext.Connection.RemoteIpAddress} => {HttpContext.Connection.LocalIpAddress}:\n {HttpContext.Request}");
         
-        if (!_tokenService.TryGetToken(token, out var userId)) return NotFound();
+        if (!_tokenService.TryGetUserId(token, out var userId)) return NotFound();
 
         var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == userId);
         if (user == null)

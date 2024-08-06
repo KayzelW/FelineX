@@ -30,8 +30,9 @@ else
     protected override async Task OnParametersSetAsync()
     {
         _logger.LogInformation($"Try load page {RouteData?.PageType}");
-        _isLoading = true;
         _isAuthorized = false;
+        _isLoading = true;
+        _redirectUrl = "";
 
         if (RouteData == null)
         {

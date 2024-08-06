@@ -13,9 +13,9 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
 
     private JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
-    public bool TryGetToken(string? token, out Guid userId)
+    public bool TryGetUserId(string? token, out Guid userId)
     {
-        logger.LogInformation($"try get token({token})");
+        logger.LogInformation($"Try get token({token})");
         if (!ValidateToken(token))
         {
             userId = Guid.Empty;
@@ -56,13 +56,13 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
                 // ClockSkew = TimeSpan.Zero,  // допустимая погрешность в несколько минут
             }, out var validatedToken);
             
-            logger.LogInformation($"token({token}) passed the check");
+            logger.LogInformation($"Token({token}) passed the check");
             
             return true;
         }
         catch (Exception ex)
         {
-            logger.LogInformation($"token({token}) not passed check", ex);
+            logger.LogInformation($"Token({token}) not passed check", ex);
             return false;
         }
     }

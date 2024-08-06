@@ -4,6 +4,6 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 APIServer/appsettings.Development.json
-.idea/
-.vs/
+/.vs
 WebAssembly/wwwroot/appsettings.json
+/.idea

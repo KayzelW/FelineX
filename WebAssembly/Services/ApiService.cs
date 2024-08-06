@@ -16,11 +16,18 @@ namespace WebAssembly.Services;
 public class ApiService
 {
     private HttpClient httpClient { get; }
+    private ILocalStorageService localStorageService { get; }
     
     public ApiService(HttpClient httpClient, ILocalStorageService localStorageService)
     {
         this.httpClient = httpClient;
-        var token = localStorageService.GetItemAsync(JwtExtensions.JwtCookieName).ConfigureAwait(false).ToString();
+        this.localStorageService = localStorageService;
+        SetAuthToken();
+    }
+
+    private async void SetAuthToken()
+    {
+        var token = await localStorageService.GetItemAsync(JwtExtensions.JwtCookieName);
         if (!string.IsNullOrEmpty(token))
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

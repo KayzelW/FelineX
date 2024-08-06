@@ -203,8 +203,6 @@ else
 
         _logger.LogInformation($"Now at {this.GetType()}");
 
-        userId = await LocalStorageService.GetUserIdAsync();
-        _logger.LogInformation($"Got userId {userId} at {this.GetType()} from LocalStorage");
 
         test = await _ApiService.GetTest(TestId);
         _logger.LogInformation($"Got test {TestId}");
@@ -212,12 +210,6 @@ else
 
     private async void SaveAndSubmit()
     {
-        if (userId != null)
-        {
-            _logger.LogInformation($"Token is {this.userId} at {nameof(this.SaveAndSubmit)}");
-            test!.StudentId = userId;
-        }
-
         var ansTestId = await _ApiService.SubmitTest(test);
         nav.NavigateTo($"result_test/{ansTestId}");
     }

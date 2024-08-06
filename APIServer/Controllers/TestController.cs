@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using APIServer.Database;
+using Microsoft.AspNetCore.Authentication;
 using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -214,9 +215,12 @@ public class TestController : Controller
         if (solvedTest?.Tasks is null)
         {
             _logger.LogError(
-                $"test or tasks are null while executing SubmitTest");
+                $"Test or tasks are null while executing SubmitTest");
             return BadRequest();
         }
+
+        _logger.LogCritical($"Items User is {HttpContext.Items["User"]}");
+        solvedTest.StudentId = (Guid)HttpContext.Items["User"]!;
 
         try
         {
