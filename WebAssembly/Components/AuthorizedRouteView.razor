@@ -1,8 +1,6 @@
 ﻿@using System.Reflection
-@using Microsoft.AspNetCore.Components.Authorization
-@using Shared.DB.Classes.User
-@using Shared.Extensions
 @using Microsoft.Extensions.Logging
+@using Shared.Interfaces
 
 @if (_isLoading)
 {
@@ -21,10 +19,9 @@ else
     [Parameter] public RouteData? RouteData { get; set; }
     [Parameter] public RenderFragment ChildContent { get; set; }
 
-    [Inject] private ApiService _ApiService { get; set; }
     [Inject] private NavigationManager Navigation { get; set; }
-    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
     [Inject] private ILogger<AuthorizedRouteView> _logger { get; set; }
+    [Inject] private IUserContextService _userContext { get; set; }
 
     private bool _isAuthorized = false;
     private bool _isLoading = true;
@@ -32,7 +29,6 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        _ApiService.SendMessage($"Try load page {RouteData?.PageType}");
         _logger.LogInformation($"Try load page {RouteData?.PageType}");
         _isLoading = true;
         _isAuthorized = false;
@@ -58,36 +54,17 @@ else
             StateHasChanged();
             return;
         }
-
-        var requiredLevel = authorizeLevelAttribute!.RequiredLevel;
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        if (user.Identity is { IsAuthenticated: false })
+        
+        if (!_userContext.IsAuthorized)
         {
             _logger.LogInformation("User is not authenticated.");
             Failed();
             return;
         }
-
-        var userId = user.Claims.FirstOrDefault(x => x.Type == JwtExtensions.JwtCookieName)?.Value;
-        if (string.IsNullOrEmpty(userId))
-        {
-            _logger.LogInformation($"userId is NullOrEmpty | {userId}");
-            Failed();
-            return;
-        }
-
-        var accessLevel = await _ApiService.GetUserAccessById(userId.ToGuid());
-        if (accessLevel == null)
-        {
-            _logger.LogInformation($"accessLevel == null | {accessLevel}");
-            Failed();
-            return;
-        }
-
-        _logger.LogInformation($"Check {userId} for {requiredLevel} | {pageType}");
-        if (requiredLevel == (uint)AccessLevel.Exists
-            || (accessLevel & requiredLevel) == requiredLevel)
+        
+        var requiredLevel = authorizeLevelAttribute!.RequiredLevel;
+        _logger.LogInformation($"Check user(token = {_userContext.UserToken}) for {requiredLevel} | {pageType}");
+        if (_userContext.HasAccess(requiredLevel))
         {
             _isAuthorized = true;
         }
@@ -106,13 +83,14 @@ else
     {
         _redirectUrl = "/auth";
         _isLoading = false;
-        
+
         _logger.LogInformation($"RedirectUrl is {_redirectUrl}");
         if (!string.IsNullOrEmpty(_redirectUrl))
         {
             Navigation.NavigateTo(_redirectUrl);
         }
-        
+
         StateHasChanged();
     }
+
 }

@@ -10,7 +10,6 @@
 
 @inject ApiService _apiService
 @inject NavigationManager _navigationManager
-@inject LocalStorageService _localStorageService
 @inject ILogger<CreatedTest> _logger
 
 <h3 class="text-center">Новый тест</h3>
@@ -179,8 +178,6 @@
 
     private async void Save()
     {
-        var userId = await _localStorageService.GetUserIdAsync();
-        test.CreatorId = userId;
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");
     }

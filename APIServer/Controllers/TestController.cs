@@ -117,8 +117,8 @@ public class TestController : Controller
             }
             else
             {
-                var allMarkedVariablesMatch = task.MarkedVariables
-                    .All(markedVar => correctTask.VariableAnswers
+                var allMarkedVariablesMatch = task.MarkedVariables!
+                    .All(markedVar => correctTask.VariableAnswers!
                         .Any(varAnswer => varAnswer.Id == markedVar.Id && varAnswer.Truthful == true));
 
                 if (allMarkedVariablesMatch)
@@ -138,7 +138,7 @@ public class TestController : Controller
     {
         try
         {
-            var listTestAnswers = await _dbContext.TestAnswers.Where(x => x.AnsweredTestId == test_id)
+            var listTestAnswers = await _dbContext.TestAnswers!.Where(x => x.AnsweredTestId == test_id)
                 .Include(x => x.Student)
                 .ToListAsync();
             foreach (var test in listTestAnswers)
@@ -179,9 +179,19 @@ public class TestController : Controller
                 $"test is null while executing CreateTest from user");
             return BadRequest();
         }
-
+        
         try
         {
+            var userId = (Guid)HttpContext.Items["User"]!;
+            test.CreatorId = userId;
+            if (test.Tasks is not null)
+            {
+                foreach (var task in test.Tasks)
+                {
+                    task.CreatorId = test.CreatorId;
+                }
+            }
+            
             await _dbContext.Tests!.AddAsync(test);
             await _dbContext.SaveChangesAsync();
         }

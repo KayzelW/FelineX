@@ -23,9 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Services\LocalStorageService.Cookie.cs">
-        <DependentUpon>LocalStorageService.cs</DependentUpon>
-      </Compile>
       <Compile Update="Authentication\AuthorizeLevelAttribute.cs">
         <DependentUpon>AccessLevelRouteView.cs</DependentUpon>
       </Compile>

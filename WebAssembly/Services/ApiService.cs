@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using Microsoft.Extensions.Caching.Memory;
@@ -6,6 +7,7 @@ using Microsoft.JSInterop;
 using Shared.DB.Classes.Test.Task.TaskAnswer;
 using Shared.DB.Classes.User;
 using Shared.Extensions;
+using Shared.Interfaces;
 using Shared.Models;
 using MyTest = Shared.DB.Classes.Test.Test;
 
@@ -13,21 +15,23 @@ namespace WebAssembly.Services;
 
 public class ApiService
 {
-    private readonly HttpClient _httpClient;
-    private readonly IMemoryCache _memoryCache;
-    private readonly LocalStorageService _localStorageService;
-
-    public ApiService(HttpClient httpClient, IMemoryCache memoryCache, LocalStorageService localStorageService)
+    private HttpClient httpClient { get; }
+    
+    public ApiService(HttpClient httpClient, ILocalStorageService localStorageService)
     {
-        _httpClient = httpClient;
-        _memoryCache = memoryCache;
-        _localStorageService = localStorageService;
+        this.httpClient = httpClient;
+        var token = localStorageService.GetItemAsync(JwtExtensions.JwtCookieName).ConfigureAwait(false).ToString();
+        if (!string.IsNullOrEmpty(token))
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        Console.WriteLine(token);
     }
-
+    
     public async Task<List<MyTest>> GetTests()
     {
         List<MyTest>? tests = null;
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync("Test/get_tests");
+        var responseMessage = await httpClient.GetAsync("Test/get_tests");
         if (responseMessage.IsSuccessStatusCode)
         {
             tests = await responseMessage.Content.ReadFromJsonAsync<List<MyTest>>();
@@ -39,7 +43,7 @@ public class ApiService
     public async Task<MyTest?> GetTest(string testId)
     {
         MyTest? test = null;
-        HttpResponseMessage responseMessage = await _httpClient.GetAsync($"Test/get_test/{testId}");
+        var responseMessage = await httpClient.GetAsync($"Test/get_test/{testId}");
         if (responseMessage.IsSuccessStatusCode)
         {
             test = await responseMessage.Content.ReadFromJsonAsync<MyTest>();
@@ -50,7 +54,7 @@ public class ApiService
 
     public async Task<TestAnswer?> GetTestResult(Guid testAnswerId)
     {
-        var responseMessage = await _httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
+        var responseMessage = await httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
         TestAnswer? testAnswer = null;
         if (responseMessage.IsSuccessStatusCode)
         {
@@ -60,38 +64,15 @@ public class ApiService
         return testAnswer;
     }
 
-    public async Task<User?> GetUser(Guid userId)
-    {
-        
-        var responseMessage = await _httpClient.GetAsync($"User/get_user/{userId}");
-        responseMessage.EnsureSuccessStatusCode();
-
-        var user = await responseMessage.Content.ReadFromJsonAsync<User>();
-
-        return user;
-    }
-
     public async Task<bool> PostTest(MyTest test)
     {
-        var userId = await _localStorageService.GetUserIdAsync();
-
-        test.CreatorId = userId;
-        //TODO: Failed if user == null && can't add a new test with multiply exception like problems with Foreign key
-        if (test.Tasks is not null)
-        {
-            foreach (var task in test.Tasks)
-            {
-                task.CreatorId = test.CreatorId;
-            }
-        }
-
-        var responseMessage = await _httpClient.PostAsJsonAsync("Test/create_test", test);
+        var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
         return responseMessage.IsSuccessStatusCode;
     }
 
     public async Task<Guid> SubmitTest(MyTest? test)
     {
-        var responseMessage = await _httpClient.PostAsJsonAsync("Test/submit_test", test);
+        var responseMessage = await httpClient.PostAsJsonAsync("Test/submit_test", test);
         responseMessage.EnsureSuccessStatusCode();
         return await responseMessage.Content.ReadFromJsonAsync<Guid>();
     }
@@ -102,45 +83,40 @@ public class ApiService
     /// <param name="login"></param>
     /// <param name="password"></param>
     /// <returns>Token as a string</returns>
-    public async Task<string?> AuthUser(string login, string password)
+    public async Task<AuthAnswer?> AuthUser(string login, string password)
     {
         var hash = await UserExtensions.HashPasswordAsync(password);
-        
+
         Console.WriteLine($"User: |{login}| - |{hash}|"); //TODO: REMOVE
-        var responseMessage = await _httpClient.PostAsJsonAsync("User/auth", new AuthData
+        var responseMessage = await httpClient.PostAsJsonAsync("Auth/auth", new AuthData
         {
             Login = login,
             HashedPassword = WebUtility.UrlEncode(hash)
         });
         if (!responseMessage.IsSuccessStatusCode) return null;
 
-        var token = await responseMessage.Content.ReadAsStringAsync();
-        Console.WriteLine($"Got |{token}| from User/auth");
-        return token;
+        var data = await responseMessage.Content.ReadFromJsonAsync<AuthAnswer>();
+        Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/auth");
+        return data;
     }
 
-    public async Task<uint?> GetUserAccessById(Guid? id)
+    public async Task<AuthAnswer?> AuthUserByToken(string token)
     {
-        if (id == null || id == Guid.Empty) return null;
-        if (_memoryCache.TryGetValue(id, out uint access)) return access;
-        
-        var responseMessage = await _httpClient.GetAsync($"User/get_user_access_by_id/{id}");
+        var responseMessage = await httpClient.PostAsJsonAsync("Auth/authtoken", token);
         if (!responseMessage.IsSuccessStatusCode) return null;
-
-        access = await responseMessage.Content.ReadFromJsonAsync<uint>();
-        _memoryCache.Set(id, access);
-
-        return access;
+        var data = await responseMessage.Content.ReadFromJsonAsync<AuthAnswer>();
+        Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/auth");
+        return data;
     }
 
     public async void SendMessage(string msg)
     {
-        await _httpClient.PatchAsJsonAsync("User", msg);
+        await httpClient.PatchAsJsonAsync("User", msg);
     }
 
     public async Task<List<TestAnswer>?> GetListStudentsTestAnswers(string testId)
     {
-        var responseMessage = await _httpClient.GetAsync($"Test/get_list_students_testanswers/{testId}");
+        var responseMessage = await httpClient.GetAsync($"Test/get_list_students_testanswers/{testId}");
         responseMessage.EnsureSuccessStatusCode();
         return await responseMessage.Content.ReadFromJsonAsync<List<TestAnswer>>();
     }
