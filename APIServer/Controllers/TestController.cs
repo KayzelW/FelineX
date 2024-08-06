@@ -196,7 +196,7 @@ public class TestController : Controller
 
 
     [HttpPost("submit_test")]
-    public async Task<IActionResult> SubmitTest(Test? solvedTest)
+    public async Task<IActionResult> SubmitTest(TestDTO? solvedTest)
     {
         Test? test;
         var testAnswer = new TestAnswer();

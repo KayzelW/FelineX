@@ -15,10 +15,7 @@ public class Test
     public Guid? CreatorId { get; set; }
     public DateTime? CreationTime { get; set; } = DateTime.Now;
     public List<Task.Task>? Tasks { get; set; } = new List<Task.Task>();
-
-    [NotMapped] public string? FantomName { get; set; } = "";
-    [NotMapped] public Guid? StudentId { get; set; }
-
+    
     public Test()
     {
     }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Shared.DB.Classes.Test.Task.TaskAnswer;
 using Shared.DB.Interfaces;
 
 namespace Shared.DB.Classes.Test.Task;
@@ -17,6 +18,8 @@ public sealed class Task : ITask
     [JsonIgnore] public User.User? Creator { get; set; }
     public Guid? CreatorId { get; set; }
     [JsonIgnore] public List<Test>? Tests { get; set; } = new List<Test>();
+
+    // [JsonIgnore] public DBMS Dbms { get; set; } = DBMS.Sqlite;
 
 
     [NotMapped, JsonIgnore]

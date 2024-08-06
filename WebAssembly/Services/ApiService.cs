@@ -36,13 +36,13 @@ public class ApiService
         return tests;
     }
 
-    public async Task<MyTest?> GetTest(string testId)
+    public async Task<TestDTO?> GetTest(string testId)
     {
-        MyTest? test = null;
+        TestDTO? test = null;
         HttpResponseMessage responseMessage = await _httpClient.GetAsync($"Test/get_test/{testId}");
         if (responseMessage.IsSuccessStatusCode)
         {
-            test = await responseMessage.Content.ReadFromJsonAsync<MyTest>();
+            test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
         }
 
         return test;
