@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
@@ -17,6 +18,7 @@ public sealed class UserContextService
     private ILogger<UserContextService> logger { get; }
     private NavigationManager navigationManager { get; }
     private ApiService apiService { get; }
+    private HttpClient httpClient { get; }
 
     // private readonly JwtSecurityTokenHandler _jwtTokenHandler = new();
 
@@ -36,12 +38,13 @@ public sealed class UserContextService
         }
     }
 
-    public UserContextService(ILocalStorageService localStorageService, ILogger<UserContextService> logger, NavigationManager navigationManager, ApiService apiService)
+    public UserContextService(ILocalStorageService localStorageService, ILogger<UserContextService> logger, NavigationManager navigationManager, ApiService apiService, HttpClient httpClient)
     {
         this.localStorageService = localStorageService;
         this.logger = logger;
         this.navigationManager = navigationManager;
         this.apiService = apiService;
+        this.httpClient = httpClient;
         
         FillUserContextStartUp();
     }
@@ -100,6 +103,7 @@ public sealed class UserContextService
             return;
         }
 
+        
         var data = await apiService.AuthUserByToken(cookieToken);
         FillUserContext(data);
     }
@@ -118,6 +122,9 @@ public sealed class UserContextService
         Access = data.Access;
         // IsAuthorized = true; not used
         SetTokenAsync(UserToken);
+        
+        logger.LogWarning($"CookieToken is {UserToken}");
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
     }
 
     private async void RemoveTokenAsync()

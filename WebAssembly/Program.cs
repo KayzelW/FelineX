@@ -20,7 +20,12 @@ public sealed class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        builder.Services.AddMemoryCache();
+        builder.Services.AddSingleton(sp => new HttpClient
+        {
+            BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
+                                  ?? throw new ApplicationException("ApiUrl are not existing")),
+        });
+        
         builder.Services.AddSingleton<ILocalStorageService, LocalStorageService>();
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddSingleton<IUserContextService, UserContextService>();
@@ -28,12 +33,6 @@ public sealed class Program
 
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
-
-        builder.Services.AddSingleton(sp => new HttpClient
-        {
-            BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
-                                  ?? throw new ApplicationException("ApiUrl are not existing")),
-        });
 
 
         _tasks.Add(builder.Build().RunAsync());

@@ -10,6 +10,7 @@ public class TokenCheckingMiddleware(RequestDelegate next, ILogger<TokenChecking
         var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
 
         logger.LogInformation($"User with token({token}) are checking");
+        logger.LogWarning(context.Request.Headers.Authorization.ToString());
         
         if (tokenService.TryGetUserId(token, out var userId))
         {
