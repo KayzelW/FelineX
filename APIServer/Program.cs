@@ -1,4 +1,6 @@
 using APIServer.Database;
+using APIServer.Middlewares;
+using APIServer.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -29,6 +31,8 @@ public sealed class Program
             options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddSingleton<TokenService>();
+        
         builder.Services.AddLogging(logging =>
         {
             logging.AddConsole();
@@ -74,6 +78,7 @@ public sealed class Program
         app.UseHttpsRedirection();
         app.MapControllers();
         app.UseCors("AllowSpecificOrigin");
+        app.UseMiddleware<TokenCheckingMiddleware>();
 
         app.Run();
     }

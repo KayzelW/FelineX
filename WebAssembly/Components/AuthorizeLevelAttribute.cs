@@ -1,6 +1,6 @@
 ﻿using Shared.DB.Classes.User;
 
-namespace WebAssembly.Auth;
+namespace WebAssembly.Components;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public sealed class AuthorizeLevelAttribute : Attribute

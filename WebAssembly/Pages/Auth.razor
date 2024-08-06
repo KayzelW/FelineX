@@ -1,10 +1,11 @@
 ﻿@page "/auth"
 
 @using Microsoft.Extensions.Logging
+@using Shared.Interfaces
 @using WebAssembly.Services
 
-@inject NavigationManager nav
-@inject AuthService _authService
+@inject NavigationManager _navigationManager
+@inject IUserContextService _userContext
 @inject ILogger<Auth> _logger
 
 <div class="row d-flex justify-content-center h-100">
@@ -74,12 +75,11 @@
         if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
             return;
 
-        var token = await _authService.GetJwtToken(Login, Password);
-        if (token is null)
+        await _userContext.AuthorizeAsync(Login, Password);
+        if (!_userContext.IsAuthorized)
             return;
-
-        await _authService.SetJwtToken(token);
-        nav.NavigateTo("/profile");
+        
+        _navigationManager.NavigateTo("/profile");
     }
 
 }
