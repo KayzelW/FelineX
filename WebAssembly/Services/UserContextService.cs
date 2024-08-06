@@ -26,6 +26,8 @@ public sealed class UserContextService
     public string UserName { get; private set; } = "";
     public uint? Access { get; private set; }
 
+    public bool isLoading { get; private set; } = true;
+
     public bool IsAuthorized
     {
         get => Access != null && !string.IsNullOrEmpty(UserToken);
@@ -47,6 +49,7 @@ public sealed class UserContextService
         this.httpClient = httpClient;
         
         FillUserContextStartUp();
+        
     }
 
     /// <summary>
@@ -91,6 +94,7 @@ public sealed class UserContextService
         UserName = string.Empty;
         Access = null;
         IsAuthorized = false;
+
     }
 
     private async void FillUserContextStartUp()
@@ -99,6 +103,7 @@ public sealed class UserContextService
         if (cookieToken == null)
         {
             RemoveTokenAsync();
+            isLoading = false;
             IsAuthorized = false;
             return;
         }
@@ -106,9 +111,10 @@ public sealed class UserContextService
         
         var data = await apiService.AuthUserByToken(cookieToken);
         FillUserContext(data);
+        isLoading = false;
     }
 
-    private async void FillUserContext(AuthAnswer? data)
+    private void FillUserContext(AuthAnswer? data)
     {
         if (data?.UserToken == null || data?.Access == null)
         {
@@ -125,6 +131,7 @@ public sealed class UserContextService
         
         logger.LogWarning($"CookieToken is {UserToken}");
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
+        
     }
 
     private async void RemoveTokenAsync()

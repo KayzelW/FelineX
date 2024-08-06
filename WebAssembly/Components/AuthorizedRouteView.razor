@@ -29,6 +29,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+       
         _logger.LogInformation($"Try load page {RouteData?.PageType}");
         _isAuthorized = false;
         _isLoading = true;
@@ -55,6 +56,16 @@ else
             StateHasChanged();
             return;
         }
+        
+        await Task.Run(async() =>
+        {
+            var context = _userContext as UserContextService;
+            while (context.isLoading)
+            {
+                _logger.LogWarning("await setup userContext");
+                await Task.Delay(100);
+            }
+        });
         
         if (!_userContext.IsAuthorized)
         {
