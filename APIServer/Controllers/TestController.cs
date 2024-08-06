@@ -175,7 +175,7 @@ public class TestController : Controller
     {
         if (test is null)
         {
-            _logger.LogWarning(
+            _logger.LogInformation(
                 $"test is null while executing CreateTest from user");
             return BadRequest();
         }
@@ -246,7 +246,7 @@ public class TestController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogWarning(e, $"Exception while saving new test from user");
+            _logger.LogInformation(e, $"Exception while saving new test from user");
             return BadRequest(solvedTest);
         }
     }

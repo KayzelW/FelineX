@@ -1,0 +1,13 @@
+﻿@page "/"
+
+@inject NavigationManager nav
+
+<h3>We're working</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        // nav.NavigateTo("/my_tests");
+    }
+}

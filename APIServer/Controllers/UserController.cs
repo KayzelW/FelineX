@@ -1,6 +1,10 @@
-﻿using APIServer.Database;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using APIServer.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic.CompilerServices;
 using Shared.DB.Classes.User;
 using Shared.Extensions;
@@ -14,13 +18,21 @@ public class UserController : Controller
 {
     private readonly AppDbContext _dbContext;
     private readonly ILogger<UserController> _logger;
+    private readonly IConfiguration _configuration;
 
-    public UserController(AppDbContext dbContext, ILogger<UserController> logger)
+    public UserController(AppDbContext dbContext, ILogger<UserController> logger, IConfiguration configuration)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _configuration = configuration;
     }
 
+    [HttpPatch(Name = "SendMessage")]
+    public async Task<ActionResult> SendMessage([FromBody]string msg)
+    {
+        _logger.LogInformation(msg);
+        return Ok();
+    }
 
     [HttpPost(Name = "PostUser")]
     [SwaggerOperation("Post a new user from UserDTO")]
@@ -53,8 +65,8 @@ public class UserController : Controller
     {
         try
         {
-            var user = _dbContext.Users!.FirstOrDefault(x => x.Id == id);
-            return Ok(user ?? null);
+            var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == id);
+            return Ok(user);
         }
         catch (Exception e)
         {
@@ -67,22 +79,24 @@ public class UserController : Controller
     [HttpPost("auth")]
     public async Task<IActionResult> TryAuth(AuthData auth)
     {
-        var _user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login);
-        if (_user.PasswordHash == auth.HashedPassword)
-        {
-            return Ok(_user.Id);
-        }
-
-        return NotFound(false);
+        _logger.LogInformation($"{HttpContext.Connection.RemoteIpAddress} => {HttpContext.Connection.LocalIpAddress}:\n {HttpContext.Request}");
+        if (auth.HashedPassword == null || auth.Login == null)
+            return NotFound();
+        
+        var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.UserName == auth.Login && x.PasswordHash == auth.HashedPassword);
+        if (user == null) 
+            return NotFound();
+        
+        return Ok(GenerateJwtToken(user.Id));
     }
-    
+
     [HttpGet("get_user_access_by_id/{id:guid}")]
     public async Task<ActionResult> GetUserAccessById(Guid id)
     {
-        var _user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == id);
-        if (_user != null)
+        var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == id);
+        if (user != null)
         {
-            return Ok(_user.AccessFlags);
+            return Ok(user.AccessFlags);
         }
 
         return NotFound();
@@ -91,6 +105,25 @@ public class UserController : Controller
     [HttpGet("test_hash")]
     public async Task<string> TestHash(string password)
     {
-        return UserExtensions.HashPassword(password);
+        return await UserExtensions.HashPasswordAsync(password);
+    }
+
+    private string GenerateJwtToken(Guid userId)
+    {
+        _logger.LogInformation($"Generating Jwt token for {userId}");
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(JwtExtensions.JwtCookieName, userId.ToString())
+            }),
+            Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])),
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 }

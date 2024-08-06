@@ -1,0 +1,118 @@
+﻿@using System.Reflection
+@using Microsoft.AspNetCore.Components.Authorization
+@using Shared.DB.Classes.User
+@using Shared.Extensions
+@using Microsoft.Extensions.Logging
+
+@if (_isLoading)
+{
+    <p>Загрузка...</p>
+}
+else if (_isAuthorized)
+{
+    @ChildContent
+}
+else
+{
+    <p>Нет прав для доступа на эту страницу...</p>
+}
+
+@code {
+    [Parameter] public RouteData? RouteData { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Inject] private ApiService _ApiService { get; set; }
+    [Inject] private NavigationManager Navigation { get; set; }
+    [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; }
+    [Inject] private ILogger<AuthorizedRouteView> _logger { get; set; }
+
+    private bool _isAuthorized = false;
+    private bool _isLoading = true;
+    private string? _redirectUrl = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _ApiService.SendMessage($"Try load page {RouteData?.PageType}");
+        _logger.LogInformation($"Try load page {RouteData?.PageType}");
+        _isLoading = true;
+        _isAuthorized = false;
+
+        if (RouteData == null)
+        {
+            Failed();
+            return;
+        }
+
+        var pageType = RouteData.PageType;
+        var authorizeLevelAttribute = pageType.GetCustomAttribute<AuthorizeLevelAttribute>();
+        if (authorizeLevelAttribute == null)
+        {
+            if (!string.IsNullOrEmpty(_redirectUrl))
+            {
+                // Navigation.NavigateTo(_redirectUrl);
+                _logger.LogInformation($"Navigated to {_redirectUrl}");
+            }
+
+            _isLoading = false;
+            _isAuthorized = true;
+            StateHasChanged();
+            return;
+        }
+
+        var requiredLevel = authorizeLevelAttribute!.RequiredLevel;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity is { IsAuthenticated: false })
+        {
+            _logger.LogInformation("User is not authenticated.");
+            Failed();
+            return;
+        }
+
+        var userId = user.Claims.FirstOrDefault(x => x.Type == JwtExtensions.JwtCookieName)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogInformation($"userId is NullOrEmpty | {userId}");
+            Failed();
+            return;
+        }
+
+        var accessLevel = await _ApiService.GetUserAccessById(userId.ToGuid());
+        if (accessLevel == null)
+        {
+            _logger.LogInformation($"accessLevel == null | {accessLevel}");
+            Failed();
+            return;
+        }
+
+        _logger.LogInformation($"Check {userId} for {requiredLevel} | {pageType}");
+        if (requiredLevel == (uint)AccessLevel.Exists
+            || (accessLevel & requiredLevel) == requiredLevel)
+        {
+            _isAuthorized = true;
+        }
+        else
+        {
+            _logger.LogInformation("Access level check failed.");
+            Failed();
+        }
+
+        _logger.LogInformation($"Routing to {pageType}");
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    private void Failed()
+    {
+        _redirectUrl = "/auth";
+        _isLoading = false;
+        
+        _logger.LogInformation($"RedirectUrl is {_redirectUrl}");
+        if (!string.IsNullOrEmpty(_redirectUrl))
+        {
+            Navigation.NavigateTo(_redirectUrl);
+        }
+        
+        StateHasChanged();
+    }
+}

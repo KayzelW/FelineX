@@ -48,4 +48,6 @@ public class TaskAnswer
             }
         }
     }
+
+    public TaskAnswer(User.User? user, MyTask task):this(user?.Id, task){}
 }
