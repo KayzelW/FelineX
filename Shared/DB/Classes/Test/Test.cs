@@ -13,6 +13,7 @@ public class Test
     [JsonIgnore]
     public User.User? Creator { get; set; }
     public Guid? CreatorId { get; set; }
+    [Column(TypeName = "timestamp(6)")]
     public DateTime? CreationTime { get; set; } = DateTime.Now;
     public List<Task.Task>? Tasks { get; set; } = new List<Task.Task>();
     

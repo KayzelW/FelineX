@@ -16,6 +16,7 @@ public class TestAnswer
     public Guid? AnsweredTestId { get; set; }
     public List<TaskAnswer>? TaskAnswers { get; set; } = new List<TaskAnswer>();
     
+    [Column(TypeName = "timestamp(6)")]
     public DateTime PassingDate { get; set; }
     
     public double Score { get; set; }

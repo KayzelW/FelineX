@@ -82,7 +82,7 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
             {
                 new Claim(JwtExtensions.JwtCookieName, userId.ToString())
             }),
-            Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(configuration["Jwt:ExpireMinutes"])),
+            Expires = DateTime.Now.AddMinutes(Convert.ToDouble(configuration["Jwt:ExpireMinutes"])),
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
