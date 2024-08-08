@@ -58,6 +58,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasOne(x => x.Creator)
             .WithMany();
 
+
         modelBuilder.Entity<User>()
             .HasIndex(e => e.UserName)
             .IsUnique();

@@ -25,6 +25,29 @@ public class TestController : Controller
         _dbContext = dbContext;
         _logger = logger;
     }
+    
+    [HttpDelete("delete_test/{testId:guid}")]
+    public async Task<IActionResult> DeleteTest(Guid testId)
+    {
+        try
+        {
+            var testAnswers =  _dbContext.TestAnswers.Where(x => x.AnsweredTestId == testId).ToList();
+            foreach (var testAnswer in testAnswers)
+            {
+                _dbContext.Remove(testAnswer);
+            }
+            var test = await _dbContext.Tests!.FirstOrDefaultAsync(x => x.Id == testId);
+            _dbContext.Remove(test);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Delete error test: {testId}", e);
+            return BadRequest();
+        }
+        return Ok(true);
+        
+    }
 
     [HttpGet("get_tests")]
     [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action")]
@@ -46,10 +69,12 @@ public class TestController : Controller
                 .FirstOrDefaultAsync();
             foreach (var task in test.Tasks)
             {
-                if (task.IsStringTask())
+                if (task.IsStringTask() || task.IsShortStringTask())
                 {
-                    task.VariableAnswers[0].StringAnswer = "";
-                    task.VariableAnswers[0].Truthful = false;
+                    foreach (var varAns in task.VariableAnswers!)
+                    {
+                        varAns.StringAnswer = "";
+                    }
                 }
                 else
                 {
@@ -105,16 +130,25 @@ public class TestController : Controller
 
         foreach (var task in answeredTest.TaskAnswers)
         {
-            var correctTask = await _dbContext.Tasks.Where(x => x.Id == task.AnsweredTaskId)
+            var correctTask = await _dbContext.Tasks!.Where(x => x.Id == task.AnsweredTaskId)
                 .AsNoTracking()
                 .Include(x => x.VariableAnswers)
                 .FirstOrDefaultAsync();
             if (correctTask!.IsStringTask())
             {
-                if (task.StringAnswer == correctTask.VariableAnswers.FirstOrDefault().StringAnswer)
+                if (task.StringAnswer == correctTask.VariableAnswers!.FirstOrDefault()!.StringAnswer)
                 {
                     score += taskWeight;
                 }
+            }
+
+            if (correctTask.IsShortStringTask())
+            {
+                if (correctTask.VariableAnswers!.Any(varAns => task.StringAnswer == varAns.StringAnswer))
+                {
+                    score += taskWeight;
+                }
+                
             }
             else
             {

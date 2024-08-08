@@ -1,25 +1,23 @@
 ﻿@page "/test/{TestId}"
 
-@using MyTest = Shared.DB.Classes.Test.Test;
 @using Shared.DB.Classes.Test.Task
 @using Shared.DB.Interfaces
-@using Shared.Extensions
 @using Task = System.Threading.Tasks.Task
-@using System.IdentityModel.Tokens.Jwt
 @using Microsoft.Extensions.Logging
-@using Shared.DB.Classes.User
+@using Shared.Interfaces
 @using Shared.Models
-@using WebAssembly.Services
+
 
 @inject ApiService _ApiService
 @inject ILogger<Auth> _logger
 @inject NavigationManager nav
+@inject IUserContextService _UserContext
 
 
 
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test?.TestName</h3>
 
-@if (userId is null)
+@if (!_UserContext.IsAuthorized)
 {
     <div class="d-flex justify-content-center row">
         <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
@@ -185,9 +183,17 @@ else
 @code {
     [Parameter] public string TestId { get; set; }
 
-    private Guid? userId { get; set; }
-
     private TestDTO? test { get; set; } = new TestDTO();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _logger.LogInformation($"Now at {this.GetType()}");
+        
+        test = await _ApiService.GetTest(TestId);
+        _logger.LogInformation($"Got test {TestId}");
+    }
 
     void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
     {
@@ -196,20 +202,17 @@ else
             varAns.Truthful = varAns == selectedAnswer;
         }
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        _logger.LogInformation($"Now at {this.GetType()}");
-
-
-        test = await _ApiService.GetTest(TestId);
-        _logger.LogInformation($"Got test {TestId}");
-    }
-
+    
     private async void SaveAndSubmit()
     {
+        foreach (var task in test.Tasks)
+        {
+            _logger.LogInformation($"Task {task.Question}");
+            foreach (var varAns in task.VariableAnswers)
+            {
+                _logger.LogInformation(varAns.StringAnswer);
+            }
+        }
         var ansTestId = await _ApiService.SubmitTest(test);
         nav.NavigateTo($"result_test/{ansTestId}");
     }

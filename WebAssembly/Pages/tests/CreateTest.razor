@@ -85,8 +85,9 @@
                             </div>
                             @foreach (var varAnswer in task.VariableAnswers!)
                             {
+                                varAnswer.Truthful = true;
                                 <div class="form-check" style="min-height: 50px">
-                                    <input type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
+                                    <input type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@varAnswer.StringAnswer"
                                            style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
                                 </div>
                             }
@@ -179,7 +180,7 @@
     private void Plus(InteractionType interactionType)
     {
         var t = new MyTask(null, interactionType);
-        if (t.InteractionType is InteractionType.LongStringTask or InteractionType.ShortStringTask or InteractionType.SqlQueryTask)
+        if (t.InteractionType is InteractionType.LongStringTask or InteractionType.SqlQueryTask)
         {
             var v = new VariableAnswer
             {

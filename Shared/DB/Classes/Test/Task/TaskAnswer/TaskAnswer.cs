@@ -29,7 +29,7 @@ public class TaskAnswer
         StudentId = userId;
         AnsweredTaskId = task.Id;
         
-        if (task.IsStringTask())
+        if (task.IsStringTask() || task.IsShortStringTask())
         {
             var varAns = task.VariableAnswers!.FirstOrDefault();
             if (varAns is not null)

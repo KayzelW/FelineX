@@ -29,9 +29,11 @@ public sealed class Task : ITask
         set => FixCountVariables(value);
     }
 
+    public bool IsShortStringTask() => this.InteractionType is
+        InteractionType.ShortStringTask;
+    
     public bool IsStringTask() => this.InteractionType is
         InteractionType.LongStringTask or
-        InteractionType.ShortStringTask or
         InteractionType.SqlQueryTask;
 
     #region Constructors

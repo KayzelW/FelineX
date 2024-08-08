@@ -16,13 +16,13 @@ namespace WebAssembly.Services;
 public class ApiService
 {
     private HttpClient httpClient { get; }
-    
+
     public ApiService(HttpClient httpClient)
     {
         this.httpClient = httpClient;
     }
 
-    
+
     public async Task<List<MyTest>> GetTests()
     {
         List<MyTest>? tests = null;
@@ -33,6 +33,12 @@ public class ApiService
         }
 
         return tests;
+    }
+
+    public async Task<bool> DeleteTest(Guid testId)
+    {
+        var responseMessage = await httpClient.DeleteAsync($"Test/delete_test/{testId}");
+        return responseMessage.IsSuccessStatusCode;
     }
 
     public async Task<TestDTO?> GetTest(string testId)
