@@ -7,12 +7,17 @@ using Shared.Extensions;
 
 namespace APIServer.Services;
 
-public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)
+public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)// : BackgroundService
 {
     private ConcurrentDictionary<string, Guid> _activeTokens = [];
 
     private JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
+    // protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    // {
+    //     
+    // }
+    
     public bool TryGetUserId(string? token, out Guid userId)
     {
         logger.LogInformation($"Try get token({token})");

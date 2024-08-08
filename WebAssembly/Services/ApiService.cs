@@ -100,7 +100,7 @@ public class ApiService
         var responseMessage = await httpClient.PostAsJsonAsync("Auth/authtoken", token);
         if (!responseMessage.IsSuccessStatusCode) return null;
         var data = await responseMessage.Content.ReadFromJsonAsync<AuthAnswer>();
-        Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/auth");
+        Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/authtoken");
         return data;
     }
 

@@ -23,22 +23,45 @@ public sealed class Program
 
     private static void ConfigureServices(WebApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                               throw new InvalidOperationException(
-                                   "Connection string 'DefaultConnection' not found.");
+        #region Database connection
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+        try
+        {
+            //postrges
+            var connectionString = builder.Configuration.GetConnectionString("postgres") ??
+                                   throw new InvalidOperationException(
+                                       "Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(connectionString));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed connect to Postgres");
+
+            //mysql
+            var connectionString = builder.Configuration.GetConnectionString("mysql") ??
+                                   throw new InvalidOperationException(
+                                       "Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+        }
+
+        #endregion
 
         builder.Services.AddHttpContextAccessor();
+        // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
-        
+
         builder.Services.AddLogging(logging =>
         {
             logging.AddConsole();
             logging.AddDebug();
         });
-        
+
+        #region swagger
+
         if (builder.Environment.IsDevelopment())
         {
             builder.Services.AddSwaggerGen(c =>
@@ -46,7 +69,11 @@ public sealed class Program
                 c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Dev API", Version = "v1" });
             });
         }
-        
+
+        #endregion
+
+        #region Cors
+
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowSpecificOrigin",
@@ -57,7 +84,9 @@ public sealed class Program
                         .AllowAnyMethod();
                 });
         });
-        
+
+        #endregion
+
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
     }

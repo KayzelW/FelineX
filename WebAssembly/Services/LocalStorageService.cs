@@ -10,7 +10,6 @@ public partial class LocalStorageService(IJSRuntime jsRuntime) : ILocalStorageSe
 {
     public async Task SetItemAsync(string name, string value, int days = 7)
     {
-        var expires = new DateTimeOffset(DateTime.UtcNow.AddDays(days)).ToString("R");
         await jsRuntime.InvokeVoidAsync("cookieHelper.setCookie", name, value, days);
     }
 

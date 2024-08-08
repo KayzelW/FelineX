@@ -11,48 +11,39 @@ namespace APIServer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("MySql:CharSet", "utf8mb4");
-
             migrationBuilder.CreateTable(
                 name: "ThemeTasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Theme = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Theme = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ThemeTasks", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UserName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NormalizedUserName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    AccessFlags = table.Column<uint>(type: "int unsigned", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    NormalizedUserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    PasswordHash = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    AccessFlags = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Groups",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    GroupCreatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GroupCreatorId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -62,18 +53,16 @@ namespace APIServer.Migrations
                         column: x => x.GroupCreatorId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Tasks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Question = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    InteractionType = table.Column<int>(type: "int", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Question = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    InteractionType = table.Column<int>(type: "integer", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -83,18 +72,16 @@ namespace APIServer.Migrations
                         column: x => x.CreatorId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "Tests",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TestName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    CreationTime = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -104,15 +91,14 @@ namespace APIServer.Migrations
                         column: x => x.CreatorId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "UserUserGroup",
                 columns: table => new
                 {
-                    StudentsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    UserGroupsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    StudentsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserGroupsId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,18 +115,16 @@ namespace APIServer.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "TaskAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StudentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    AnsweredTaskId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    StringAnswer = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    AnsweredTaskId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StringAnswer = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -155,15 +139,14 @@ namespace APIServer.Migrations
                         column: x => x.StudentId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "TaskThemeTask",
                 columns: table => new
                 {
-                    ThematicsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ThemeTask = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    ThematicsId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ThemeTask = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,18 +163,16 @@ namespace APIServer.Migrations
                         principalTable: "ThemeTasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "VariableAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StringAnswer = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Truthful = table.Column<bool>(type: "tinyint(1)", nullable: true),
-                    TaskId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StringAnswer = table.Column<string>(type: "text", nullable: true),
+                    Truthful = table.Column<bool>(type: "boolean", nullable: true),
+                    TaskId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -201,15 +182,14 @@ namespace APIServer.Migrations
                         column: x => x.TaskId,
                         principalTable: "Tasks",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "TaskTest",
                 columns: table => new
                 {
-                    TasksId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TestsId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    TasksId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestsId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -226,16 +206,18 @@ namespace APIServer.Migrations
                         principalTable: "Tests",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "TestAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    StudentId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    AnsweredTestId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StudentId = table.Column<Guid>(type: "uuid", nullable: true),
+                    AnsweredTestId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PassingDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Score = table.Column<double>(type: "double precision", nullable: false),
+                    FantomName = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -250,15 +232,14 @@ namespace APIServer.Migrations
                         column: x => x.StudentId,
                         principalTable: "Users",
                         principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "TaskAnswerVariableAnswer",
                 columns: table => new
                 {
-                    MarkedVariablesId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TaskAnswerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    MarkedVariablesId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TaskAnswerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -275,15 +256,14 @@ namespace APIServer.Migrations
                         principalTable: "VariableAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateTable(
                 name: "TaskAnswerTestAnswer",
                 columns: table => new
                 {
-                    TaskAnswersId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TestAnswerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    TaskAnswersId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestAnswerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -300,8 +280,7 @@ namespace APIServer.Migrations
                         principalTable: "TestAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_GroupCreatorId",
