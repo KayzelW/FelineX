@@ -12,7 +12,7 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
     private ConcurrentDictionary<string, Guid> _activeTokens = [];
 
     private JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-
+    
     // protected override Task ExecuteAsync(CancellationToken stoppingToken)
     // {
     //     

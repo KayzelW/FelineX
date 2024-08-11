@@ -66,8 +66,6 @@ public class AuthController : Controller
     [HttpPost("auth")]
     public async Task<IActionResult> TryAuth([FromBody]AuthData auth)
     {
-        _logger.LogInformation(
-            $"{HttpContext.Connection.RemoteIpAddress} => {HttpContext.Connection.LocalIpAddress}:\n {HttpContext.Request}");
         if (auth.HashedPassword == null || auth.Login == null)
             return NotFound();
 

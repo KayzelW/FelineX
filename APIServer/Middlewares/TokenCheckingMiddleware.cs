@@ -9,6 +9,10 @@ public class TokenCheckingMiddleware(RequestDelegate next, ILogger<TokenChecking
     {
         var token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
 
+        logger.LogInformation(
+            $"{context.Connection.RemoteIpAddress} => {context.Connection.LocalIpAddress}:\n {context.Request}");
+        
+        
         logger.LogInformation($"User with token({token}) are checking");
         logger.LogWarning(context.Request.Headers.Authorization.ToString());
         
