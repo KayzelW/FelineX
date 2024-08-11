@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Shared.DB.Classes.User;
+using Shared.DB.User;
 
 namespace Shared.Interfaces;
 

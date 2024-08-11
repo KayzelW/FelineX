@@ -1,7 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Shared.DB.Classes;
-using Shared.DB.Classes.User;
+﻿using System.Text.Json.Serialization;
+using Shared.DB.User;
 
 namespace Shared.Models;
 

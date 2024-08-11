@@ -53,6 +53,7 @@ public sealed class Program
         builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
+        builder.Services.AddHostedService<TestWarrior>();
 
         builder.Services.AddLogging(logging =>
         {

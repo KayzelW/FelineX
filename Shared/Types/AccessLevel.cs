@@ -1,4 +1,4 @@
-﻿namespace Shared.DB.Classes.User;
+﻿namespace Shared.DB.User;
 
 [Flags]
 public enum AccessLevel : uint

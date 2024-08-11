@@ -1,5 +1,5 @@
-﻿using Shared.DB.Classes.Test.Task;
-using Shared.DB.Classes.Test.Task.TaskAnswer;
+﻿using Shared.DB.Test.Task;
+using Shared.Types;
 
 namespace Shared.Extensions;
 

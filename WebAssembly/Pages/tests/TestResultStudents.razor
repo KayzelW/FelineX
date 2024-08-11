@@ -1,9 +1,10 @@
 ﻿@page "/result_test_students/{AnsweredTestId}"
 @attribute [AuthorizeLevel(AccessLevel.Teacher)]
 
-@using Shared.DB.Classes.Test.Task
-@using Shared.DB.Classes.Test.Task.TaskAnswer
-@using Shared.DB.Classes.User
+@using Shared.DB.Test.Task
+@using Shared.DB.User
+@using Shared.DB.Test.Answers
+@using Shared.DB.Test.Task
 @using Shared.Extensions
 @using Task = System.Threading.Tasks.Task
 

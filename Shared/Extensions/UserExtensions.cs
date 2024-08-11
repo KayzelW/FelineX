@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
-using Shared.DB.Classes.User;
+using Shared.DB.User;
 using Shared.Models;
 
 namespace Shared.Extensions;

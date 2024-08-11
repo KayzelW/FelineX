@@ -11,11 +11,11 @@ public class TokenCheckingMiddleware(RequestDelegate next, ILogger<TokenChecking
 
         logger.LogInformation(
             $"{context.Connection.RemoteIpAddress} => {context.Connection.LocalIpAddress}:\n {context.Request}");
-        
-        
+
+
         logger.LogInformation($"User with token({token}) are checking");
         logger.LogWarning(context.Request.Headers.Authorization.ToString());
-        
+
         if (tokenService.TryGetUserId(token, out var userId))
         {
             context.Items["User"] = userId;
@@ -24,8 +24,9 @@ public class TokenCheckingMiddleware(RequestDelegate next, ILogger<TokenChecking
         else
         {
             logger.LogInformation($"access denied for token({token})");
-            if (Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"]?.ToString() != "Development")
-                await context.ForbidAsync();
+#if !DEBUG
+            await context.ForbidAsync();
+#endif
         }
 
         await next(context);

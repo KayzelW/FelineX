@@ -1,4 +1,5 @@
-﻿using Shared.DB.Classes.Test.Task;
+﻿using Shared.DB.Test.Task;
+using Shared.DB.Test.Task;
 
 namespace Shared.DB.Interfaces;
 

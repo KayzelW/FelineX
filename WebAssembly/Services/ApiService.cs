@@ -4,24 +4,18 @@ using System.Net.Http.Json;
 using System.Net.Mime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.JSInterop;
-using Shared.DB.Classes.Test.Task.TaskAnswer;
-using Shared.DB.Classes.User;
+using Shared.DB.User;
+using Shared.DB.Test.Answers;
 using Shared.Extensions;
 using Shared.Interfaces;
 using Shared.Models;
-using MyTest = Shared.DB.Classes.Test.Test;
+using MyTest = Shared.DB.Test.Test;
 
 namespace WebAssembly.Services;
 
-public class ApiService
+public class ApiService(HttpClient httpClient)
 {
-    private HttpClient httpClient { get; }
-
-    public ApiService(HttpClient httpClient)
-    {
-        this.httpClient = httpClient;
-    }
-
+    // private HttpClient httpClient { get; } = httpClient;
 
     public async Task<List<MyTest>> GetTests()
     {
@@ -82,13 +76,12 @@ public class ApiService
     /// 
     /// </summary>
     /// <param name="login"></param>
-    /// <param name="password"></param>
-    /// <returns>Token as a string</returns>
+    /// <param name="password">will hash</param>
+    /// <returns><see cref="AuthAnswer"/></returns>
     public async Task<AuthAnswer?> AuthUser(string login, string password)
     {
         var hash = await UserExtensions.HashPasswordAsync(password);
 
-        Console.WriteLine($"User: |{login}| - |{hash}|"); //TODO: REMOVE
         var responseMessage = await httpClient.PostAsJsonAsync("Auth/auth", new AuthData
         {
             Login = login,
@@ -103,21 +96,16 @@ public class ApiService
 
     public async Task<AuthAnswer?> AuthUserByToken(string token)
     {
-        var responseMessage = await httpClient.PostAsJsonAsync("Auth/authtoken", token);
+        var responseMessage = await httpClient.PostAsJsonAsync("Auth/auth_token", token);
         if (!responseMessage.IsSuccessStatusCode) return null;
         var data = await responseMessage.Content.ReadFromJsonAsync<AuthAnswer>();
-        Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/authtoken");
+        Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/auth_token");
         return data;
-    }
-
-    public async void SendMessage(string msg)
-    {
-        await httpClient.PatchAsJsonAsync("User", msg);
     }
 
     public async Task<List<TestAnswer>?> GetListStudentsTestAnswers(string testId)
     {
-        var responseMessage = await httpClient.GetAsync($"Test/get_list_students_testanswers/{testId}");
+        var responseMessage = await httpClient.GetAsync($"Test/get_list_students_test_answers/{testId}");
         responseMessage.EnsureSuccessStatusCode();
         return await responseMessage.Content.ReadFromJsonAsync<List<TestAnswer>>();
     }

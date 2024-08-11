@@ -34,7 +34,10 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
     {
         var token = GenerateJwtToken(userId);
         if (!_activeTokens.TryAdd(token, userId))
+        {
+            //TODO:continue token lifetime logic
             return token;
+        }
 
         return token;
     }

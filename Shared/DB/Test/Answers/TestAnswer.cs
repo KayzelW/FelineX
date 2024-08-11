@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Shared.DB.Classes.Test.Task.TaskAnswer;
+namespace Shared.DB.Test.Answers;
 
 public class TestAnswer
 {
@@ -14,16 +14,12 @@ public class TestAnswer
 
     public Test? AnsweredTest { get; set; }
     public Guid? AnsweredTestId { get; set; }
-    public List<TaskAnswer>? TaskAnswers { get; set; } = new List<TaskAnswer>();
+    public List<TaskAnswer>? TaskAnswers { get; set; } = [];
     
     [Column(TypeName = "timestamp(6)")]
     public DateTime PassingDate { get; set; }
     
     public double Score { get; set; }
-    
-    public string FantomName { get; set; } = "";
-
-    public TestAnswer()
-    {
-    }
+    [JsonIgnore, NotMapped] public int TaskWeight { get; set; } 
+    [StringLength(100)] public string? FantomName { get; set; }
 }

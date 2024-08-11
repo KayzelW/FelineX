@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic.CompilerServices;
-using Shared.DB.Classes.User;
+using Shared.DB.User;
 using Shared.Extensions;
 using Shared.Models;
 using Swashbuckle.AspNetCore.Annotations;
@@ -78,20 +78,18 @@ public class AuthController : Controller
         return Ok(new AuthAnswer()
         {
             UserToken = token,
-            UserName = user.NormalizedUserName,
+            UserName = user.NormalizedUserName ?? user.UserName,
             Access = user.AccessFlags,
         });
     }
 
-    [HttpPost("authtoken")]
+    [HttpPost("auth_token")]
     public async Task<IActionResult> TryAuthByToken([FromBody] string token)
     {
-        _logger.LogInformation(
-            $"{HttpContext.Connection.RemoteIpAddress} => {HttpContext.Connection.LocalIpAddress}:\n {HttpContext.Request}");
-        
         if (!_tokenService.TryGetUserId(token, out var userId)) return NotFound();
 
         var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == userId);
+        
         if (user == null)
         {
             _tokenService.RemoveToken(token);
@@ -101,8 +99,8 @@ public class AuthController : Controller
         return Ok(new AuthAnswer()
         {
             UserToken = token,
-            UserName = user?.NormalizedUserName,
-            Access = user?.AccessFlags,
+            UserName = user.NormalizedUserName ?? user.UserName,
+            Access = user.AccessFlags,
         });
     }
 

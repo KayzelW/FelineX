@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Shared.DB.Classes.User;
+namespace Shared.DB.User;
 
 // Add profile data for application users by adding properties to the User class
 public sealed class User
@@ -14,14 +14,14 @@ public sealed class User
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    [MaxLength(100)] public string UserName { get; set; }
-    [MaxLength(100)] public string? NormalizedUserName { get; set; }
+    [StringLength(100)] public string UserName { get; set; }
+    [StringLength(100)] public string? NormalizedUserName { get; set; }
     [JsonIgnore, MaxLength(100)] public string? PasswordHash { get; set; }
 
     /// <summary>
     /// DO NOT TOUCH. FOR YOUR HANDS EXISTS: Access
     /// </summary>
-    public uint AccessFlags { get; set; } // Хранить флаги доступа в виде числа
+    public uint AccessFlags { get; set; }
 
     /// <summary>
     /// Use '|' to add permssions like:
@@ -36,7 +36,7 @@ public sealed class User
         set => AccessFlags = (uint)value;
     }
 
-    [JsonIgnore] public List<UserGroup>? UserGroups { get; set; }
+    [JsonIgnore] public List<UserGroup>? UserGroups { get; set; } = [];
 
     public User()
     {
@@ -48,6 +48,5 @@ public sealed class User
     }
 
 
-    public override string ToString()
-        => UserName ?? string.Empty;
+    public override string ToString() => NormalizedUserName ?? UserName ?? string.Empty;
 }

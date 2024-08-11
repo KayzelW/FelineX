@@ -2,6 +2,9 @@
 
 namespace Shared.Models;
 
+/// <summary>
+/// DTO, contains the UserToken, UserName and Access(<see cref="uint"/>)
+/// </summary>
 public class AuthAnswer
 {
     public string? UserToken { get; set; }

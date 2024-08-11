@@ -1,25 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Shared.DB.Classes.Test.Task.TaskAnswer;
+using Shared.DB.Test.Task;
 using Shared.DB.Interfaces;
+using Shared.Types;
 
-namespace Shared.DB.Classes.Test.Task;
+namespace Shared.DB.Test.Task;
 
-public sealed class Task : ITask
+public sealed partial class Task : ITask
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; } = new Guid();
 
-    [MaxLength(1000)] public string? Question { get; set; } = "";
-    [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; } = new List<ThemeTask>();
+    [StringLength(1000)] public string? Question { get; set; } = "";
+    public TaskSettings Settings { get; set; }
+    public Guid SettingsId { get; set; }
+    [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; } = [];
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
-    public List<VariableAnswer>? VariableAnswers { get; set; } = new List<VariableAnswer>();
+    public List<VariableAnswer>? VariableAnswers { get; set; } = [];
     [JsonIgnore] public User.User? Creator { get; set; }
     public Guid? CreatorId { get; set; }
-    [JsonIgnore] public List<Test>? Tests { get; set; } = new List<Test>();
-
-    // [JsonIgnore] public DBMS Dbms { get; set; } = DBMS.Sqlite;
+    [JsonIgnore] public List<Test>? Tests { get; set; } = [];
+    public DBMS? DatabaseType { get; set; }
+    public List<string>? DataRows { get; set; }
 
 
     [NotMapped, JsonIgnore]
@@ -31,9 +34,11 @@ public sealed class Task : ITask
 
     public bool IsShortStringTask() => this.InteractionType is
         InteractionType.ShortStringTask;
-    
-    public bool IsStringTask() => this.InteractionType is
-        InteractionType.LongStringTask or
+
+    public bool IsLongStringTask() => this.InteractionType is
+        InteractionType.LongStringTask;
+
+    public bool IsSqlTask() => this.InteractionType is
         InteractionType.SqlQueryTask;
 
     #region Constructors
@@ -62,7 +67,7 @@ public sealed class Task : ITask
 
     private void FixCountVariables(int targetCount)
     {
-        int countInTask = VariableAnswers!.Count;
+        var countInTask = VariableAnswers!.Count;
 
         if (targetCount <= 0)
         {
@@ -84,7 +89,7 @@ public sealed class Task : ITask
 
         if (countInTask < targetCount)
         {
-            for (int i = countInTask; i < targetCount; i++)
+            for (var i = countInTask; i < targetCount; i++)
             {
                 VariableAnswers!.Add(new VariableAnswer());
             }

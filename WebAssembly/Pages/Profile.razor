@@ -1,7 +1,7 @@
 ﻿@page "/profile"
 @attribute [AuthorizeLevel(AccessLevel.Exists)]
 
-@using Shared.DB.Classes.User
+@using Shared.DB.User
 @using Shared.Interfaces
 
 @inject ILogger<Profile> _logger

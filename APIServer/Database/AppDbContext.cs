@@ -1,25 +1,27 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shared.DB.Classes;
-using Shared.DB.Classes.Test;
-using Shared.DB.Classes.Test.Task;
-using Shared.DB.Classes.Test.Task.TaskAnswer;
-using Shared.DB.Classes.User;
-using Task = Shared.DB.Classes.Test.Task.Task;
+using Shared.DB.Test;
+using Shared.DB.Test.Task;
+using Shared.DB.User;
+using Shared.DB.Test.Answers;
+using Shared.DB.Test.Task;
+using Task = Shared.DB.Test.Task.Task;
+using TestSettings = Shared.DB.Test.TestSettings;
 
 namespace APIServer.Database;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options)
-    : DbContext(options)
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<User>? Users { get; set; }
-    public DbSet<ThemeTask>? ThemeTasks { get; set; }
-    public DbSet<Test>? Tests { get; set; }
-    public DbSet<Task>? Tasks { get; set; }
-    public DbSet<VariableAnswer>? VariableAnswers { get; set; }
-    public DbSet<UserGroup>? Groups { get; set; }
-    public DbSet<TestAnswer>? TestAnswers { get; set; }
-    public DbSet<TaskAnswer>? TaskAnswers { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<ThemeTask> ThemeTasks { get; set; }
+    public DbSet<Test> Tests { get; set; }
+    public DbSet<TestSettings> TestSettings { get; set; }
+    public DbSet<Task> Tasks { get; set; }
+    public DbSet<TaskSettings> TaskSettings { get; set; }
+    public DbSet<VariableAnswer> VariableAnswers { get; set; }
+    public DbSet<UserGroup> Groups { get; set; }
+    public DbSet<TestAnswer> TestAnswers { get; set; }
+    public DbSet<TaskAnswer> TaskAnswers { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -44,20 +46,44 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region TaskConfigure
+
         modelBuilder.Entity<Task>()
             .HasMany(x => x.Thematics)
             .WithMany(task => task.Tasks);
         modelBuilder.Entity<Task>()
             .HasMany(x => x.VariableAnswers)
             .WithOne();
+        modelBuilder.Entity<Task>()
+            .HasOne(x => x.Settings)
+            .WithOne();
+        modelBuilder.Entity<Task>()
+            .Navigation(x => x.Settings)
+            .AutoInclude();
+        modelBuilder.Entity<Task>()
+            .Navigation(x => x.VariableAnswers)
+            .AutoInclude();
+
+        #endregion
+
+        #region TestConfigure
 
         modelBuilder.Entity<Test>()
             .HasMany(x => x.Tasks)
             .WithMany(x => x.Tests);
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Creator)
-            .WithMany();
+            .WithOne();
+        modelBuilder.Entity<Test>()
+            .Navigation(x => x.Tasks)
+            .AutoInclude();
+        modelBuilder.Entity<Test>()
+            .Navigation(x => x.Settings)
+            .AutoInclude();
 
+        #endregion
+
+        #region UserConfigure
 
         modelBuilder.Entity<User>()
             .HasIndex(e => e.UserName)
@@ -66,12 +92,31 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasMany(x => x.UserGroups)
             .WithMany(x => x.Students);
 
+        #endregion
+
+        #region TestAnswerConfigure
+
+        modelBuilder.Entity<TestAnswer>()
+            .HasMany(testAns => testAns.TaskAnswers)
+            .WithMany();
+        modelBuilder.Entity<TaskAnswer>()
+            .HasMany(x => x.MarkedVariables)
+            .WithMany();
+
+        #endregion
+
         #region usingId
 
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Creator)
             .WithMany()
             .HasForeignKey(x => x.CreatorId);
+
+        modelBuilder.Entity<Test>()
+            .HasOne<TestSettings>(x => x.Settings)
+            .WithMany()
+            .HasForeignKey(x => x.SettingsId);
+
         modelBuilder.Entity<UserGroup>()
             .HasOne(x => x.GroupCreator)
             .WithMany()
@@ -103,12 +148,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .HasForeignKey(x => x.AnsweredTestId);
 
         #endregion
-
-        modelBuilder.Entity<TestAnswer>()
-            .HasMany(testAns => testAns.TaskAnswers)
-            .WithMany();
-        modelBuilder.Entity<TaskAnswer>()
-            .HasMany(x => x.MarkedVariables)
-            .WithMany();
     }
 }

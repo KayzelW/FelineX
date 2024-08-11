@@ -1,9 +1,10 @@
 ﻿@page "/test/{TestId}"
 
-@using Shared.DB.Classes.Test.Task
+@using Shared.DB.Test.Task
 @using Shared.DB.Interfaces
 @using Task = System.Threading.Tasks.Task
 @using Microsoft.Extensions.Logging
+@using Shared.DB.Test.Task
 @using Shared.Interfaces
 @using Shared.Models
 
@@ -188,9 +189,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        _logger.LogInformation($"Now at {this.GetType()}");
-        
+       
         test = await _ApiService.GetTest(TestId);
         _logger.LogInformation($"Got test {TestId}");
     }
@@ -208,7 +207,7 @@ else
         foreach (var task in test.Tasks)
         {
             _logger.LogInformation($"Task {task.Question}");
-            foreach (var varAns in task.VariableAnswers)
+            foreach (var varAns in task.VariableAnswers!)
             {
                 _logger.LogInformation(varAns.StringAnswer);
             }

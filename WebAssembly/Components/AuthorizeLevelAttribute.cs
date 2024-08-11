@@ -1,4 +1,4 @@
-﻿using Shared.DB.Classes.User;
+﻿using Shared.DB.User;
 
 namespace WebAssembly.Components;
 

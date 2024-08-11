@@ -1,8 +1,8 @@
 ﻿@page "/my_tests"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Exists)]
 
-@using MyTest = Shared.DB.Classes.Test.Test;
-@using Shared.DB.Classes.User
+@using MyTest = Shared.DB.Test.Test;
+@using Shared.DB.User
 
 @inject ApiService _ApiService
 @inject NavigationManager _navigationManager

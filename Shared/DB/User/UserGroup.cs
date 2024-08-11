@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Shared.DB.Classes.User;
+namespace Shared.DB.User;
 
 public class UserGroup
 {

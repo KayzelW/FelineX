@@ -1,14 +1,9 @@
-﻿using Shared.DB.Classes.Test;
+﻿using Shared.DB.Test;
 
 namespace Shared.Models;
 
 public class TestDTO : Test
 {
-    public string? FantomName { get; set; } = "";
+    public string? FantomName { get; set; }
     public Guid? StudentId { get; set; }
-
-    public TestDTO()
-    {
-        
-    }
 }

@@ -1,13 +1,14 @@
 ﻿@page "/create_test"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
-@using Shared.DB.Classes.Test.Task
-@using Shared.DB.Classes.Test.Task.TaskAnswer
-@using Shared.DB.Classes.User
+@using Shared.DB.Test.Task
+@using Shared.DB.User
 @using Shared.Extensions
-@using MyTest = Shared.DB.Classes.Test.Test;
-@using MyTask = Shared.DB.Classes.Test.Task.Task;
+@using MyTest = Shared.DB.Test.Test;
+@using MyTask = Shared.DB.Test.Task.Task;
 @using Shared.DB.Interfaces
+@using Shared.DB.Test.Task
+@using Shared.Types
 
 @inject ApiService _apiService
 @inject NavigationManager _navigationManager

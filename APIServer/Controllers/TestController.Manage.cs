@@ -1,0 +1,71 @@
+﻿using APIServer.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Shared.DB.Test;
+
+namespace APIServer.Controllers;
+
+public partial class TestController
+{
+    [HttpDelete("delete_test/{testId:guid}")]
+    public async Task<IActionResult> DeleteTest(Guid testId)
+    {
+        try
+        {
+            var testAnswers =  dbContext.TestAnswers.Where(x => x.AnsweredTestId == testId).ToList();
+            foreach (var testAnswer in testAnswers)
+            {
+                dbContext.Remove(testAnswer);
+            }
+            var test = await dbContext.Tests!.FirstOrDefaultAsync(x => x.Id == testId);
+            dbContext.Remove(test);
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Delete error test: {testId}", e);
+            return BadRequest();
+        }
+        return Ok(true);
+        
+    }
+
+    [HttpPost("create_test")]
+    public async Task<IActionResult> CreateTest(Test? test)
+    {
+        if (test is null)
+        {
+            _logger.LogInformation(
+                $"test is null while executing CreateTest from user");
+            return BadRequest();
+        }
+        
+        try
+        {
+            var userId = (Guid)HttpContext.Items["User"]!;
+            test.CreatorId = userId;
+            if (test.Tasks is not null)
+            {
+                foreach (var task in test.Tasks)
+                {
+                    task.CreatorId = test.CreatorId;
+                    if (task.IsSqlTask())
+                    {
+                        task.DataRows = await TaskExtension.SetupAndFetch(task);
+                    }
+                }
+            }
+            
+            await dbContext.Tests.AddAsync(test);
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, $"Exception while saving new test from user");
+            return BadRequest(test);
+        }
+
+        return Ok();
+    }
+    
+}

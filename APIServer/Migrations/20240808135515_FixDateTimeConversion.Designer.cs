@@ -25,7 +25,7 @@ namespace APIServer.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.Task", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +48,7 @@ namespace APIServer.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.TaskAnswer.TaskAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace APIServer.Migrations
                     b.ToTable("TaskAnswers");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.TaskAnswer.TestAnswer", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.TaskAnswer.TestAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace APIServer.Migrations
                     b.ToTable("TestAnswers");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.ThemeTask", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.ThemeTask", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -119,7 +119,7 @@ namespace APIServer.Migrations
                     b.ToTable("ThemeTasks");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.VariableAnswer", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.VariableAnswer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,7 +141,7 @@ namespace APIServer.Migrations
                     b.ToTable("VariableAnswers");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Test", b =>
+            modelBuilder.Entity("Shared.DB.Test.Test", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,7 +164,7 @@ namespace APIServer.Migrations
                     b.ToTable("Tests");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.User.User", b =>
+            modelBuilder.Entity("Shared.DB.User.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -194,7 +194,7 @@ namespace APIServer.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.User.UserGroup", b =>
+            modelBuilder.Entity("Shared.DB.User.UserGroup", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -285,22 +285,22 @@ namespace APIServer.Migrations
                     b.ToTable("UserUserGroup");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.Task", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.User.User", "Creator")
+                    b.HasOne("Shared.DB.User.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.TaskAnswer.TaskAnswer", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Task.Task", "AnsweredTask")
+                    b.HasOne("Shared.DB.Test.Task.Task", "AnsweredTask")
                         .WithMany()
                         .HasForeignKey("AnsweredTaskId");
 
-                    b.HasOne("Shared.DB.Classes.User.User", "Student")
+                    b.HasOne("Shared.DB.User.User", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId");
 
@@ -309,13 +309,13 @@ namespace APIServer.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.TaskAnswer.TestAnswer", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.TaskAnswer.TestAnswer", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Test", "AnsweredTest")
+                    b.HasOne("Shared.DB.Test.Test", "AnsweredTest")
                         .WithMany()
                         .HasForeignKey("AnsweredTestId");
 
-                    b.HasOne("Shared.DB.Classes.User.User", "Student")
+                    b.HasOne("Shared.DB.User.User", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId");
 
@@ -324,25 +324,25 @@ namespace APIServer.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.VariableAnswer", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.VariableAnswer", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Task.Task", null)
+                    b.HasOne("Shared.DB.Test.Task.Task", null)
                         .WithMany("VariableAnswers")
                         .HasForeignKey("TaskId");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Test", b =>
+            modelBuilder.Entity("Shared.DB.Test.Test", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.User.User", "Creator")
+                    b.HasOne("Shared.DB.User.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.User.UserGroup", b =>
+            modelBuilder.Entity("Shared.DB.User.UserGroup", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.User.User", "GroupCreator")
+                    b.HasOne("Shared.DB.User.User", "GroupCreator")
                         .WithMany()
                         .HasForeignKey("GroupCreatorId");
 
@@ -351,13 +351,13 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskAnswerTestAnswer", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer", null)
+                    b.HasOne("Shared.DB.Test.Task.TaskAnswer.TaskAnswer", null)
                         .WithMany()
                         .HasForeignKey("TaskAnswersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.DB.Classes.Test.Task.TaskAnswer.TestAnswer", null)
+                    b.HasOne("Shared.DB.Test.Task.TaskAnswer.TestAnswer", null)
                         .WithMany()
                         .HasForeignKey("TestAnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -366,13 +366,13 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Task.VariableAnswer", null)
+                    b.HasOne("Shared.DB.Test.Task.VariableAnswer", null)
                         .WithMany()
                         .HasForeignKey("MarkedVariablesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.DB.Classes.Test.Task.TaskAnswer.TaskAnswer", null)
+                    b.HasOne("Shared.DB.Test.Task.TaskAnswer.TaskAnswer", null)
                         .WithMany()
                         .HasForeignKey("TaskAnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -381,13 +381,13 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskTest", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Task.Task", null)
+                    b.HasOne("Shared.DB.Test.Task.Task", null)
                         .WithMany()
                         .HasForeignKey("TasksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.DB.Classes.Test.Test", null)
+                    b.HasOne("Shared.DB.Test.Test", null)
                         .WithMany()
                         .HasForeignKey("TestsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,13 +396,13 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskThemeTask", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.Test.Task.ThemeTask", null)
+                    b.HasOne("Shared.DB.Test.Task.ThemeTask", null)
                         .WithMany()
                         .HasForeignKey("ThematicsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.DB.Classes.Test.Task.Task", null)
+                    b.HasOne("Shared.DB.Test.Task.Task", null)
                         .WithMany()
                         .HasForeignKey("ThemeTask")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -411,20 +411,20 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("UserUserGroup", b =>
                 {
-                    b.HasOne("Shared.DB.Classes.User.User", null)
+                    b.HasOne("Shared.DB.User.User", null)
                         .WithMany()
                         .HasForeignKey("StudentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.DB.Classes.User.UserGroup", null)
+                    b.HasOne("Shared.DB.User.UserGroup", null)
                         .WithMany()
                         .HasForeignKey("UserGroupsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Shared.DB.Classes.Test.Task.Task", b =>
+            modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
                     b.Navigation("VariableAnswers");
                 });
