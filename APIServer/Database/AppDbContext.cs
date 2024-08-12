@@ -46,6 +46,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region SettingsConfigure
+        
+        modelBuilder.Entity<TestSettings>()
+            .HasMany(x => x.TasksThemes)
+            .WithMany();
+        modelBuilder.Entity<TestSettings>()
+            .HasMany(x => x.TestGroups)
+            .WithMany();
+        
+        #endregion
+        
         #region TaskConfigure
 
         modelBuilder.Entity<Task>()
@@ -80,7 +91,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<Test>()
             .Navigation(x => x.Settings)
             .AutoInclude();
-
+        
         #endregion
 
         #region UserConfigure
