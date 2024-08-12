@@ -270,6 +270,11 @@ namespace APIServer.Migrations
                     b.Property<Guid?>("GroupCreatorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<Guid?>("TestSettingsId")
                         .HasColumnType("uuid");
 

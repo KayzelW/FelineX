@@ -111,16 +111,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .HasOne(x => x.Creator)
             .WithMany()
             .HasForeignKey(x => x.CreatorId);
-
         modelBuilder.Entity<Test>()
             .HasOne<TestSettings>(x => x.Settings)
             .WithMany()
             .HasForeignKey(x => x.SettingsId);
-
-        modelBuilder.Entity<UserGroup>()
-            .HasOne(x => x.GroupCreator)
-            .WithMany()
-            .HasForeignKey(x => x.GroupCreatorId);
+        
         modelBuilder.Entity<Task>()
             .HasOne(x => x.Creator)
             .WithMany()
@@ -138,6 +133,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .HasOne(x => x.GroupCreator)
             .WithMany()
             .HasForeignKey(x => x.GroupCreatorId);
+        modelBuilder.Entity<UserGroup>()
+            .Navigation(x => x.Students)
+            .AutoInclude();
         modelBuilder.Entity<TestAnswer>()
             .HasOne(x => x.Student)
             .WithMany()

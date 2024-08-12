@@ -20,8 +20,9 @@ public class ApiService
     public ApiService(HttpClient httpClient, IJSRuntime jsRuntime)
     {
         this.httpClient = httpClient;
-        SetupHttpClient(jsRuntime);
+        // SetupHttpClient(jsRuntime);
     }
+
 
     private async void SetupHttpClient(IJSRuntime jsRuntime)
     {
@@ -32,6 +33,9 @@ public class ApiService
         userAgent.TryParseAdd(await jsRuntime.InvokeAsync<string>("Intl.DateTimeFormat().resolvedOptions().timeZone"));
         userAgent.Add(new ProductInfoHeaderValue($"WebAssembly Blazor"));
     }
+
+    #region ForTests
+
 
     public async Task<List<MyTest>> GetTests()
     {
@@ -63,6 +67,11 @@ public class ApiService
         return test;
     }
 
+    #endregion
+
+
+    #region ForTestAnswers
+
     public async Task<TestAnswer?> GetTestResult(Guid testAnswerId)
     {
         var responseMessage = await httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
@@ -88,6 +97,18 @@ public class ApiService
         return await responseMessage.Content.ReadFromJsonAsync<Guid>();
     }
 
+    public async Task<List<TestAnswer>?> GetListStudentsTestAnswers(string testId)
+    {
+        var responseMessage = await httpClient.GetAsync($"Test/get_list_students_test_answers/{testId}");
+        responseMessage.EnsureSuccessStatusCode();
+        return await responseMessage.Content.ReadFromJsonAsync<List<TestAnswer>>();
+
+    }
+
+    #endregion
+
+
+    #region ForAuth
     /// <summary>
     /// 
     /// </summary>
@@ -118,11 +139,28 @@ public class ApiService
         Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/auth_token");
         return data;
     }
+    
+    #endregion
 
-    public async Task<List<TestAnswer>?> GetListStudentsTestAnswers(string testId)
+
+
+
+    #region ForClasses
+
+    public async Task<List<UserGroup>?> GetClasses()
     {
-        var responseMessage = await httpClient.GetAsync($"Test/get_list_students_test_answers/{testId}");
-        responseMessage.EnsureSuccessStatusCode();
-        return await responseMessage.Content.ReadFromJsonAsync<List<TestAnswer>>();
+        var responseMessage = await httpClient.GetAsync("Class/get_classes");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            return await responseMessage.Content.ReadFromJsonAsync<List<UserGroup>>();
+        }
+
+        return null;
+    }
+
+    #endregion
+    public async void SendMessage(string msg)
+    {
+        await httpClient.PatchAsJsonAsync("User", msg);
     }
 }
