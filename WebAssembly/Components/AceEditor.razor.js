@@ -1,5 +1,6 @@
 ﻿export class AceEditor {
-    static initialize() {
+    static initialize(dotNetObject) {
+        console.log("start init ace")
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/textmate");
         editor.session.setMode("ace/mode/sql");
@@ -16,13 +17,25 @@
                 showLineNumbers: true,
                 tabSize: 4
             });
-
-            // Включение подсветки синтаксических ошибок
-            ace.config.loadModule('ace/ext/error_marker', function() {
-                editor.getSession().setUseWorker(true);
-            });
+            
         });
-    }
+
+        // Обработка изменений текста
+        editor.on('change', function() {
+            var value = editor.getValue();
+            dotNetObject.invokeMethodAsync('UpdateValue', value);
+        });
+    };
+    static getText() {
+        
+        var editor = ace.edit("editor");
+        return editor.getValue();
+    };
+
+    static setText(value) {
+        var editor = ace.edit("editor");
+        editor.setValue(value, -1);
+    };
 }
 
 window.AceEditor = AceEditor;
