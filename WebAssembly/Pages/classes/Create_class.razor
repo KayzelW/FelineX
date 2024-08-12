@@ -8,42 +8,45 @@
 <div class="input-group input-group-lg" style="max-width: max-content">
     <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1"  style="background-color: #EFF4FF; box-shadow: none; max-height: 30px ">
 </div>
-
-    <h3> Добавить нового студента </h3>
-    
-    
-<div class="input-group input-group-lg" style="max-width: max-content">
+<div style="display: flex; justify-content: space-between;">
+<h3> Добавить нового студента </h3>
+<h3> Студенты этого класса </h3>
+</div>
+<div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px">
     <input type="text" class="form-control" placeholder="Введите имя" aria-label="Введите название" aria-describedby="basic-addon1"  style="background-color: #EFF4FF; box-shadow: none; max-height: 30px ">
-    <button class="btn" type="button" style="padding-left: 25px; max-width: 20px;  box-shadow: none;">+</button>
+    <button class="btn" type="button" style=" max-height: 30px; box-shadow: none; font-size: medium; ">Добавить</button>
 </div>
 
-<table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
-    <thead>
-    <tr>
-        <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">#</th>
-        <th scope="col" style="-webkit-text-fill-color: #00003A">Название</th>
-        <th scope="col" style="-webkit-text-fill-color: #00003A">Дата создания</th>
-        <th scope="col" style=" -webkit-text-fill-color: #00003A">Кол-во заданий</th>
-        <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
-    </tr>
-    </thead>
-    <tbody>
-</table>
+<div style="display: flex; justify-content: space-between;">
+    
+    <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+        <thead>
+        <tr>
+            <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+            <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+            <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+        </tr>
+        </thead>
+    </table>
 
+    <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+        <thead>
+        
+        <tr>
+            <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+            <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+            <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+        </tr>
+        </thead>
+    </table>
+</div>
 
-
-<div class="d-grid gap-2 d-md-flex justify-content-md-start" >
+<div class="d-grid gap-2 d-md-flex justify-content-md-start" style="padding-top: 50px">
     <button class="btn"  type="button" >
         Сохранить
     </button>
 </div>
 
-
-
-
-
-
 @code {
 
-    
 }

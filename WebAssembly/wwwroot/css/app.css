@@ -7,8 +7,8 @@ html, body {
     background-color: #DDEBFF;
 }
 
-a, .btn-link {
-    color: #006bb7;
+a {
+    color: #00003A;
 }
 .btn {
     border-radius: .5rem;
