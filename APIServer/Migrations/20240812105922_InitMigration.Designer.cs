@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240812093815_SQLTaskInit")]
-    partial class SQLTaskInit
+    [Migration("20240812105922_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,8 +130,7 @@ namespace APIServer.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("SettingsId")
-                        .IsUnique();
+                    b.HasIndex("SettingsId");
 
                     b.ToTable("Tasks");
                 });
@@ -159,16 +158,11 @@ namespace APIServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TestSettingsId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Theme")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TestSettingsId");
 
                     b.ToTable("ThemeTasks");
                 });
@@ -273,14 +267,14 @@ namespace APIServer.Migrations
                     b.Property<Guid?>("GroupCreatorId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TestSettingsId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GroupCreatorId");
-
-                    b.HasIndex("TestSettingsId");
 
                     b.ToTable("Groups");
                 });
@@ -328,6 +322,36 @@ namespace APIServer.Migrations
                     b.HasIndex("ThemeTask");
 
                     b.ToTable("TaskThemeTask");
+                });
+
+            modelBuilder.Entity("TestSettingsThemeTask", b =>
+                {
+                    b.Property<Guid>("TasksThemesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TestSettingsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TasksThemesId", "TestSettingsId");
+
+                    b.HasIndex("TestSettingsId");
+
+                    b.ToTable("TestSettingsThemeTask");
+                });
+
+            modelBuilder.Entity("TestSettingsUserGroup", b =>
+                {
+                    b.Property<Guid>("TestGroupsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TestSettingsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TestGroupsId", "TestSettingsId");
+
+                    b.HasIndex("TestSettingsId");
+
+                    b.ToTable("TestSettingsUserGroup");
                 });
 
             modelBuilder.Entity("UserUserGroup", b =>
@@ -386,21 +410,14 @@ namespace APIServer.Migrations
                         .HasForeignKey("CreatorId");
 
                     b.HasOne("Shared.DB.Test.Task.TaskSettings", "Settings")
-                        .WithOne()
-                        .HasForeignKey("Shared.DB.Test.Task.Task", "SettingsId")
+                        .WithMany()
+                        .HasForeignKey("SettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Creator");
 
                     b.Navigation("Settings");
-                });
-
-            modelBuilder.Entity("Shared.DB.Test.Task.ThemeTask", b =>
-                {
-                    b.HasOne("Shared.DB.Test.TestSettings", null)
-                        .WithMany("TasksThemes")
-                        .HasForeignKey("TestSettingsId");
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Task.VariableAnswer", b =>
@@ -432,10 +449,6 @@ namespace APIServer.Migrations
                     b.HasOne("Shared.DB.User.User", "GroupCreator")
                         .WithMany()
                         .HasForeignKey("GroupCreatorId");
-
-                    b.HasOne("Shared.DB.Test.TestSettings", null)
-                        .WithMany("TestGroups")
-                        .HasForeignKey("TestSettingsId");
 
                     b.Navigation("GroupCreator");
                 });
@@ -485,6 +498,36 @@ namespace APIServer.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TestSettingsThemeTask", b =>
+                {
+                    b.HasOne("Shared.DB.Test.Task.ThemeTask", null)
+                        .WithMany()
+                        .HasForeignKey("TasksThemesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.DB.Test.TestSettings", null)
+                        .WithMany()
+                        .HasForeignKey("TestSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TestSettingsUserGroup", b =>
+                {
+                    b.HasOne("Shared.DB.User.UserGroup", null)
+                        .WithMany()
+                        .HasForeignKey("TestGroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.DB.Test.TestSettings", null)
+                        .WithMany()
+                        .HasForeignKey("TestSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("UserUserGroup", b =>
                 {
                     b.HasOne("Shared.DB.User.User", null)
@@ -508,13 +551,6 @@ namespace APIServer.Migrations
             modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
                     b.Navigation("VariableAnswers");
-                });
-
-            modelBuilder.Entity("Shared.DB.Test.TestSettings", b =>
-                {
-                    b.Navigation("TasksThemes");
-
-                    b.Navigation("TestGroups");
                 });
 #pragma warning restore 612, 618
         }

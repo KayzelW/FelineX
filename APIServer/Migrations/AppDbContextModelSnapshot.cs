@@ -127,8 +127,7 @@ namespace APIServer.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("SettingsId")
-                        .IsUnique();
+                    b.HasIndex("SettingsId");
 
                     b.ToTable("Tasks");
                 });
@@ -270,9 +269,6 @@ namespace APIServer.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<Guid?>("TestSettingsId")
-                        .HasColumnType("uuid");
-                    
                     b.HasKey("Id");
 
                     b.HasIndex("GroupCreatorId");
@@ -411,8 +407,8 @@ namespace APIServer.Migrations
                         .HasForeignKey("CreatorId");
 
                     b.HasOne("Shared.DB.Test.Task.TaskSettings", "Settings")
-                        .WithOne()
-                        .HasForeignKey("Shared.DB.Test.Task.Task", "SettingsId")
+                        .WithMany()
+                        .HasForeignKey("SettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
