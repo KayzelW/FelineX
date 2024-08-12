@@ -10,6 +10,6 @@ public class TestSettings
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
-    public List<UserGroup> TestGroups { get; set; }
-    public List<ThemeTask> TasksThemes { get; set; }
+    public List<UserGroup>? TestGroups { get; set; }
+    public List<ThemeTask>? TasksThemes { get; set; }
 }

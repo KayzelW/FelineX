@@ -9,8 +9,8 @@ public class Test
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public TestSettings Settings { get; set; }
-    public Guid SettingsId { get; set; }
+    public TestSettings Settings { get; set; } = new TestSettings();
+    public Guid SettingsId { get; set; } 
 
     [StringLength(100)] public string? TestName { get; set; }
     [JsonIgnore]

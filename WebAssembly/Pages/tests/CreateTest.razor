@@ -191,6 +191,7 @@
         }
 
         test.Tasks!.Add(t);
+        
         _logger.LogInformation($"Added task with type {t.InteractionType}");
         InvokeAsync(StateHasChanged);
     }
@@ -205,6 +206,7 @@
 
     private async void Save()
     {
+        
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");
     }

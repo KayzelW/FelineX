@@ -64,7 +64,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .WithMany(task => task.Tasks);
         modelBuilder.Entity<Task>()
             .HasMany(x => x.VariableAnswers)
-            .WithOne();
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Task>()
             .Navigation(x => x.Settings)
             .AutoInclude();
@@ -81,14 +82,15 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .WithMany(x => x.Tests);
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Creator)
-            .WithOne();
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Test>()
             .Navigation(x => x.Tasks)
             .AutoInclude();
         modelBuilder.Entity<Test>()
             .Navigation(x => x.Settings)
             .AutoInclude();
-
+        
         #endregion
 
         #region UserConfigure
@@ -105,8 +107,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         #region AnswerConfigure
 
         modelBuilder.Entity<TestAnswer>()
+            .HasOne(x => x.AnsweredTest)
+            .WithMany()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<TestAnswer>()
             .HasMany(testAns => testAns.TaskAnswers)
-            .WithOne();
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TaskAnswer>()
             .HasMany(x => x.MarkedVariables)
             .WithMany();
@@ -118,7 +125,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Creator)
             .WithMany()
-            .HasForeignKey(x => x.CreatorId);
+            .HasForeignKey(x => x.CreatorId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Settings)
             .WithMany()
@@ -140,22 +148,26 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<TaskAnswer>()
             .HasOne(x => x.AnsweredTask)
             .WithMany()
-            .HasForeignKey(x => x.AnsweredTaskId);
+            .HasForeignKey(x => x.AnsweredTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<UserGroup>()
             .HasOne(x => x.GroupCreator)
             .WithMany()
-            .HasForeignKey(x => x.GroupCreatorId);
+            .HasForeignKey(x => x.GroupCreatorId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<UserGroup>()
             .Navigation(x => x.Students)
             .AutoInclude();
         modelBuilder.Entity<TestAnswer>()
             .HasOne(x => x.Student)
             .WithMany()
-            .HasForeignKey(x => x.StudentId);
+            .HasForeignKey(x => x.StudentId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<TestAnswer>()
             .HasOne(x => x.AnsweredTest)
             .WithMany()
-            .HasForeignKey(x => x.AnsweredTestId);
+            .HasForeignKey(x => x.AnsweredTestId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
     }

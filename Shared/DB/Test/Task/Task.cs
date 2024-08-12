@@ -13,7 +13,7 @@ public sealed partial class Task : ITask
     public Guid Id { get; set; } = new Guid();
 
     [StringLength(1000)] public string? Question { get; set; } = "";
-    public TaskSettings Settings { get; set; }
+    public TaskSettings Settings { get; set; } = new TaskSettings();
     public Guid SettingsId { get; set; }
     [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; } = [];
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
