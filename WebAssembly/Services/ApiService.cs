@@ -13,9 +13,25 @@ using MyTest = Shared.DB.Test.Test;
 
 namespace WebAssembly.Services;
 
-public class ApiService(HttpClient httpClient)
+public class ApiService
 {
-    // private HttpClient httpClient { get; } = httpClient;
+    private HttpClient httpClient { get; }
+
+    public ApiService(HttpClient httpClient, IJSRuntime jsRuntime)
+    {
+        this.httpClient = httpClient;
+        SetupHttpClient(jsRuntime);
+    }
+
+    private async void SetupHttpClient(IJSRuntime jsRuntime)
+    {
+        var userAgent = httpClient.DefaultRequestHeaders.UserAgent;
+        userAgent.TryParseAdd(await jsRuntime.InvokeAsync<string>("navigator.userAgent"));
+        userAgent.TryParseAdd(await jsRuntime.InvokeAsync<string>("navigator.platform"));
+        userAgent.TryParseAdd(await jsRuntime.InvokeAsync<string>("navigator.language"));
+        userAgent.TryParseAdd(await jsRuntime.InvokeAsync<string>("Intl.DateTimeFormat().resolvedOptions().timeZone"));
+        userAgent.Add(new ProductInfoHeaderValue($"WebAssembly Blazor"));
+    }
 
     public async Task<List<MyTest>> GetTests()
     {

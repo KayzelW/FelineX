@@ -128,6 +128,17 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
                 taskAnswer.TestAnswer = testAnswer;
             }
 
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            var userAgent = HttpContext.Request.Headers.UserAgent.Append($"IP:{ipAddress};");
+            var userInfo = userAgent.ToString();
+            // var userAgentParser = new UserAgentParser();
+            // var clientInfo = userAgentParser.Parse(userAgent);
+            // var operatingSystem = clientInfo.OS.Name;
+            // var device = clientInfo.Device.Family;
+            //var logString = $"Браузер: {userAgent}, IP: {ipAddress}, ОС: {operatingSystem}, Устройство: {device}";
+
+            testAnswer.ClientConnectionLog = userInfo ?? "failed parse";
+
             _testWarrior.RegisterTestAnswer(testAnswer);
 
             // var score = await CalculateScore(testAnswer);

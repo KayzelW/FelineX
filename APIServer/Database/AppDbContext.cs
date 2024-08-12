@@ -94,11 +94,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
         #endregion
 
-        #region TestAnswerConfigure
+        #region AnswerConfigure
 
         modelBuilder.Entity<TestAnswer>()
             .HasMany(testAns => testAns.TaskAnswers)
-            .WithMany();
+            .WithOne();
         modelBuilder.Entity<TaskAnswer>()
             .HasMany(x => x.MarkedVariables)
             .WithMany();

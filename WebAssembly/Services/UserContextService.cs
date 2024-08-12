@@ -116,6 +116,7 @@ public sealed class UserContextService
 
     private void FillUserContext(AuthAnswer? data)
     {
+        
         if (data?.UserToken == null || data?.Access == null)
         {
             RemoveTokenAsync();
@@ -131,7 +132,6 @@ public sealed class UserContextService
         
         logger.LogWarning($"CookieToken is {UserToken}");
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
-        
     }
 
     private async void RemoveTokenAsync()

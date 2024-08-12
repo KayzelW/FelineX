@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using APIServer.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Shared.DB.Test.Answers;
 using Shared.Types;
 using Task = System.Threading.Tasks.Task;
@@ -10,20 +11,21 @@ namespace APIServer.Services;
 public sealed partial class TestWarrior : BackgroundService
 {
     private AppDbContext dbContext;
-    private ILogger<TestWarrior> logger;
-    private IConfiguration configuration;
+    private readonly ILogger<TestWarrior> logger;
+    private readonly IConfiguration configuration;
+    private readonly IServiceProvider _serviceProvider;
 
     public static Dictionary<DBMS, string> AvailableDBMS = [];
 
     private ConcurrentQueue<TestAnswer> _testAnswers = [];
-    private ConcurrentQueue<SqlTaskPare> _sqlTasks = [];
+    private ConcurrentQueue<TaskAnswer> _sqlTasks = [];
     private const int BaseLimitThreads = 10;
 
-    public TestWarrior(AppDbContext dbContext, ILogger<TestWarrior> logger, IConfiguration configuration)
+    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, IServiceProvider serviceProvider)
     {
-        this.dbContext = dbContext;
         this.logger = logger;
         this.configuration = configuration;
+        _serviceProvider = serviceProvider;
 
         #region DatabaseModelsInit
 
@@ -65,7 +67,9 @@ public sealed partial class TestWarrior : BackgroundService
         }
 
         var workers = new List<Task>();
-
+        using var scope = _serviceProvider.CreateScope();
+        dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            
         #region TestAnswer worker
 
         workers.Add(Task.Run(async () =>
@@ -103,7 +107,7 @@ public sealed partial class TestWarrior : BackgroundService
         }, stoppingToken));
 
         #endregion
-
+            
         return Task.WhenAll(workers);
     }
 
@@ -125,14 +129,13 @@ public sealed partial class TestWarrior : BackgroundService
                 continue;
             }
 
+            task.AnsweredTask = originalTask;
+            
             if (originalTask.IsSqlTask())
             {
                 sqlTasksCount += 1;
-                _sqlTasks.Enqueue(new SqlTaskPare()
-                {
-                    OriginalTask = originalTask,
-                    TaskAnswer = task,
-                });
+                
+                _sqlTasks.Enqueue(task);
                 continue;
             }
 

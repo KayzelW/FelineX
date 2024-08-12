@@ -32,8 +32,10 @@ public sealed class Program
                                    throw new InvalidOperationException(
                                        "Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContext<AppDbContext>(options =>
+            builder.Services.AddDbContextFactory<AppDbContext>(options =>
                 options.UseNpgsql(connectionString));
+            // builder.Services.AddDbContext<AppDbContext>(options =>
+            //     options.UseNpgsql(connectionString));
         }
         catch (Exception e)
         {
@@ -44,8 +46,10 @@ public sealed class Program
                                    throw new InvalidOperationException(
                                        "Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContext<AppDbContext>(options =>
+            builder.Services.AddDbContextFactory<AppDbContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            // builder.Services.AddDbContext<AppDbContext>(options =>
+            //     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
         }
 
         #endregion

@@ -13,13 +13,14 @@ namespace APIServer.Extensions;
 public static class TaskExtension
 {
     private static ILogger<TestWarrior> _logger = new Logger<TestWarrior>(new NullLoggerFactory());
+
     public static async Task<DbConnection?> SetupConnection(Task task)
     {
         try
         {
             if (task.DatabaseType == null) return null;
             if (!TestWarrior.AvailableDBMS.TryGetValue(task.DatabaseType.Value, out var connString)) return null;
-        
+
             DbConnection? connection = task.DatabaseType switch
             {
                 DBMS.SqLite => new SqliteConnection(connString),
@@ -34,7 +35,7 @@ public static class TaskExtension
             var cmd = connection.CreateCommand();
             cmd.CommandText = task.Settings.SqlQueryInstall;
             await cmd.ExecuteNonQueryAsync();
-            
+
             return connection;
         }
         catch (Exception e)
@@ -51,17 +52,7 @@ public static class TaskExtension
             var cmd = connection.CreateCommand();
             cmd.CommandText = task.Settings.SqlQueryCheck;
             var reader = await cmd.ExecuteReaderAsync();
-            var dataTable = new DataTable();
-            dataTable.Load(reader);
-        
-            var itemRows = new List<string>();
-            foreach (DataRow row in dataTable.Rows)
-            {
-                if (row.ItemArray.All(x => x != null))
-                {
-                    itemRows.AddRange(row.ItemArray.Cast<string>());
-                }
-            }
+            var itemRows = ExtractItemRows(reader);
 
             await connection.CloseAsync();
 
@@ -74,6 +65,33 @@ public static class TaskExtension
         }
     }
 
+    /// <summary>
+    /// Extract item from rows as <see cref="string"/>!
+    /// </summary>
+    /// <param name="reader">List of <see cref="string"/></param>
+    /// <returns></returns>
+    public static List<string> ExtractItemRows(DbDataReader reader)
+    {
+        var dataTable = new DataTable();
+        dataTable.Load(reader);
+
+        var itemRows = new List<string>();
+        foreach (DataRow row in dataTable.Rows)
+        {
+            if (row.ItemArray.All(x => x != null))
+            {
+                itemRows.AddRange(row.ItemArray.Cast<string>());
+            }
+        }
+
+        return itemRows;
+    }
+
+    /// <summary>
+    /// Inner exec of <see cref="SetupConnection"/> and <see cref="FetchQuery"/>
+    /// </summary>
+    /// <param name="task">Task from DB configured as SQLTask</param>
+    /// <returns>List of <see cref="string"/></returns>
     public static async Task<List<string>?> SetupAndFetch(Task task)
     {
         try
@@ -92,5 +110,4 @@ public static class TaskExtension
 
         return null;
     }
-    
 }

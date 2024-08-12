@@ -17,15 +17,17 @@ public class TaskAnswer
     public Guid? AnsweredTaskId { get; set; }
     public List<VariableAnswer>? MarkedVariables { get; set; } = [];
     [JsonIgnore, NotMapped] public TestAnswer TestAnswer { get; set; }
-
     [StringLength(1000)] public string? StringAnswer { get; set; }
     [StringLength(100)] public string? Result { get; set; } // For SQL
+    public bool IsFailedCheck { get; set; } // Logic was failed
+    public bool IsSuccess { get; set; } // Check success and logic correctly end work
+    
 
     public TaskAnswer()
     {
     }
 
-    public TaskAnswer(Guid? userId, OriginalTask task)
+    public TaskAnswer(Guid? userId, OriginalTask task) : this()
     {
         this.StudentId = userId;
         this.AnsweredTaskId = task.Id;

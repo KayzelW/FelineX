@@ -22,4 +22,5 @@ public class TestAnswer
     public double Score { get; set; }
     [JsonIgnore, NotMapped] public int TaskWeight { get; set; } 
     [StringLength(100)] public string? FantomName { get; set; }
+    public string ClientConnectionLog { get; set; }
 }
