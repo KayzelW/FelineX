@@ -1,6 +1,13 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     padding-bottom: 25px;
+    
+    
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #DDEBFF;
 }
 
 a, .btn-link {
@@ -13,13 +20,18 @@ a, .btn-link {
     --bs-btn-color: #00003A;
     height: 40px;
     box-shadow: none;
+    max-height: 40px;
+    -webkit-text-fill-color: #00003A;
+    
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+
+.body{
+    font-size: 21px;
+    justify-content: center;
+    
 }
+
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
@@ -144,141 +156,39 @@ h1:focus {
     background-color: lightcoral;
 }
 
-.preloader {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-    background: #fff;
-    z-index: 1001;
-}
+/*.preloader {*/
+/*    position: fixed;*/
+/*    left: 0;*/
+/*    top: 0;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    overflow: hidden;*/
+/*    background: #fff;*/
+/*    z-index: 1001;*/
+/*}*/
 
-.preloader__image {
-    position: relative;
-    top: 50%;
-    left: 50%;
-    width: 64px;
-    height: 64px;
-    margin-top: -32px;
-    margin-left: -32px;
-    background: url('images/preloader.gif') no-repeat 50% 50%; /*расположение (url) изображения gif и др. параметры*/
-}
-
-.loaded_hiding .preloader {
-    transition: 0.3s opacity;
-    opacity: 0;
-}
-
- .logo {
-     max-width: 40px;
-     height: auto;
- }
-
-.search-container {
-    min-width: 200px;
-    max-width: 300px;
-    width: 100%;
-}
-
-.search-input {
-    background-color: #EFF4FF;
-    border-color: #BDD3FF;
-    box-shadow: none;
-    width: 100%;
-    padding: 5px;
-}
-
-.search-button {
-    background-color: #EFF4FF;
-    border-color: #BDD3FF;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-/* Media queries for responsiveness */
-@media (max-width: 1200px) {
-    .navbar-brand {
-        font-size: 1.4rem;
-    }
-
-    .nav-link {
-        font-size: 1rem;
-    }
-
-    .logo {
-        max-width: 35px;
-    }
-}
-
-@media (max-width: 992px) {
-    .navbar-brand {
-        font-size: 1.3rem;
-    }
-
-    .nav-link {
-        font-size: 0.9rem;
-    }
-
-    .logo {
-        max-width: 30px;
-    }
-}
-
-@media (max-width: 768px) {
-    .navbar-brand {
-        font-size: 1.2rem;
-    }
-
-    .nav-link {
-        font-size: 0.8rem;
-    }
-
-    .logo {
-        max-width: 25px;
-    }
-
-    .search-container {
-        max-width: 200px;
-    }
-
-    .search-input {
-        padding: 4px;
-    }
-
-    .search-button {
-        padding: 4px 8px;
-    }
-}
-
-@media (max-width: 576px) {
-    .navbar-brand {
-        font-size: 1rem;
-    }
-
-    .nav-link {
-        font-size: 0.7rem;
-    }
-
-    .logo {
-        max-width: 20px;
-    }
-
-    .search-container {
-        max-width: 150px;
-    }
-
-    .search-input {
-        padding: 3px;
-    }
-
-    .search-button {
-        padding: 3px 6px;
-    }
-}
+/*.preloader__image {*/
+/*    position: relative;*/
+/*    top: 50%;*/
+/*    left: 50%;*/
+/*    width: 64px;*/
+/*    height: 64px;*/
+/*    margin-top: -32px;*/
+/*    margin-left: -32px;*/
+/*    background: url('images/preloader.gif') no-repeat 50% 50%; !*расположение (url) изображения gif и др. параметры*!*/
+/*}*/
 
 
-.loaded .preloader {
-    display: none;
-}
+/*.loaded .preloader {*/
+/*    display: none;*/
+/*}*/
+
+
+
+
+
+
+
+
+
+

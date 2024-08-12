@@ -1,4 +1,5 @@
 ﻿@page "/game"
+
 <style>
 
     .game-container {
@@ -8,7 +9,7 @@
     }
 
     canvas {
-        background-color: #00003A;
+        background-color: #00009A;
         border: 1px solid #00003A;
     }
 
@@ -20,14 +21,15 @@
 
 <div class="Sticker" style="width: 104px; height: 104px; display: flex; justify-content: flex-end"><img src="https://media.tenor.com/9fBgVWrDYs0AAAAi/run-busy.gif" width="88" height="79.44444444444444" alt="Run Busy Sticker - Run Busy Coko Stickers" style="max-width: 104px; background-color: unset;"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/gifler/gifler.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/gifler/gifler.min.js"></script> 
 
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
     const gif = new Image();
-    gif.src = 'images/cats/game/cat0.png';
+    gif.src = 'images/cats/game/cat-running.gif';
 
     const backgroundImage = new Image();
     backgroundImage.src = 'images/fon2.jpg';
@@ -65,6 +67,7 @@
     let speedIncrement = 0.01;  // начальное увеличение скорости
     let speedMultiplier = 2;  // множитель скорости
     let distance = 0; // переменная для отслеживания пройденного расстояния
+    let imgDino = 1;
 
     const obstacleImages = [];
     for (let i = 1; i <= 4; i++) {
@@ -87,10 +90,12 @@
     }
 
     function drawDino() {
-        i = Math.floor(distance)%2 +1
+        if (imgDino > 2 )
+            imgDino = 1;
         const gif2 = new Image();
-        gif2.src = `images/cats/game/cat${i}.png`;
+        gif2.src = `images/cats/game/cat${imgDino}.png`;
         ctx.drawImage(gif2, dino.x, dino.y-20, dino.width, dino.height);
+        imgDino++;
     }
 
     function drawObstacle() {

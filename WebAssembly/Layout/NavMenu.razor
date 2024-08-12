@@ -1,17 +1,17 @@
 ﻿
-
+<link rel="stylesheet" href="css/menu.css">
 <nav class="navbar navbar-expand-lg" style="height: auto; display: flex; align-items: center;">
     <div class="container-fluid" style="display: flex; justify-content: space-between; align-items: center;">
         <button style="border: none; background: none; padding: 0; cursor: pointer;" onclick="location.href='/game'">
             <img class="img-fluid my-5 logo" src="images/icon1.png" alt=""/>
         </button>
 
-        <a class="navbar-brand" href="/my_tests" style="color: #DDE8FF; font-size: 1.5rem; display: flex">
+        <a class="navbar-brand" href="/" style="color: #DDE8FF; font-size: 1.5rem; display: flex">
             FelineX
         </a>
         
-        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-grow: 1;">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="display: flex; align-items: center;">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-grow: 1; max-width: 600px;">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                 <li class="nav-item">
                     <NavLink class="nav-link" href="/my_tests" style="color: #EFF4FF; font-size: 1.2rem;">
                         Мои тесты
@@ -37,6 +37,7 @@
         </div>
     </div>
 </nav>
+
 
 @code {
     private string TestId { get; set; }
