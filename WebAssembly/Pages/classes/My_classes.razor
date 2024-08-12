@@ -1,4 +1,4 @@
-﻿@page "/my-classes"
+﻿@page "/my_classes"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
 
@@ -8,8 +8,10 @@
 @inject ApiService _ApiService
 @inject IUserContextService _userContext
 
-<div class="d-grid gap-2 d-md-flex justify-content-md-center" style="height: 40px; -webkit-text-fill-color: #00003A">
-    <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px;" type="button"> Создать новый класс </button>
+@inject NavigationManager _navigationManager
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-center" >
+    <button class="btn"  type="button" style="box-shadow: none" @onclick="NavigateToCreateClass"> Создать новый класс </button>
 </div>
 <div class="text-success" style="border-color:  #00003A; height: 1px">
     <hr>
@@ -69,6 +71,11 @@
     {
         await base.OnInitializedAsync();
         MyClasses = await _ApiService.GetClasses();
+    }
+    
+    private void NavigateToCreateClass()
+    {
+        _navigationManager.NavigateTo("/create_class");
     }
 
 }

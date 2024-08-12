@@ -10,7 +10,7 @@
             FelineX
         </a>
         
-        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-grow: 1; max-width: 600px;">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-grow: 1;">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                 <li class="nav-item">
                     <NavLink class="nav-link" href="/my_tests" style="color: #EFF4FF; font-size: 1.2rem;">
@@ -18,7 +18,7 @@
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="/my-classes" style="font-size: 1rem;">
+                    <NavLink class="nav-link" href="/my_classes" style="font-size: 1rem;">
                         Классы
                     </NavLink>
                 </li>
@@ -29,12 +29,14 @@
                 </li>
             </ul>
         </div>
-
-        <div class="search-container" style="display: flex; justify-content: flex-end; align-items: center; gap: 5px;">
-            <input type="text" @bind="TestId" placeholder="Введите id теста" @onkeydown="KeyboardEventHandler"
-                   class="search-input">
-            <button @onclick="NavigateToTest" class="search-button">Go</button>
-        </div>
+        
+        <div class="float-md-end">
+            <div class="search-container" style="display: flex; justify-content: flex-end; align-items: center; gap: 5px; padding-left: 25px">
+                <input type="text" @bind="TestId" placeholder="Введите id теста" @onkeydown="KeyboardEventHandler"
+                       class="search-input">
+                <button @onclick="NavigateToTest" class="search-button">Go</button>
+            </div>
+            </div>
     </div>
 </nav>
 
