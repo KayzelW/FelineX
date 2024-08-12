@@ -12,11 +12,6 @@ public partial class TestController
     {
         try
         {
-            var testAnswers =  dbContext.TestAnswers.Where(x => x.AnsweredTestId == testId).ToList();
-            foreach (var testAnswer in testAnswers)
-            {
-                dbContext.Remove(testAnswer);
-            }
             var test = await dbContext.Tests!.FirstOrDefaultAsync(x => x.Id == testId);
             dbContext.Remove(test);
             await dbContext.SaveChangesAsync();
@@ -31,7 +26,7 @@ public partial class TestController
     }
 
     [HttpPost("create_test")]
-    public async Task<IActionResult> CreateTest(Test? test)
+    public async Task<IActionResult> CreateTest([FromBody]Test? test)
     {
         if (test is null)
         {

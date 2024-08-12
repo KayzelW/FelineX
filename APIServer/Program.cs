@@ -58,6 +58,7 @@ public sealed class Program
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
         builder.Services.AddHostedService<TestWarrior>();
+        builder.Services.AddSingleton<TestWarrior>();
 
         builder.Services.AddLogging(logging =>
         {

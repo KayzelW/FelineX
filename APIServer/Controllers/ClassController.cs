@@ -68,6 +68,7 @@ public class ClassController : Controller
                 return BadRequest("Group was null");
             }
             await _dbContext.Groups!.AddAsync(group);
+            await _dbContext.SaveChangesAsync();
             return Ok();
         }
         catch (Exception e)

@@ -16,10 +16,12 @@ namespace WebAssembly.Services;
 public class ApiService
 {
     private HttpClient httpClient { get; }
+    private ILogger<ApiService> _logger;
 
-    public ApiService(HttpClient httpClient, IJSRuntime jsRuntime)
+    public ApiService(HttpClient httpClient, IJSRuntime jsRuntime, ILogger<ApiService> logger)
     {
         this.httpClient = httpClient;
+        _logger = logger;
         // SetupHttpClient(jsRuntime);
     }
 
@@ -86,7 +88,9 @@ public class ApiService
 
     public async Task<bool> PostTest(MyTest test)
     {
+        _logger.LogInformation("Got test in APIservice");
         var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
+        _logger.LogInformation("Send test to API");
         return responseMessage.IsSuccessStatusCode;
     }
 
@@ -141,10 +145,7 @@ public class ApiService
     }
     
     #endregion
-
-
-
-
+    
     #region ForClasses
 
     public async Task<List<UserGroup>?> GetClasses()

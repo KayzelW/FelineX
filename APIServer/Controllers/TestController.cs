@@ -95,8 +95,13 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="solvedTest"></param>
+    /// <returns> TestAnswer id as <see cref="Guid"/></returns>
     [AllowAnonymous, HttpPost("submit_test")]
-    public async Task<IActionResult> SubmitTest(TestDTO solvedTest)
+    public async Task<ActionResult<Guid>> SubmitTest([FromBody]TestDTO solvedTest)
     {
         if (solvedTest?.Tasks == null)
         {
@@ -143,14 +148,14 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
 
             // var score = await CalculateScore(testAnswer);
 
-            // await dbContext.TestAnswers!.AddAsync(testAnswer);
-            // await dbContext.SaveChangesAsync();
+            await dbContext.TestAnswers!.AddAsync(testAnswer);
+            await dbContext.SaveChangesAsync();
 
-            return Ok("TestAnswered registered to check");
+            return Ok(testAnswer.Id);
         }
         catch (Exception e)
         {
-            _logger.LogInformation(e, $"Exception while saving new test from user");
+            _logger.LogInformation(e, $"Exception while saving new testAnswer from user");
             return BadRequest(solvedTest);
         }
     }
