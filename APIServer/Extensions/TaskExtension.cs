@@ -80,7 +80,9 @@ public static class TaskExtension
         {
             if (row.ItemArray.All(x => x != null))
             {
-                itemRows.AddRange(row.ItemArray.Cast<string>());
+                // Преобразуем все элементы в строки
+                var stringValues = row.ItemArray.Select(x => x.ToString()).ToList();
+                itemRows.AddRange(stringValues);
             }
         }
 

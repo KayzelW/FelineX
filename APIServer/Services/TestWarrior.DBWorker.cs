@@ -1,6 +1,8 @@
 ﻿using System.Data;
+using APIServer.Database;
 using APIServer.Extensions;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Shared.DB.Test.Answers;
 using Shared.Types;
 using OriginalTask = Shared.DB.Test.Task.Task;
@@ -52,6 +54,10 @@ public sealed partial class TestWarrior
 
     private void SaveSqlTask(TaskAnswer taskAnswer)
     {
+        using var scope = _serviceProvider.CreateScope();
+        dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        dbContext.Entry(taskAnswer.AnsweredTask.Settings).State = EntityState.Unchanged;//TODO fix cringe State
         dbContext.Update(taskAnswer);
         dbContext.SaveChanges();
     }
@@ -78,8 +84,3 @@ public sealed partial class TestWarrior
     }
 }
 
-public class SqlTaskPare
-{
-    public required TaskAnswer TaskAnswer;
-    public required OriginalTask OriginalTask;
-}

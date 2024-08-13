@@ -46,6 +46,7 @@ public class TaskAnswer
             {
                 if (varAns.Truthful is true)
                 {
+                    
                     this.MarkedVariables!.Add(varAns);
                 }
             }

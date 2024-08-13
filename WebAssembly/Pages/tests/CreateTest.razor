@@ -1,6 +1,7 @@
 ﻿@page "/create_test"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
+@using System.Text.Json
 @using Shared.DB.Test.Task
 @using Shared.DB.User
 @using Shared.Extensions
@@ -110,27 +111,33 @@
                                 </a>
                                 <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
                                     <li>
-                                        <a class="dropdown-item" >@DBMS.SqLite.DBMSTypeToString()</a>
+                                        <a class="dropdown-item" @onclick="() => {task.DatabaseType = DBMS.SqLite; }" >@DBMS.SqLite.DBMSTypeToString()</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" >@DBMS.MySQL.DBMSTypeToString()</a>
+                                        <a class="dropdown-item" @onclick="() => {task.DatabaseType = DBMS.MySQL; }" >@DBMS.MySQL.DBMSTypeToString()</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" >@DBMS.PostgreSQL.DBMSTypeToString()</a>
+                                        <a class="dropdown-item" @onclick="() => {task.DatabaseType = DBMS.PostgreSQL; }" >@DBMS.PostgreSQL.DBMSTypeToString()</a>
                                     </li>
                                 </ul>
                             </div>
                             <h5 style="padding-top: 25px"> Скрипт базы данных</h5>
                             <div class="form-floating" style="padding-top: 5px">
-                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.VariableAnswers![0].StringAnswer"
-                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;"></textarea>
+                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall"
+                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;"> CREATE TABLE if not exists Blogs (
+                                                  BlogId INTEGER PRIMARY KEY,
+                                                  Url TEXT
+                                              );
+
+                                              INSERT INTO Blogs (Url) VALUES ('https://example.com');
+                                              INSERT INTO Blogs (Url) VALUES ('https://another.com');</textarea>
 
                             </div>
                             
                             <h5 style="padding-top: 25px"> Эталонный запрос</h5>
                             <div class="form-floating1" style="padding-top: 5px">
-                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " 
-                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;"></textarea>
+                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck"
+                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea>
 
                             </div>
                             break;
@@ -187,7 +194,7 @@
     private void Plus(InteractionType interactionType)
     {
         var t = new MyTask(null, interactionType);
-        if (t.InteractionType is InteractionType.LongStringTask or InteractionType.SqlQueryTask)
+        if (t.InteractionType is InteractionType.LongStringTask)
         {
             var v = new VariableAnswer
             {
@@ -212,7 +219,8 @@
 
     private async void Save()
     {
-        
+        var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation(json);
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");
     }

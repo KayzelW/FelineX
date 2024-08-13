@@ -11,11 +11,11 @@ using Shared.DB.Test.Answers;
 namespace APIServer.Controllers;
 
 [ApiController, Route("[controller]")]
-public partial class TestController(AppDbContext dbContext, ILogger<TestController> logger, TestWarrior testWarrior)
+public partial class TestController(AppDbContext dbContext, ILogger<TestController> logger, ITestWarriorQueue testWarrior)
     : Controller
 {
     private readonly ILogger _logger = logger;
-    private readonly TestWarrior _testWarrior = testWarrior;
+    private readonly ITestWarriorQueue _testWarrior = testWarrior;
 
     /// <summary>
     /// Must be used when Teacher trying to see all available tests 
@@ -125,9 +125,15 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             testAnswer.PassingDate = DateTime.Now; // fill pass date
             testAnswer.AnsweredTestId = solvedTest.Id; // fill testId
 
+            
+            
             // fill list of tasksAnswers 
             foreach (var task in solvedTest.Tasks)
             {
+                foreach (var taskVariableAnswer in task.VariableAnswers)
+                {
+                    dbContext.Entry(taskVariableAnswer).State = EntityState.Unchanged;
+                }//TODO fix cringe State
                 var taskAnswer = new TaskAnswer(testAnswer.StudentId, task);
                 testAnswer.TaskAnswers!.Add(taskAnswer);
                 taskAnswer.TestAnswer = testAnswer;

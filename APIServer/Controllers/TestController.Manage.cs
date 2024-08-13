@@ -12,7 +12,7 @@ public partial class TestController
     {
         try
         {
-            var test = await dbContext.Tests!.FirstOrDefaultAsync(x => x.Id == testId);
+            var test = await dbContext.Tests.FirstOrDefaultAsync(x => x.Id == testId);
             dbContext.Remove(test);
             await dbContext.SaveChangesAsync();
         }
@@ -34,7 +34,6 @@ public partial class TestController
                 $"test is null while executing CreateTest from user");
             return BadRequest();
         }
-        
         try
         {
             var userId = (Guid)HttpContext.Items["User"]!;

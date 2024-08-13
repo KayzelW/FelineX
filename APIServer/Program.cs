@@ -8,19 +8,6 @@ namespace APIServer;
 
 public sealed class Program
 {
-    public static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
-        ConfigureServices(builder);
-
-        var app = builder.Build();
-        ConfigureApplication(app);
-
-        using var dbContext = app.Services.GetRequiredService<AppDbContext>();
-        Console.WriteLine("Trying to verify DB");
-        dbContext.Database.EnsureCreated();
-    }
-
     private static void ConfigureServices(WebApplicationBuilder builder)
     {
         #region Database connection
@@ -57,8 +44,10 @@ public sealed class Program
         builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
+        builder.Services.AddSingleton<ITestWarriorQueue,TestWarrior>();
+        builder.Services.AddSingleton<CheckQueueService>();
         builder.Services.AddHostedService<TestWarrior>();
-        builder.Services.AddSingleton<TestWarrior>();
+
 
         builder.Services.AddLogging(logging =>
         {
@@ -95,6 +84,19 @@ public sealed class Program
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
+    }
+
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+        ConfigureServices(builder);
+
+        var app = builder.Build();
+        ConfigureApplication(app);
+
+        using var dbContext = app.Services.GetRequiredService<AppDbContext>();
+        Console.WriteLine("Trying to verify DB");
+        dbContext.Database.EnsureCreated();
     }
 
     private static void ConfigureApplication(WebApplication app)
