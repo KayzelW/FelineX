@@ -3,6 +3,7 @@ using APIServer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Shared.DB.Test.Answers;
+using Shared.DB.Test.Task;
 using Shared.Types;
 using Task = System.Threading.Tasks.Task;
 
@@ -96,7 +97,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                         await Task.Delay(100, stoppingToken);
                     }
         
-                    logger.LogInformation($"Current {_testAnswers.GetType()} count: {_testAnswers.Count}");
+                    // logger.LogInformation($"Current {_testAnswers.GetType()} count: {_testAnswers.Count}");
                     await Task.Delay(1000, stoppingToken);
                 }
             }
@@ -131,16 +132,12 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
             
         return Task.WhenAll(workers);
     }
-
-    private void Cringe()
-    {
-        logger.LogInformation($"Current {_testAnswers.GetType()} count: {_testAnswers.Count}");
-    }
-
-    private async void CheckTasks(TestAnswer answeredTest)
+    
+    private async Task CheckTasks(TestAnswer answeredTest)
     {
         using var scope = _serviceProvider.CreateScope();
         dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        
         var sqlTasksCount = 0;
         var taskCount = answeredTest.TaskAnswers!.Count;
 
@@ -149,60 +146,50 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
 
         foreach (var task in answeredTest.TaskAnswers)
         {
-            var originalTask = await dbContext.Tasks!.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == task.AnsweredTaskId);
-            if (originalTask == null)
+            
+            if (task.AnsweredTask.IsSqlTask())
             {
-                logger.LogInformation($"originalTask for {task.StudentId}:{answeredTest.FantomName} is null");
+                sqlTasksCount += 1;
+                _sqlTasks.Enqueue(task);
                 continue;
             }
 
-            task.AnsweredTask = originalTask;
-            
-            // if (originalTask.IsSqlTask())
-            // {
-            //     sqlTasksCount += 1;
-            //     
-            //     _sqlTasks.Enqueue(task);
-            //     continue;
-            // }
-
-            if (originalTask.IsLongStringTask())
+            if (task.AnsweredTask.IsLongStringTask())
             {
                 //TODO: merge with short string task
-                if (task.StringAnswer == originalTask.VariableAnswers!.FirstOrDefault()!.StringAnswer)
+                if (task.StringAnswer == task.AnsweredTask.VariableAnswers!.FirstOrDefault()!.StringAnswer)
                 {
                     score += answeredTest.TaskWeight;
                 }
-
+                task.IsCheckEnded = true;
                 continue;
             }
 
-            if (originalTask.IsShortStringTask())
+            if (task.AnsweredTask.IsShortStringTask())
             {
-                if (originalTask.VariableAnswers!.Any(varAns => task.StringAnswer == varAns.StringAnswer))
+                if (task.AnsweredTask.VariableAnswers!.Any(varAns => task.StringAnswer == varAns.StringAnswer))
                 {
                     score += answeredTest.TaskWeight;
                 }
-
+                task.IsCheckEnded = true;
                 continue;
             }
 
             var allMarkedVariablesMatch = task.MarkedVariables!
-                .All(markedVar => originalTask.VariableAnswers!
+                .All(markedVar => task.AnsweredTask.VariableAnswers!
                     .Any(varAnswer => varAnswer.Id == markedVar.Id && varAnswer.Truthful == true));
 
             if (allMarkedVariablesMatch)
             {
                 score += answeredTest.TaskWeight;
+                task.IsCheckEnded = true;
             }
+            task.IsCheckEnded = true;
+            
         }
-        foreach (var answeredTestTaskAnswer in answeredTest.TaskAnswers)
-        {
-            dbContext.Entry(answeredTestTaskAnswer).State = EntityState.Unchanged;
-        }
-        dbContext.Add(answeredTest);
-        dbContext.Entry(answeredTest).State = EntityState.Unchanged;//TODO fix cringe State
+        
+        answeredTest.Score = score;
+        dbContext.Update(answeredTest);
         await dbContext.SaveChangesAsync();
     }
 

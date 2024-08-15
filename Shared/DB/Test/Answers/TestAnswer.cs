@@ -23,4 +23,5 @@ public class TestAnswer
     [JsonIgnore, NotMapped] public int TaskWeight { get; set; } 
     [StringLength(100)] public string? FantomName { get; set; }
     public string ClientConnectionLog { get; set; }
+
 }

@@ -111,13 +111,13 @@
                                 </a>
                                 <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
                                     <li>
-                                        <a class="dropdown-item" @onclick="() => {task.DatabaseType = DBMS.SqLite; }" >@DBMS.SqLite.DBMSTypeToString()</a>
+                                        <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.SqLite; }">@DBMS.SqLite.DBMSTypeToString()</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" @onclick="() => {task.DatabaseType = DBMS.MySQL; }" >@DBMS.MySQL.DBMSTypeToString()</a>
+                                        <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.MySQL; }">@DBMS.MySQL.DBMSTypeToString()</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" @onclick="() => {task.DatabaseType = DBMS.PostgreSQL; }" >@DBMS.PostgreSQL.DBMSTypeToString()</a>
+                                        <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.PostgreSQL; }">@DBMS.PostgreSQL.DBMSTypeToString()</a>
                                     </li>
                                 </ul>
                             </div>
@@ -133,7 +133,7 @@
                                               INSERT INTO Blogs (Url) VALUES ('https://another.com');</textarea>
 
                             </div>
-                            
+
                             <h5 style="padding-top: 25px"> Эталонный запрос</h5>
                             <div class="form-floating1" style="padding-top: 5px">
                                 <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck"
@@ -143,7 +143,7 @@
                             break;
                     }
                 </div>
-                
+
                 <div class="d-flex justify-content-end" style="min-height: 60px; padding-top: 25px; padding-bottom: 10px">
                     <button class="btn " style="box-shadow: none;" type="button" @onclick="(() => { Delete(task); })">
                         <img src="images/del.png" alt="Фото" style="width: 24px; height: 24px;">
@@ -157,7 +157,7 @@
     <div class="d-flex justify-content-end">
         <div class="dropdown">
             <a class="btn" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; --bs-dropdown-border-color: #00003A;  box-shadow: none;" data-toggle="dropdown">
-                  +
+                +
             </a>
             <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
                 <li>
@@ -193,20 +193,29 @@
 
     private void Plus(InteractionType interactionType)
     {
-        var t = new MyTask(null, interactionType);
-        if (t.InteractionType is InteractionType.LongStringTask)
+        try
         {
-            var v = new VariableAnswer
+            var t = new MyTask(null, interactionType);
+            if (t.InteractionType is InteractionType.LongStringTask or InteractionType.SqlQueryTask)
             {
-                Truthful = true
-            };
-            t.VariableAnswers!.Add(v);
-        }
+                var v = new VariableAnswer
+                {
+                    Truthful = true
+                };
+                t.VariableAnswers!.Add(v);
+            }
 
-        test.Tasks!.Add(t);
-        
-        _logger.LogInformation($"Added task with type {t.InteractionType}");
-        InvokeAsync(StateHasChanged);
+            test.Tasks!.Add(t);
+
+            _logger.LogInformation($"Added task with type {t.InteractionType}");
+            var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+            _logger.LogInformation(json);
+            // InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error adding task {e}");
+        }
     }
 
     static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
@@ -219,8 +228,14 @@
 
     private async void Save()
     {
+        
+
+        var cringe = await _apiService.GetTest("a1d49c27-3c99-4abd-b51d-2b5c7b727b44");
+        
+        test.Tasks.Add(cringe.Tasks.FirstOrDefault());
         var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
         _logger.LogInformation(json);
+        
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");
     }

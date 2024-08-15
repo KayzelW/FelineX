@@ -13,15 +13,21 @@ public class TaskAnswer
 
     [JsonIgnore] public User.User? Student { get; set; }
     public Guid? StudentId { get; set; }
-    public OriginalTask? AnsweredTask { get; set; }
+    [NotMapped] public OriginalTask? AnsweredTask { get; set; }
     public Guid? AnsweredTaskId { get; set; }
     public List<VariableAnswer>? MarkedVariables { get; set; } = [];
-    [JsonIgnore, NotMapped] public TestAnswer TestAnswer { get; set; }
+    // public List<Guid> MarkedVariableIds { get; set; } = new List<Guid>();
+    [NotMapped, JsonIgnore] public TestAnswer? TestAnswer { get; set; }
+    
     [StringLength(1000)] public string? StringAnswer { get; set; }
-    [StringLength(100)] public string? Result { get; set; } // For SQL
+    [StringLength(1000)] public string? Result { get; set; } // For SQL
+
+    public Guid TestAnswerId { get; set; }
+
     public bool IsFailedCheck { get; set; } // Logic was failed
     public bool IsSuccess { get; set; } // Check success and logic correctly end work
-    
+    [NotMapped] public bool IsCheckEnded { get; set; } = false; //Check operations ended
+
 
     public TaskAnswer()
     {
@@ -29,15 +35,15 @@ public class TaskAnswer
 
     public TaskAnswer(Guid? userId, OriginalTask task) : this()
     {
-        this.StudentId = userId;
-        this.AnsweredTaskId = task.Id;
+        StudentId = userId;
+        AnsweredTaskId = task.Id;
 
-        if (task.IsLongStringTask() || task.IsShortStringTask())
+        if (task.IsLongStringTask() || task.IsShortStringTask() || task.IsSqlTask())
         {
             var varAns = task.VariableAnswers!.FirstOrDefault();
             if (varAns is not null)
             {
-                this.StringAnswer = varAns.StringAnswer;
+                StringAnswer = varAns.StringAnswer;
             }
         }
         else
@@ -47,7 +53,7 @@ public class TaskAnswer
                 if (varAns.Truthful is true)
                 {
                     
-                    this.MarkedVariables!.Add(varAns);
+                    MarkedVariables!.Add(varAns);
                 }
             }
         }

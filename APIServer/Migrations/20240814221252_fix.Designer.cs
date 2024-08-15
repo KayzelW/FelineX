@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using APIServer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240814221252_fix")]
+    partial class fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,9 +123,14 @@ namespace APIServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<Guid>("SettingsId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
+
+                    b.HasIndex("SettingsId");
 
                     b.ToTable("Tasks");
                 });
@@ -139,13 +147,7 @@ namespace APIServer.Migrations
                     b.Property<string>("SqlQueryInstall")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("TaskId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TaskId")
-                        .IsUnique();
 
                     b.ToTable("TaskSettings");
                 });
@@ -419,16 +421,15 @@ namespace APIServer.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("Shared.DB.Test.Task.TaskSettings", b =>
-                {
-                    b.HasOne("Shared.DB.Test.Task.Task", null)
-                        .WithOne("Settings")
-                        .HasForeignKey("Shared.DB.Test.Task.TaskSettings", "TaskId")
+                    b.HasOne("Shared.DB.Test.Task.TaskSettings", "Settings")
+                        .WithMany()
+                        .HasForeignKey("SettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Settings");
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Task.VariableAnswer", b =>
@@ -573,9 +574,6 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
-                    b.Navigation("Settings")
-                        .IsRequired();
-
                     b.Navigation("VariableAnswers");
                 });
 #pragma warning restore 612, 618

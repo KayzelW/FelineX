@@ -41,9 +41,9 @@ public partial class TestController
 
             return Ok(answeredTest);
         }
-        catch
+        catch(Exception e)
         {
-            _logger.Log(LogLevel.Error, $"Fail to get score for test_answer with id {test_answer_id}");
+            _logger.LogError(e, $"Fail to get score for test_answer with id {test_answer_id}");
             return NotFound();
         }
     }

@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240812122706_FixRelations")]
-    partial class FixRelations
+    [Migration("20240814224224_fix1")]
+    partial class fix1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,8 +42,8 @@ namespace APIServer.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Result")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("StringAnswer")
                         .HasMaxLength(1000)
@@ -52,7 +52,7 @@ namespace APIServer.Migrations
                     b.Property<Guid?>("StudentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TestAnswerId")
+                    b.Property<Guid>("TestAnswerId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -123,14 +123,9 @@ namespace APIServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid>("SettingsId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("SettingsId");
 
                     b.ToTable("Tasks");
                 });
@@ -147,7 +142,13 @@ namespace APIServer.Migrations
                     b.Property<string>("SqlQueryInstall")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskId")
+                        .IsUnique();
 
                     b.ToTable("TaskSettings");
                 });
@@ -176,6 +177,9 @@ namespace APIServer.Migrations
                     b.Property<string>("StringAnswer")
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("TaskAnswerId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TaskId")
                         .HasColumnType("uuid");
 
@@ -183,6 +187,8 @@ namespace APIServer.Migrations
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskAnswerId");
 
                     b.HasIndex("TaskId");
 
@@ -281,17 +287,17 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
                 {
-                    b.Property<Guid>("MarkedVariablesId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TaskAnswerId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("MarkedVariablesId", "TaskAnswerId");
+                    b.Property<Guid>("MarkedVariableAnswerId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("TaskAnswerId");
+                    b.HasKey("TaskAnswerId", "MarkedVariableAnswerId");
 
-                    b.ToTable("TaskAnswerVariableAnswer");
+                    b.HasIndex("MarkedVariableAnswerId");
+
+                    b.ToTable("TaskAnswerVariableAnswers", (string)null);
                 });
 
             modelBuilder.Entity("TaskTest", b =>
@@ -380,14 +386,17 @@ namespace APIServer.Migrations
                         .WithMany()
                         .HasForeignKey("StudentId");
 
-                    b.HasOne("Shared.DB.Test.Answers.TestAnswer", null)
+                    b.HasOne("Shared.DB.Test.Answers.TestAnswer", "TestAnswer")
                         .WithMany("TaskAnswers")
                         .HasForeignKey("TestAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AnsweredTask");
 
                     b.Navigation("Student");
+
+                    b.Navigation("TestAnswer");
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Answers.TestAnswer", b =>
@@ -413,19 +422,24 @@ namespace APIServer.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("Shared.DB.Test.Task.TaskSettings", "Settings")
-                        .WithMany()
-                        .HasForeignKey("SettingsId")
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("Shared.DB.Test.Task.TaskSettings", b =>
+                {
+                    b.HasOne("Shared.DB.Test.Task.Task", null)
+                        .WithOne("Settings")
+                        .HasForeignKey("Shared.DB.Test.Task.TaskSettings", "TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Creator");
-
-                    b.Navigation("Settings");
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Task.VariableAnswer", b =>
                 {
+                    b.HasOne("Shared.DB.Test.Answers.TaskAnswer", null)
+                        .WithMany("MarkedVariables")
+                        .HasForeignKey("TaskAnswerId");
+
                     b.HasOne("Shared.DB.Test.Task.Task", null)
                         .WithMany("VariableAnswers")
                         .HasForeignKey("TaskId")
@@ -464,7 +478,7 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.Test.Task.VariableAnswer", null)
                         .WithMany()
-                        .HasForeignKey("MarkedVariablesId")
+                        .HasForeignKey("MarkedVariableAnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -550,6 +564,11 @@ namespace APIServer.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Shared.DB.Test.Answers.TaskAnswer", b =>
+                {
+                    b.Navigation("MarkedVariables");
+                });
+
             modelBuilder.Entity("Shared.DB.Test.Answers.TestAnswer", b =>
                 {
                     b.Navigation("TaskAnswers");
@@ -557,6 +576,9 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
+                    b.Navigation("Settings")
+                        .IsRequired();
+
                     b.Navigation("VariableAnswers");
                 });
 #pragma warning restore 612, 618

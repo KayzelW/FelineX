@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240812105922_InitMigration")]
-    partial class InitMigration
+    [Migration("20240814220602_initMigration")]
+    partial class initMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,8 +42,8 @@ namespace APIServer.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Result")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("StringAnswer")
                         .HasMaxLength(1000)
@@ -52,7 +52,7 @@ namespace APIServer.Migrations
                     b.Property<Guid?>("StudentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TestAnswerId")
+                    b.Property<Guid>("TestAnswerId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -281,17 +281,17 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
                 {
-                    b.Property<Guid>("MarkedVariablesId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TaskAnswerId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("MarkedVariablesId", "TaskAnswerId");
+                    b.Property<Guid>("MarkedVariableAnswerId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("TaskAnswerId");
+                    b.HasKey("TaskAnswerId", "MarkedVariableAnswerId");
 
-                    b.ToTable("TaskAnswerVariableAnswer");
+                    b.HasIndex("MarkedVariableAnswerId");
+
+                    b.ToTable("TaskAnswerVariableAnswers", (string)null);
                 });
 
             modelBuilder.Entity("TaskTest", b =>
@@ -373,30 +373,37 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.Test.Task.Task", "AnsweredTask")
                         .WithMany()
-                        .HasForeignKey("AnsweredTaskId");
+                        .HasForeignKey("AnsweredTaskId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Shared.DB.User.User", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId");
 
-                    b.HasOne("Shared.DB.Test.Answers.TestAnswer", null)
+                    b.HasOne("Shared.DB.Test.Answers.TestAnswer", "TestAnswer")
                         .WithMany("TaskAnswers")
-                        .HasForeignKey("TestAnswerId");
+                        .HasForeignKey("TestAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AnsweredTask");
 
                     b.Navigation("Student");
+
+                    b.Navigation("TestAnswer");
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Answers.TestAnswer", b =>
                 {
                     b.HasOne("Shared.DB.Test.Test", "AnsweredTest")
                         .WithMany()
-                        .HasForeignKey("AnsweredTestId");
+                        .HasForeignKey("AnsweredTestId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Shared.DB.User.User", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("AnsweredTest");
 
@@ -424,14 +431,16 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.Test.Task.Task", null)
                         .WithMany("VariableAnswers")
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Test", b =>
                 {
                     b.HasOne("Shared.DB.User.User", "Creator")
                         .WithMany()
-                        .HasForeignKey("CreatorId");
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Shared.DB.Test.TestSettings", "Settings")
                         .WithMany()
@@ -448,7 +457,8 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.User.User", "GroupCreator")
                         .WithMany()
-                        .HasForeignKey("GroupCreatorId");
+                        .HasForeignKey("GroupCreatorId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("GroupCreator");
                 });
@@ -457,7 +467,7 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.Test.Task.VariableAnswer", null)
                         .WithMany()
-                        .HasForeignKey("MarkedVariablesId")
+                        .HasForeignKey("MarkedVariableAnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

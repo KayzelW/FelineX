@@ -54,12 +54,12 @@ public sealed partial class TestWarrior
 
     private void SaveSqlTask(TaskAnswer taskAnswer)
     {
+        taskAnswer.IsCheckEnded = true;
         using var scope = _serviceProvider.CreateScope();
         dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
-        dbContext.Entry(taskAnswer.AnsweredTask.Settings).State = EntityState.Unchanged;//TODO fix cringe State
+        // dbContext.Entry(taskAnswer.AnsweredTask.Settings).State = EntityState.Unchanged;//TODO fix cringe State
         dbContext.Update(taskAnswer);
-        dbContext.SaveChanges();
+        // dbContext.SaveChanges();
     }
 
     private void MissingSqlTasks(TaskAnswer taskAnswer)

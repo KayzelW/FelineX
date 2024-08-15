@@ -1,5 +1,6 @@
 ﻿@page "/test/{TestId}"
 
+@using System.Text.Json
 @using Shared.DB.Test.Task
 @using Shared.DB.Interfaces
 @using Task = System.Threading.Tasks.Task
@@ -158,8 +159,8 @@ else
                                 </div>
 
                                 <div class="form-floating">
-                                    <AceEditor @bind-Value="cringe" > </AceEditor>
-                                    @* <textarea class="form-control" type="text" id="floatingTextarea2" @bind="@task.VariableAnswers[0].StringAnswer" style="height: 100px"  ></textarea> *@
+                                    <AceEditor @bind-Value="@task.VariableAnswers[0].StringAnswer" > </AceEditor>
+                                   
                                 </div>
 
                             </div>
@@ -183,8 +184,7 @@ else
 
 @code {
     [Parameter] public string TestId { get; set; }
-    private string cringe { get; set; } = "select";
-    private TestDTO? test { get; set; } = new TestDTO();
+    private TestDTO? test { get; set; } = new();
     
     protected override async Task OnInitializedAsync()
     {
@@ -194,7 +194,7 @@ else
         _logger.LogInformation($"Got test {TestId}");
     }
 
-    void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
+    private static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
     {
         foreach (var varAns in task.VariableAnswers)
         {
@@ -204,14 +204,8 @@ else
     
     private async void SaveAndSubmit()
     {
-        foreach (var task in test.Tasks)
-        {
-            _logger.LogInformation($"Task {task.Question}");
-            foreach (var varAns in task.VariableAnswers!)
-            {
-                _logger.LogInformation(varAns.StringAnswer);
-            }
-        }
+        var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation(json);
         var ansTestId = await _ApiService.SubmitTest(test);
         nav.NavigateTo($"result_test/{ansTestId}");
     }

@@ -6,7 +6,6 @@ using Shared.DB.User;
 using Shared.DB.Test.Answers;
 using Shared.DB.Test.Task;
 using Task = Shared.DB.Test.Task.Task;
-using TestSettings = Shared.DB.Test.TestSettings;
 
 namespace APIServer.Database;
 
@@ -32,6 +31,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .AddJsonFile("appsettings.json")
             .Build();
         var connectionString = config.GetConnectionString("postgres");
+        optionsBuilder.EnableSensitiveDataLogging();
+        optionsBuilder.EnableDetailedErrors();
+        
         if (!string.IsNullOrEmpty(connectionString))
         {
             optionsBuilder.UseNpgsql(connectionString);
@@ -42,6 +44,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             connectionString = config.GetConnectionString("mysql");
             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }
+
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -109,14 +113,38 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<TestAnswer>()
             .HasOne(x => x.AnsweredTest)
             .WithMany()
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade);//working
         modelBuilder.Entity<TestAnswer>()
             .HasMany(testAns => testAns.TaskAnswers)
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskAnswer>(entity =>
+        {
+            // Конфигурация для списка идентификаторов MarkedVariableIds
+            entity.HasMany<VariableAnswer>()
+                .WithMany()
+                .UsingEntity<Dictionary<string, object>>(
+                    "TaskAnswerVariableAnswer",
+                    right => right.HasOne<VariableAnswer>()
+                        .WithMany()
+                        .HasForeignKey("MarkedVariableAnswerId"),
+                    left => left.HasOne<TaskAnswer>()
+                        .WithMany()
+                        .HasForeignKey("TaskAnswerId"),
+                    join =>
+                    {
+                        join.HasKey("TaskAnswerId", "MarkedVariableAnswerId");
+                        join.ToTable("TaskAnswerVariableAnswers"); // Название таблицы связей
+                    });
+
+            // Если нужно, добавь другие конфигурации здесь
+        });
         modelBuilder.Entity<TaskAnswer>()
-            .HasMany(x => x.MarkedVariables)
-            .WithMany();
+            .HasOne(x => x.TestAnswer)
+            .WithMany(x => x.TaskAnswers)
+            .HasForeignKey(x => x.TestAnswerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
 
@@ -129,8 +157,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Test>()
             .HasOne(x => x.Settings)
-            .WithMany()
-            .HasForeignKey(x => x.SettingsId);
+            .WithMany()//TODO remove many
+            .HasForeignKey(x => x.SettingsId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+
 
         modelBuilder.Entity<Task>()
             .HasOne(x => x.Creator)
@@ -138,8 +169,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .HasForeignKey(x => x.CreatorId);
         modelBuilder.Entity<Task>()
             .HasOne(x => x.Settings)
-            .WithMany()
-            .HasForeignKey(x => x.SettingsId);
+            .WithOne()
+            .HasForeignKey<TaskSettings>(x => x.TaskId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<TaskAnswer>()
             .HasOne(x => x.Student)

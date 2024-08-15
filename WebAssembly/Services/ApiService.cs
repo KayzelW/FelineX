@@ -39,6 +39,14 @@ public class ApiService
     #region ForTests
 
 
+    public async Task<bool> PostTest(MyTest test)
+    {
+        _logger.LogInformation("Got test in APIservice");
+        var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
+        _logger.LogInformation("Send test to API");
+        return responseMessage.IsSuccessStatusCode;
+    }
+    
     public async Task<List<MyTest>> GetTests()
     {
         List<MyTest>? tests = null;
@@ -84,14 +92,6 @@ public class ApiService
         }
 
         return testAnswer;
-    }
-
-    public async Task<bool> PostTest(MyTest test)
-    {
-        _logger.LogInformation("Got test in APIservice");
-        var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
-        _logger.LogInformation("Send test to API");
-        return responseMessage.IsSuccessStatusCode;
     }
 
     public async Task<Guid> SubmitTest(MyTest? test)

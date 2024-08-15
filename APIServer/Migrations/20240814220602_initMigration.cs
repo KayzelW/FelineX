@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace APIServer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMigration : Migration
+    public partial class initMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -102,7 +102,8 @@ namespace APIServer.Migrations
                         name: "FK_Groups_Users_GroupCreatorId",
                         column: x => x.GroupCreatorId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -156,7 +157,8 @@ namespace APIServer.Migrations
                         name: "FK_Tests_Users_CreatorId",
                         column: x => x.CreatorId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,7 +249,8 @@ namespace APIServer.Migrations
                         name: "FK_VariableAnswers_Tasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Tasks",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -293,12 +296,14 @@ namespace APIServer.Migrations
                         name: "FK_TestAnswers_Tests_AnsweredTestId",
                         column: x => x.AnsweredTestId,
                         principalTable: "Tests",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TestAnswers_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -309,10 +314,10 @@ namespace APIServer.Migrations
                     StudentId = table.Column<Guid>(type: "uuid", nullable: true),
                     AnsweredTaskId = table.Column<Guid>(type: "uuid", nullable: true),
                     StringAnswer = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    Result = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Result = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    TestAnswerId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsFailedCheck = table.Column<bool>(type: "boolean", nullable: false),
-                    IsSuccess = table.Column<bool>(type: "boolean", nullable: false),
-                    TestAnswerId = table.Column<Guid>(type: "uuid", nullable: true)
+                    IsSuccess = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -321,12 +326,14 @@ namespace APIServer.Migrations
                         name: "FK_TaskAnswers_Tasks_AnsweredTaskId",
                         column: x => x.AnsweredTaskId,
                         principalTable: "Tasks",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TaskAnswers_TestAnswers_TestAnswerId",
                         column: x => x.TestAnswerId,
                         principalTable: "TestAnswers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TaskAnswers_Users_StudentId",
                         column: x => x.StudentId,
@@ -335,24 +342,24 @@ namespace APIServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TaskAnswerVariableAnswer",
+                name: "TaskAnswerVariableAnswers",
                 columns: table => new
                 {
-                    MarkedVariablesId = table.Column<Guid>(type: "uuid", nullable: false),
-                    TaskAnswerId = table.Column<Guid>(type: "uuid", nullable: false)
+                    TaskAnswerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MarkedVariableAnswerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskAnswerVariableAnswer", x => new { x.MarkedVariablesId, x.TaskAnswerId });
+                    table.PrimaryKey("PK_TaskAnswerVariableAnswers", x => new { x.TaskAnswerId, x.MarkedVariableAnswerId });
                     table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswer_TaskAnswers_TaskAnswerId",
+                        name: "FK_TaskAnswerVariableAnswers_TaskAnswers_TaskAnswerId",
                         column: x => x.TaskAnswerId,
                         principalTable: "TaskAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswer_VariableAnswers_MarkedVariablesId",
-                        column: x => x.MarkedVariablesId,
+                        name: "FK_TaskAnswerVariableAnswers_VariableAnswers_MarkedVariableAns~",
+                        column: x => x.MarkedVariableAnswerId,
                         principalTable: "VariableAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -364,9 +371,9 @@ namespace APIServer.Migrations
                 column: "GroupCreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskAnswerVariableAnswer_TaskAnswerId",
-                table: "TaskAnswerVariableAnswer",
-                column: "TaskAnswerId");
+                name: "IX_TaskAnswerVariableAnswers_MarkedVariableAnswerId",
+                table: "TaskAnswerVariableAnswers",
+                column: "MarkedVariableAnswerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskAnswers_AnsweredTaskId",
@@ -454,7 +461,7 @@ namespace APIServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TaskAnswerVariableAnswer");
+                name: "TaskAnswerVariableAnswers");
 
             migrationBuilder.DropTable(
                 name: "TaskTest");

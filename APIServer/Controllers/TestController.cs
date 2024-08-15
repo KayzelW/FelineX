@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using UAParser;
 using APIServer.Database;
 using APIServer.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.DB.Test;
 using Shared.DB.Test.Answers;
+using Shared.DB.Test.Task;
+using Task = System.Threading.Tasks.Task;
 
 namespace APIServer.Controllers;
 
@@ -39,16 +41,14 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
         Test? test;
         try
         {
-            test = await dbContext.Tests.Where(x => x.Id == id)
-                .Include(x => x.Tasks)
-                .ThenInclude(x => x.VariableAnswers)
-                .FirstOrDefaultAsync();
-
+            test = await dbContext.Tests.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(x => x.Id == id);
             if (test == null)
                 return NotFound(id);
 
             foreach (var task in test.Tasks)
             {
+                task.Settings.SqlQueryCheck = "";
+                task.Settings.SqlQueryInstall = "";
                 if (task.IsLongStringTask() || task.IsShortStringTask())
                 {
                     foreach (var varAns in task.VariableAnswers!)
@@ -82,10 +82,6 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             var listTestAnswers = await dbContext.TestAnswers!.Where(x => x.AnsweredTestId == testId)
                 .Include(x => x.Student)
                 .ToListAsync();
-            foreach (var test in listTestAnswers)
-            {
-            }
-
             return Ok(listTestAnswers);
         }
         catch (Exception e)
@@ -108,11 +104,11 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             _logger.LogError($"Test or tasks are null while executing SubmitTest");
             return BadRequest("Object is null");
         }
-
         try
         {
+
             var testAnswer = new TestAnswer();
-            // fill studentId or fantomName if first is null
+
             if (!string.IsNullOrEmpty(solvedTest.FantomName))
             {
                 testAnswer.FantomName = solvedTest.FantomName;
@@ -121,40 +117,50 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             {
                 testAnswer.StudentId = (Guid)HttpContext.Items["User"]!;
             }
-
             testAnswer.PassingDate = DateTime.Now; // fill pass date
             testAnswer.AnsweredTestId = solvedTest.Id; // fill testId
-
-            
             
             // fill list of tasksAnswers 
             foreach (var task in solvedTest.Tasks)
             {
-                foreach (var taskVariableAnswer in task.VariableAnswers)
-                {
-                    dbContext.Entry(taskVariableAnswer).State = EntityState.Unchanged;
-                }//TODO fix cringe State
                 var taskAnswer = new TaskAnswer(testAnswer.StudentId, task);
-                testAnswer.TaskAnswers!.Add(taskAnswer);
+                foreach (var varAns in taskAnswer.MarkedVariables)
+                {
+                    dbContext.Entry(varAns).State = EntityState.Detached;
+                }
+                var originalTask = await dbContext.Tasks.FirstOrDefaultAsync(x => x.Id == task.Id);
+                if (originalTask == null)
+                {
+                    logger.LogInformation($"OriginalTask for {taskAnswer.StudentId}:{solvedTest.FantomName} is null");
+                    continue;
+                }
+                
                 taskAnswer.TestAnswer = testAnswer;
+                taskAnswer.AnsweredTask = originalTask;
+                testAnswer.TaskAnswers!.Add(taskAnswer);
+               
+                
             }
-
-            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-            var userAgent = HttpContext.Request.Headers.UserAgent.Append($"IP:{ipAddress};");
-            var userInfo = userAgent.ToString();
-            // var userAgentParser = new UserAgentParser();
-            // var clientInfo = userAgentParser.Parse(userAgent);
-            // var operatingSystem = clientInfo.OS.Name;
-            // var device = clientInfo.Device.Family;
-            //var logString = $"Браузер: {userAgent}, IP: {ipAddress}, ОС: {operatingSystem}, Устройство: {device}";
-
-            testAnswer.ClientConnectionLog = userInfo ?? "failed parse";
-
+            
+            
+            testAnswer.ClientConnectionLog = GetConnectionLog();
+            // await dbContext.SaveChangesAsync();
+            
+            foreach (var task in testAnswer.TaskAnswers)
+            {
+                task.AnsweredTask = null;
+            }
+            
+            dbContext.Update(testAnswer);
+            await dbContext.SaveChangesAsync();
+            
             _testWarrior.RegisterTestAnswer(testAnswer);
 
-            // var score = await CalculateScore(testAnswer);
-
-            await dbContext.TestAnswers!.AddAsync(testAnswer);
+            while (!testAnswer.TaskAnswers!.All(x => x.IsCheckEnded))
+            {
+                await Task.Delay(1000);
+            }
+            
             await dbContext.SaveChangesAsync();
 
             return Ok(testAnswer.Id);
@@ -164,5 +170,17 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             _logger.LogInformation(e, $"Exception while saving new testAnswer from user");
             return BadRequest(solvedTest);
         }
+    }
+
+    private string GetConnectionLog()
+    {
+        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        var userAgentString = HttpContext.Request.Headers["User-Agent"].ToString();
+        var userAgentParser = Parser.GetDefault();
+        var clientInfo = userAgentParser.Parse(userAgentString);
+        var operatingSystem = clientInfo.OS.Family;
+        var device = clientInfo.Device.Family;
+        var logString = $"Браузер: {clientInfo.UA}, IP: {ipAddress}, ОС: {operatingSystem}, Устройство: {device}";
+        return logString;
     }
 }

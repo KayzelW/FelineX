@@ -13,8 +13,7 @@ public sealed partial class Task : ITask
     public Guid Id { get; set; } = new Guid();
 
     [StringLength(1000)] public string? Question { get; set; } = "";
-    public TaskSettings Settings { get; set; } = new TaskSettings();
-    public Guid SettingsId { get; set; }
+    public TaskSettings Settings { get; set; }
     [ForeignKey(nameof(ThemeTask))] public List<ThemeTask>? Thematics { get; set; } = [];
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;
     public List<VariableAnswer>? VariableAnswers { get; set; } = [];
@@ -23,6 +22,7 @@ public sealed partial class Task : ITask
     [JsonIgnore] public List<Test>? Tests { get; set; } = [];
     public DBMS? DatabaseType { get; set; }
     public List<string>? DataRows { get; set; }
+    
 
 
     [NotMapped, JsonIgnore]
@@ -52,6 +52,7 @@ public sealed partial class Task : ITask
     {
         Question = question ?? "";
         InteractionType = interactionType;
+        Settings = new TaskSettings();
     }
 
     public Task(string? question, InteractionType interactionType, params string[] answers) :
