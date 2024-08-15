@@ -89,8 +89,10 @@ public class ApiService
         if (responseMessage.IsSuccessStatusCode)
         {
             testAnswer = await responseMessage.Content.ReadFromJsonAsync<TestAnswer>();
+            var g = responseMessage.Content.ReadFromJsonAsAsyncEnumerable<TestAnswer>();
+            Console.WriteLine(g);
         }
-
+        
         return testAnswer;
     }
 

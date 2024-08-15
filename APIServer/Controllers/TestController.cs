@@ -108,7 +108,11 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
         {
 
             var testAnswer = new TestAnswer();
+            testAnswer.ClientConnectionLog = GetConnectionLog();
 
+            dbContext.Add(testAnswer);
+            await dbContext.SaveChangesAsync();
+            
             if (!string.IsNullOrEmpty(solvedTest.FantomName))
             {
                 testAnswer.FantomName = solvedTest.FantomName;
@@ -124,11 +128,12 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             foreach (var task in solvedTest.Tasks)
             {
                 var taskAnswer = new TaskAnswer(testAnswer.StudentId, task);
-                foreach (var varAns in taskAnswer.MarkedVariables)
-                {
-                    dbContext.Entry(varAns).State = EntityState.Detached;
-                }
-                var originalTask = await dbContext.Tasks.FirstOrDefaultAsync(x => x.Id == task.Id);
+                var originalTask = await dbContext
+                    .Tasks
+                    .Include(x => x.VariableAnswers)
+                    .AsNoTrackingWithIdentityResolution()
+                    .FirstOrDefaultAsync(x => x.Id == task.Id);
+                dbContext.Entry(originalTask).State = EntityState.Unchanged;
                 if (originalTask == null)
                 {
                     logger.LogInformation($"OriginalTask for {taskAnswer.StudentId}:{solvedTest.FantomName} is null");
@@ -142,18 +147,6 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
                 
             }
             
-            
-            testAnswer.ClientConnectionLog = GetConnectionLog();
-            // await dbContext.SaveChangesAsync();
-            
-            foreach (var task in testAnswer.TaskAnswers)
-            {
-                task.AnsweredTask = null;
-            }
-            
-            dbContext.Update(testAnswer);
-            await dbContext.SaveChangesAsync();
-            
             _testWarrior.RegisterTestAnswer(testAnswer);
 
             while (!testAnswer.TaskAnswers!.All(x => x.IsCheckEnded))
@@ -161,6 +154,17 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
                 await Task.Delay(1000);
             }
             
+            // foreach (var testAnswerTaskAnswer in testAnswer.TaskAnswers)
+            // {
+            //     testAnswerTaskAnswer.AnsweredTask = null;
+            //     foreach (var varible in  testAnswerTaskAnswer.MarkedVariables)
+            //     {
+            //         dbContext.Entry(varible).State = EntityState.Detached;
+            //     }
+            //     
+            // }
+            
+            dbContext.Update(testAnswer);
             await dbContext.SaveChangesAsync();
 
             return Ok(testAnswer.Id);
@@ -171,6 +175,8 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             return BadRequest(solvedTest);
         }
     }
+    
+    
 
     private string GetConnectionLog()
     {

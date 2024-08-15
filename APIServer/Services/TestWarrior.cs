@@ -133,7 +133,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
         return Task.WhenAll(workers);
     }
     
-    private async Task CheckTasks(TestAnswer answeredTest)
+    private void CheckTasks(TestAnswer answeredTest)
     {
         using var scope = _serviceProvider.CreateScope();
         dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -189,8 +189,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
         }
         
         answeredTest.Score = score;
-        dbContext.Update(answeredTest);
-        await dbContext.SaveChangesAsync();
+        dbContext.SaveChanges();
     }
 
 }

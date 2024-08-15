@@ -229,10 +229,6 @@
     private async void Save()
     {
         
-
-        var cringe = await _apiService.GetTest("a1d49c27-3c99-4abd-b51d-2b5c7b727b44");
-        
-        test.Tasks.Add(cringe.Tasks.FirstOrDefault());
         var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
         _logger.LogInformation(json);
         

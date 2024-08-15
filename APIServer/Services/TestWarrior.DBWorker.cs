@@ -58,8 +58,8 @@ public sealed partial class TestWarrior
         using var scope = _serviceProvider.CreateScope();
         dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         // dbContext.Entry(taskAnswer.AnsweredTask.Settings).State = EntityState.Unchanged;//TODO fix cringe State
-        dbContext.Update(taskAnswer);
-        // dbContext.SaveChanges();
+        // dbContext.Update(taskAnswer);
+        dbContext.SaveChanges();
     }
 
     private void MissingSqlTasks(TaskAnswer taskAnswer)

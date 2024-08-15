@@ -119,27 +119,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             .WithOne()
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<TaskAnswer>(entity =>
-        {
-            // Конфигурация для списка идентификаторов MarkedVariableIds
-            entity.HasMany<VariableAnswer>()
-                .WithMany()
-                .UsingEntity<Dictionary<string, object>>(
-                    "TaskAnswerVariableAnswer",
-                    right => right.HasOne<VariableAnswer>()
-                        .WithMany()
-                        .HasForeignKey("MarkedVariableAnswerId"),
-                    left => left.HasOne<TaskAnswer>()
-                        .WithMany()
-                        .HasForeignKey("TaskAnswerId"),
-                    join =>
-                    {
-                        join.HasKey("TaskAnswerId", "MarkedVariableAnswerId");
-                        join.ToTable("TaskAnswerVariableAnswers"); // Название таблицы связей
-                    });
-
-            // Если нужно, добавь другие конфигурации здесь
-        });
+        modelBuilder.Entity<TaskAnswer>()
+            .HasMany(x => x.MarkedVariables)
+            .WithMany();
+            
         modelBuilder.Entity<TaskAnswer>()
             .HasOne(x => x.TestAnswer)
             .WithMany(x => x.TaskAnswers)
