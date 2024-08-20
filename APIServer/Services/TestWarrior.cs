@@ -12,34 +12,33 @@ namespace APIServer.Services;
 public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
 {
     private AppDbContext dbContext;
-    private readonly ILogger<TestWarrior> logger;
-    private readonly IConfiguration configuration;
+    private readonly ILogger<TestWarrior> _logger;
+    private readonly IConfiguration _configuration;
     private readonly IServiceProvider _serviceProvider;
-    private readonly CheckQueueService _checkQueueService;
 
     public static Dictionary<DBMS, string> AvailableDBMS = [];
-    
 
-    private readonly ConcurrentQueue<TestAnswer>? _testAnswers;
-    private readonly ConcurrentQueue<TaskAnswer>? _sqlTasks;
+    private readonly ConcurrentQueue<TestAnswer> _testAnswers;
+    private readonly ConcurrentQueue<TaskAnswer> _sqlTasks;
     private const int BaseLimitThreads = 10;
 
-    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, IServiceProvider serviceProvider, CheckQueueService checkQueueService)
+    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, IServiceProvider serviceProvider,
+        CheckQueueService checkQueueService)
     {
-        this.logger = logger;
-        this.configuration = configuration;
+        this._logger = logger;
+        this._configuration = configuration;
         _serviceProvider = serviceProvider;
-        _checkQueueService = checkQueueService;
-        _testAnswers = _checkQueueService._testAnswers;
-        _sqlTasks = _checkQueueService._sqlTasks;
-        
+
+        _testAnswers = checkQueueService.TestAnswers;
+        _sqlTasks = checkQueueService.SqlTasks;
+
         logger.LogInformation("TestWarrior instance created.");
 
         #region DatabaseModelsInit
 
         try
         {
-            var fields = this.configuration.GetSection("Settings:TestDatabaseUrls");
+            var fields = this._configuration.GetSection("Settings:TestDatabaseUrls");
 
             AvailableDBMS.Add(DBMS.SqLite, "DataSource=:memory:");
 
@@ -65,20 +64,19 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
     public void RegisterTestAnswer(TestAnswer test)
     {
         _testAnswers.Enqueue(test);
-        logger.LogInformation($"Test registered in TestWarrior to {_testAnswers.GetHashCode()}");
+        _logger.LogInformation($"Test registered in TestWarrior to {_testAnswers.GetHashCode()}");
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("TestWarrior service started.");
+        _logger.LogInformation("TestWarrior service started.");
         // if (!int.TryParse(configuration["Settings:CountThreadsForTestChecking"], out var maxThreads))
         // {
         //     maxThreads = BaseLimitThreads;
         // }
 
         var workers = new List<Task>();
-        
-        
+
         #region TestAnswer worker
 
         workers.Add(Task.Run(async () =>
@@ -89,34 +87,32 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 {
                     if (_testAnswers!.TryDequeue(out var testAnswer))
                     {
-                        logger.LogInformation($"Dequeued test answer: {testAnswer}");
+                        _logger.LogInformation($"Dequeued test answer: {testAnswer}");
                         CheckTasks(testAnswer);
                     }
                     else
                     {
                         await Task.Delay(100, stoppingToken);
                     }
-        
+
                     // logger.LogInformation($"Current {_testAnswers.GetType()} count: {_testAnswers.Count}");
                     await Task.Delay(1000, stoppingToken);
                 }
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred in TestAnswer worker.");
+                _logger.LogError(ex, "Error occurred in TestAnswer worker.");
             }
-        
         }, stoppingToken));
-        
+
         #endregion
-        
+
         #region SqlTask Worker
-        
+
         workers.Add(Task.Run(async () =>
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-        
                 if (_sqlTasks.TryDequeue(out var taskAnswer))
                 {
                     CheckSqlQuery(taskAnswer);
@@ -127,17 +123,17 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 }
             }
         }, stoppingToken));
-        
+
         #endregion
-            
+
         return Task.WhenAll(workers);
     }
-    
+
     private void CheckTasks(TestAnswer answeredTest)
     {
         using var scope = _serviceProvider.CreateScope();
         dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
+
         var sqlTasksCount = 0;
         var taskCount = answeredTest.TaskAnswers!.Count;
 
@@ -146,6 +142,12 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
 
         foreach (var task in answeredTest.TaskAnswers)
         {
+            if (task.AnsweredTask == null)
+            {
+                task.IsFailedCheck = true;
+                continue;
+            }
+
             dbContext.Entry(task.AnsweredTask).State = EntityState.Unchanged;
             if (task.AnsweredTask.IsSqlTask())
             {
@@ -162,6 +164,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 {
                     score += answeredTest.TaskWeight;
                 }
+
                 task.IsCheckEnded = true;
                 continue;
             }
@@ -172,6 +175,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 {
                     score += answeredTest.TaskWeight;
                 }
+
                 task.IsCheckEnded = true;
                 continue;
             }
@@ -186,19 +190,22 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
             }
 
             task.IsCheckEnded = true;
-
         }
+
         answeredTest.Score = score;
+
         foreach (var testAnswerTaskAnswer in answeredTest.TaskAnswers)
         {
-            foreach (var varible in  testAnswerTaskAnswer.MarkedVariables)
-            {
-                dbContext.Entry(varible).State = EntityState.Unchanged;
-            }
+            if (testAnswerTaskAnswer.MarkedVariables == null)
+                continue;
 
+            foreach (var variable in testAnswerTaskAnswer.MarkedVariables)
+            {
+                dbContext.Entry(variable).State = EntityState.Unchanged;
+            }
         }
+
         dbContext.Update(answeredTest);
         dbContext.SaveChanges();
     }
-
 }

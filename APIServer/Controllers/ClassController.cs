@@ -29,7 +29,6 @@ public class ClassController : Controller
     [HttpPost("add_student")]
     public async Task<IActionResult> AddUserToGroup(UserGroupDTO data)
     {
-         
         try
         {
             var groupId = data.GroupId;
@@ -58,6 +57,7 @@ public class ClassController : Controller
             return BadRequest($"Exeption while adding student {data.UserId} to group {data.GroupId}");
         }
     }
+    
     [HttpPost("add_group")]
     public async Task<IActionResult> AddGroup(UserGroup? group)
     {
@@ -77,14 +77,4 @@ public class ClassController : Controller
             return BadRequest("Exeption while adding group");
         }
     }
-    
-    
-    
-
-
-
-
-
-
-
 }

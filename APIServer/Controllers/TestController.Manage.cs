@@ -1,4 +1,5 @@
 ﻿using APIServer.Extensions;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.DB.Test;
@@ -13,27 +14,33 @@ public partial class TestController
         try
         {
             var test = await dbContext.Tests.FirstOrDefaultAsync(x => x.Id == testId);
+
+            if (test == null)
+            {
+                return NotFound("testId doesn't exists in database or already deleted");
+            }
+            
             dbContext.Remove(test);
             await dbContext.SaveChangesAsync();
         }
         catch (Exception e)
         {
             _logger.LogError($"Delete error test: {testId}", e);
-            return BadRequest();
+            return BadRequest($"Delete error test: {testId}");
         }
-        return Ok(true);
-        
+
+        return Ok();
     }
 
     [HttpPost("create_test")]
-    public async Task<IActionResult> CreateTest([FromBody]Test? test)
+    public async Task<IActionResult> CreateTest([FromBody] Test? test)
     {
         if (test is null)
         {
-            _logger.LogInformation(
-                $"test is null while executing CreateTest from user");
+            _logger.LogInformation($"test is null while executing CreateTest from user");
             return BadRequest();
         }
+
         try
         {
             var userId = (Guid)HttpContext.Items["User"]!;
@@ -49,7 +56,7 @@ public partial class TestController
                     }
                 }
             }
-            
+
             await dbContext.Tests.AddAsync(test);
             await dbContext.SaveChangesAsync();
         }
@@ -61,5 +68,4 @@ public partial class TestController
 
         return Ok();
     }
-    
 }

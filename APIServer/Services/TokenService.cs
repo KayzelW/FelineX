@@ -7,17 +7,11 @@ using Shared.Extensions;
 
 namespace APIServer.Services;
 
-public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)// : BackgroundService
+public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)
 {
-    private ConcurrentDictionary<string, Guid> _activeTokens = [];
+    private readonly ConcurrentDictionary<string, Guid> _activeTokens = [];
+    private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
 
-    private JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-    
-    // protected override Task ExecuteAsync(CancellationToken stoppingToken)
-    // {
-    //     
-    // }
-    
     public bool TryGetUserId(string? token, out Guid userId)
     {
         logger.LogInformation($"Try get token({token})");
@@ -26,10 +20,10 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
             userId = Guid.Empty;
             return false;
         }
-        
+
         return _activeTokens.TryGetValue(token!, out userId);
     }
-    
+
     public string RegisterSession(Guid userId)
     {
         var token = GenerateJwtToken(userId);
@@ -46,12 +40,12 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
     {
         return _activeTokens.TryRemove(token, out _);
     }
-    
+
     private bool ValidateToken(string? token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
-        
+
         try
         {
             var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -61,11 +55,11 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true, // необходимость проверки срока действия токена
-                // ClockSkew = TimeSpan.Zero,  // допустимая погрешность в несколько минут
+                ClockSkew = TimeSpan.FromMinutes(30), // допустимая погрешность в несколько минут
             }, out var validatedToken);
-            
+
             logger.LogInformation($"Token({token}) passed the check");
-            
+
             return true;
         }
         catch (Exception ex)
@@ -74,7 +68,7 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
             return false;
         }
     }
-    
+
     private string GenerateJwtToken(Guid userId)
     {
         logger.LogInformation($"Generating token for {userId}");
@@ -89,8 +83,8 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var token = _tokenHandler.CreateToken(tokenDescriptor);
         logger.LogInformation($"Generated token for {userId}:{token}");
-        return tokenHandler.WriteToken(token);
+        return _tokenHandler.WriteToken(token);
     }
 }

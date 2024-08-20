@@ -133,12 +133,13 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
                     .Include(x => x.VariableAnswers)
                     .AsNoTrackingWithIdentityResolution()
                     .FirstOrDefaultAsync(x => x.Id == task.Id);
-                dbContext.Entry(originalTask).State = EntityState.Unchanged;
+                
                 if (originalTask == null)
                 {
                     logger.LogInformation($"OriginalTask for {taskAnswer.StudentId}:{solvedTest.FantomName} is null");
                     continue;
                 }
+                dbContext.Entry(originalTask).State = EntityState.Unchanged;
                 
                 taskAnswer.TestAnswer = testAnswer;
                 taskAnswer.AnsweredTask = originalTask;

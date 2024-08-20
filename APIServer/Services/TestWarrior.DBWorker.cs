@@ -75,7 +75,7 @@ public sealed partial class TestWarrior
 
     private void FailedToCheckSqlTask(TaskAnswer taskAnswer, Exception ex)
     {
-        logger.LogWarning(ex, "Error while try exec taskAnswer query");
+        _logger.LogWarning(ex, "Error while try exec taskAnswer query");
         taskAnswer.Result = ex.Message;
         taskAnswer.IsFailedCheck = true;
         taskAnswer.IsSuccess = false;

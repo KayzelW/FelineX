@@ -5,6 +5,6 @@ namespace APIServer.Services;
 
 public class CheckQueueService
 {
-    public ConcurrentQueue<TestAnswer>? _testAnswers = new ConcurrentQueue<TestAnswer>();
-    public ConcurrentQueue<TaskAnswer>? _sqlTasks = new ConcurrentQueue<TaskAnswer>();
+    public readonly ConcurrentQueue<TestAnswer> TestAnswers = new ConcurrentQueue<TestAnswer>();
+    public readonly ConcurrentQueue<TaskAnswer> SqlTasks = new ConcurrentQueue<TaskAnswer>();
 }
