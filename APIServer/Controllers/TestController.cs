@@ -109,7 +109,7 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
 
             var testAnswer = new TestAnswer();
             testAnswer.ClientConnectionLog = GetConnectionLog();
-
+            
             dbContext.Add(testAnswer);
             await dbContext.SaveChangesAsync();
             
@@ -143,30 +143,11 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
                 taskAnswer.TestAnswer = testAnswer;
                 taskAnswer.AnsweredTask = originalTask;
                 testAnswer.TaskAnswers!.Add(taskAnswer);
-               
                 
             }
             
             _testWarrior.RegisterTestAnswer(testAnswer);
-
-            while (!testAnswer.TaskAnswers!.All(x => x.IsCheckEnded))
-            {
-                await Task.Delay(1000);
-            }
             
-            // foreach (var testAnswerTaskAnswer in testAnswer.TaskAnswers)
-            // {
-            //     testAnswerTaskAnswer.AnsweredTask = null;
-            //     foreach (var varible in  testAnswerTaskAnswer.MarkedVariables)
-            //     {
-            //         dbContext.Entry(varible).State = EntityState.Detached;
-            //     }
-            //     
-            // }
-            
-            dbContext.Update(testAnswer);
-            await dbContext.SaveChangesAsync();
-
             return Ok(testAnswer.Id);
         }
         catch (Exception e)

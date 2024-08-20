@@ -13,19 +13,6 @@ namespace APIServer.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TaskSettings",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SqlQueryInstall = table.Column<string>(type: "text", nullable: true),
-                    SqlQueryCheck = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskSettings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TestSettings",
                 columns: table => new
                 {
@@ -112,7 +99,6 @@ namespace APIServer.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Question = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    SettingsId = table.Column<Guid>(type: "uuid", nullable: false),
                     InteractionType = table.Column<int>(type: "integer", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uuid", nullable: true),
                     DatabaseType = table.Column<int>(type: "integer", nullable: true),
@@ -121,12 +107,6 @@ namespace APIServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tasks_TaskSettings_SettingsId",
-                        column: x => x.SettingsId,
-                        principalTable: "TaskSettings",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Tasks_Users_CreatorId",
                         column: x => x.CreatorId,
@@ -205,6 +185,26 @@ namespace APIServer.Migrations
                         name: "FK_UserUserGroup_Users_StudentsId",
                         column: x => x.StudentsId,
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskSettings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TaskId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SqlQueryInstall = table.Column<string>(type: "text", nullable: true),
+                    SqlQueryCheck = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskSettings", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TaskSettings_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -342,24 +342,24 @@ namespace APIServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TaskAnswerVariableAnswers",
+                name: "TaskAnswerVariableAnswer",
                 columns: table => new
                 {
-                    TaskAnswerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    MarkedVariableAnswerId = table.Column<Guid>(type: "uuid", nullable: false)
+                    MarkedVariablesId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TaskAnswerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TaskAnswerVariableAnswers", x => new { x.TaskAnswerId, x.MarkedVariableAnswerId });
+                    table.PrimaryKey("PK_TaskAnswerVariableAnswer", x => new { x.MarkedVariablesId, x.TaskAnswerId });
                     table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswers_TaskAnswers_TaskAnswerId",
+                        name: "FK_TaskAnswerVariableAnswer_TaskAnswers_TaskAnswerId",
                         column: x => x.TaskAnswerId,
                         principalTable: "TaskAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TaskAnswerVariableAnswers_VariableAnswers_MarkedVariableAns~",
-                        column: x => x.MarkedVariableAnswerId,
+                        name: "FK_TaskAnswerVariableAnswer_VariableAnswers_MarkedVariablesId",
+                        column: x => x.MarkedVariablesId,
                         principalTable: "VariableAnswers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -371,9 +371,9 @@ namespace APIServer.Migrations
                 column: "GroupCreatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TaskAnswerVariableAnswers_MarkedVariableAnswerId",
-                table: "TaskAnswerVariableAnswers",
-                column: "MarkedVariableAnswerId");
+                name: "IX_TaskAnswerVariableAnswer_TaskAnswerId",
+                table: "TaskAnswerVariableAnswer",
+                column: "TaskAnswerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskAnswers_AnsweredTaskId",
@@ -391,6 +391,12 @@ namespace APIServer.Migrations
                 column: "TestAnswerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TaskSettings_TaskId",
+                table: "TaskSettings",
+                column: "TaskId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TaskTest_TestsId",
                 table: "TaskTest",
                 column: "TestsId");
@@ -404,11 +410,6 @@ namespace APIServer.Migrations
                 name: "IX_Tasks_CreatorId",
                 table: "Tasks",
                 column: "CreatorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_SettingsId",
-                table: "Tasks",
-                column: "SettingsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TestAnswers_AnsweredTestId",
@@ -461,7 +462,10 @@ namespace APIServer.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TaskAnswerVariableAnswers");
+                name: "TaskAnswerVariableAnswer");
+
+            migrationBuilder.DropTable(
+                name: "TaskSettings");
 
             migrationBuilder.DropTable(
                 name: "TaskTest");
@@ -498,9 +502,6 @@ namespace APIServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tests");
-
-            migrationBuilder.DropTable(
-                name: "TaskSettings");
 
             migrationBuilder.DropTable(
                 name: "TestSettings");

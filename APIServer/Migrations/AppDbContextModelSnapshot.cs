@@ -32,6 +32,9 @@ namespace APIServer.Migrations
                     b.Property<Guid?>("AnsweredTaskId")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("IsCheckEnded")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsFailedCheck")
                         .HasColumnType("boolean");
 

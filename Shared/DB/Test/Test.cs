@@ -18,7 +18,7 @@ public class Test
     public Guid? CreatorId { get; set; }
     [Column(TypeName = "timestamp(6)")]
     public DateTime? CreationTime { get; set; } = DateTime.Now;
-    public List<DB.Test.Task.Task>? Tasks { get; set; } = [];
+    public List<Task.Task>? Tasks { get; set; } = [];
     
     public Test()
     {

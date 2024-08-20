@@ -52,7 +52,11 @@ public sealed partial class Task : ITask
     {
         Question = question ?? "";
         InteractionType = interactionType;
-        Settings = new TaskSettings();
+        Settings = new TaskSettings
+        {
+            SqlQueryInstall = "",
+            SqlQueryCheck = ""
+        };
     }
 
     public Task(string? question, InteractionType interactionType, params string[] answers) :

@@ -7,18 +7,28 @@
 
 @inject ApiService _ApiService
 @inject ILogger<TestResult> _logger
+@if (TestAnswer is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="Sticker" style="width: 104px; height: 104px; display: flex; justify-content: flex-end"><img src="https://media.tenor.com/9fBgVWrDYs0AAAAi/run-busy.gif" width="88" height="79.44444444444444" alt="Run Busy Sticker - Run Busy Coko Stickers" style="max-width: 104px; background-color: unset;"></div>
+    </div>
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест проверяется</h3>
+}
+else
+{
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Ваши результаты:</h3>
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@TestAnswer?.Score%</h3>
+    <div class="d-flex justify-content-center" style="min-height: 60px">
+        <img src="@CatScoreString" alt="Фото">
+    </div>
+}
 
-<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Ваши результаты:</h3>
-<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@TestAnswer?.Score%</h3>
-<div class="d-flex justify-content-center" style="min-height: 60px">
-    <img src="@CatScoreString" alt="Фото">
-</div>
 
 
 @code {
 
     [Parameter] public string AnsweredTestId { get; set; }
-    private TestAnswer? TestAnswer { get; set; } = new();
+    private TestAnswer? TestAnswer { get; set; }
     private double CatScore { get; set; }
     private string CatScoreString { get; set; } = "";
 

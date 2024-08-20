@@ -146,11 +146,12 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
 
         foreach (var task in answeredTest.TaskAnswers)
         {
-            
+            dbContext.Entry(task.AnsweredTask).State = EntityState.Unchanged;
             if (task.AnsweredTask.IsSqlTask())
             {
                 sqlTasksCount += 1;
                 _sqlTasks.Enqueue(task);
+                task.IsCheckEnded = true;
                 continue;
             }
 
@@ -182,13 +183,21 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
             if (allMarkedVariablesMatch)
             {
                 score += answeredTest.TaskWeight;
-                task.IsCheckEnded = true;
             }
+
             task.IsCheckEnded = true;
-            
+
         }
-        
         answeredTest.Score = score;
+        foreach (var testAnswerTaskAnswer in answeredTest.TaskAnswers)
+        {
+            foreach (var varible in  testAnswerTaskAnswer.MarkedVariables)
+            {
+                dbContext.Entry(varible).State = EntityState.Unchanged;
+            }
+
+        }
+        dbContext.Update(answeredTest);
         dbContext.SaveChanges();
     }
 

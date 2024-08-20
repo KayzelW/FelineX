@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240814220602_initMigration")]
-    partial class initMigration
+    [Migration("20240819175757_fix")]
+    partial class fix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,14 +123,9 @@ namespace APIServer.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid>("SettingsId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("SettingsId");
 
                     b.ToTable("Tasks");
                 });
@@ -147,7 +142,13 @@ namespace APIServer.Migrations
                     b.Property<string>("SqlQueryInstall")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TaskId")
+                        .IsUnique();
 
                     b.ToTable("TaskSettings");
                 });
@@ -281,17 +282,17 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
                 {
+                    b.Property<Guid>("MarkedVariablesId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TaskAnswerId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("MarkedVariableAnswerId")
-                        .HasColumnType("uuid");
+                    b.HasKey("MarkedVariablesId", "TaskAnswerId");
 
-                    b.HasKey("TaskAnswerId", "MarkedVariableAnswerId");
+                    b.HasIndex("TaskAnswerId");
 
-                    b.HasIndex("MarkedVariableAnswerId");
-
-                    b.ToTable("TaskAnswerVariableAnswers", (string)null);
+                    b.ToTable("TaskAnswerVariableAnswer");
                 });
 
             modelBuilder.Entity("TaskTest", b =>
@@ -416,15 +417,16 @@ namespace APIServer.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("Shared.DB.Test.Task.TaskSettings", "Settings")
-                        .WithMany()
-                        .HasForeignKey("SettingsId")
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("Shared.DB.Test.Task.TaskSettings", b =>
+                {
+                    b.HasOne("Shared.DB.Test.Task.Task", null)
+                        .WithOne("Settings")
+                        .HasForeignKey("Shared.DB.Test.Task.TaskSettings", "TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Creator");
-
-                    b.Navigation("Settings");
                 });
 
             modelBuilder.Entity("Shared.DB.Test.Task.VariableAnswer", b =>
@@ -467,7 +469,7 @@ namespace APIServer.Migrations
                 {
                     b.HasOne("Shared.DB.Test.Task.VariableAnswer", null)
                         .WithMany()
-                        .HasForeignKey("MarkedVariableAnswerId")
+                        .HasForeignKey("MarkedVariablesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -560,6 +562,9 @@ namespace APIServer.Migrations
 
             modelBuilder.Entity("Shared.DB.Test.Task.Task", b =>
                 {
+                    b.Navigation("Settings")
+                        .IsRequired();
+
                     b.Navigation("VariableAnswers");
                 });
 #pragma warning restore 612, 618

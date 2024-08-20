@@ -24,4 +24,5 @@ public class TestAnswer
     [StringLength(100)] public string? FantomName { get; set; }
     public string ClientConnectionLog { get; set; }
 
+
 }

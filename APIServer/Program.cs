@@ -20,23 +20,28 @@ public sealed class Program
                                        "Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
-                options.UseNpgsql(connectionString));
-            // builder.Services.AddDbContext<AppDbContext>(options =>
-            //     options.UseNpgsql(connectionString));
+            {
+                options.UseNpgsql(connectionString);
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+            });
+
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed connect to Postgres");
-
-            //mysql
+             Console.WriteLine($"Failed connect to Postgres");
+            // mysql
             var connectionString = builder.Configuration.GetConnectionString("mysql") ??
                                    throw new InvalidOperationException(
                                        "Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-            // builder.Services.AddDbContext<AppDbContext>(options =>
-            //     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            {
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                options.EnableDetailedErrors();
+                options.EnableSensitiveDataLogging();
+            });
+
         }
 
         #endregion

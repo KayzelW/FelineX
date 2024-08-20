@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace APIServer.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240815151704_fix2")]
-    partial class fix2
+    [Migration("20240819223101_fix3")]
+    partial class fix3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,6 +34,9 @@ namespace APIServer.Migrations
 
                     b.Property<Guid?>("AnsweredTaskId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCheckEnded")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsFailedCheck")
                         .HasColumnType("boolean");

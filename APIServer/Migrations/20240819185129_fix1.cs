@@ -5,7 +5,7 @@
 namespace APIServer.Migrations
 {
     /// <inheritdoc />
-    public partial class fix5 : Migration
+    public partial class fix1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

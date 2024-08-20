@@ -26,7 +26,7 @@ public class TaskAnswer
 
     public bool IsFailedCheck { get; set; } // Logic was failed
     public bool IsSuccess { get; set; } // Check success and logic correctly end work
-    [NotMapped] public bool IsCheckEnded { get; set; } = false; //Check operations ended
+    public bool IsCheckEnded { get; set; } = false;
 
 
     public TaskAnswer()

@@ -33,13 +33,19 @@ public partial class TestController
                 .Include(x => x.TaskAnswers)
                 .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
                 .FirstOrDefaultAsync();
-
             if (answeredTest is null)
             {
-                return NotFound();
+                return NotFound("Test is null");
             }
 
-            return Ok(answeredTest);
+            if (answeredTest.TaskAnswers.All(x => x.IsCheckEnded) && answeredTest.TaskAnswers.Count != 0)
+            {
+                return Ok(answeredTest);
+            }
+            
+            return NotFound("Test not checked");
+
+
         }
         catch(Exception e)
         {

@@ -123,21 +123,25 @@
                             </div>
                             <h5 style="padding-top: 25px"> Скрипт базы данных</h5>
                             <div class="form-floating" style="padding-top: 5px">
-                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall"
-                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;"> CREATE TABLE if not exists Blogs (
-                                                  BlogId INTEGER PRIMARY KEY,
-                                                  Url TEXT
-                                              );
-
-                                              INSERT INTO Blogs (Url) VALUES ('https://example.com');
-                                              INSERT INTO Blogs (Url) VALUES ('https://another.com');</textarea>
+                                @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall" *@
+                                @*     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;"> CREATE TABLE if not exists Blogs ( *@
+                                @*                   BlogId INTEGER PRIMARY KEY, *@
+                                @*                   Url TEXT *@
+                                @*               ); *@
+                                @* *@
+                                @*               INSERT INTO Blogs (Url) VALUES ('https://example.com'); *@
+                                @*               INSERT INTO Blogs (Url) VALUES ('https://another.com');</textarea> *@
+                                <AceEditor @bind-Value="@task.Settings.SqlQueryInstall" ></AceEditor>
+                                
 
                             </div>
 
                             <h5 style="padding-top: 25px"> Эталонный запрос</h5>
                             <div class="form-floating1" style="padding-top: 5px">
-                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck"
-                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea>
+                                @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck" *@
+                                @*     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea> *@
+                                <AceEditor  @bind-Value="@task.Settings.SqlQueryCheck"></AceEditor>
+                                
 
                             </div>
                             break;
@@ -228,10 +232,10 @@
 
     private async void Save()
     {
-        
+
         var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
         _logger.LogInformation(json);
-        
+
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");
     }

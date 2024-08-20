@@ -10,6 +10,11 @@ public class TaskSettings
     public Guid Id { get; set; }
 
     public Guid TaskId { get; set; }
-    public string? SqlQueryInstall { get; set; }
-    public string? SqlQueryCheck { get; set; }
+    public string? SqlQueryInstall { get; set; } = "";
+    public string? SqlQueryCheck { get; set; } = "";
+
+    public TaskSettings()
+    {
+
+    }
 }
