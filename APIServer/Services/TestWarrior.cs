@@ -135,10 +135,11 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
         dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var sqlTasksCount = 0;
-        var taskCount = answeredTest.TaskAnswers!.Count;
-
-        answeredTest.TaskWeight = 100 / taskCount; //TODO: fix var when score can't be 100
-        var score = 0;
+        double taskCount = answeredTest.TaskAnswers!.Count;
+        double taskWeight = 100.0 / taskCount;
+        
+        answeredTest.TaskWeight = taskWeight;
+        double score = 0;
 
         foreach (var task in answeredTest.TaskAnswers)
         {
@@ -194,8 +195,15 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
             task.IsCheckEnded = true;
         }
 
-        answeredTest.Score = score;
-
+        if (score > 99.9)
+        {
+            answeredTest.Score = 100;
+        }
+        else
+        {
+            answeredTest.Score = Math.Round(score,2);
+        }
+        
         foreach (var testAnswerTaskAnswer in answeredTest.TaskAnswers)
         {
             if (testAnswerTaskAnswer.MarkedVariables == null)

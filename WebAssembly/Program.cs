@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -20,11 +21,24 @@ public sealed class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        builder.Services.AddSingleton(sp => new HttpClient
+        if (builder.HostEnvironment.BaseAddress.StartsWith("https"))
         {
-            BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
-                                  ?? throw new ApplicationException("ApiUrl are not existing")),
-        });
+            builder.Services.AddSingleton(sp => new HttpClient
+            {
+                BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrlHttps")
+                                      ?? throw new ApplicationException("ApiUrl are not existing")),
+            });
+
+        }
+        else
+        {
+            builder.Services.AddSingleton(sp => new HttpClient
+            {
+                BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
+                                      ?? throw new ApplicationException("ApiUrl are not existing")),
+            });
+            
+        }
         
         builder.Services.AddSingleton<ILocalStorageService, LocalStorageService>();
         builder.Services.AddSingleton<ApiService>();

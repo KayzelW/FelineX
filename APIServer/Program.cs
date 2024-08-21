@@ -86,6 +86,14 @@ public sealed class Program
         });
 
         #endregion
+        
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenAnyIP(7281, listenOptions =>
+            {
+                listenOptions.UseHttps();
+            });
+        });
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -116,6 +124,8 @@ public sealed class Program
             app.UseDeveloperExceptionPage();
             app.UseRouting();
         }
+        
+        
 
         app.UseHttpsRedirection();
         app.MapControllers();

@@ -32,6 +32,7 @@ public partial class TestController
                 .ThenInclude(x => x.VariableAnswers)
                 .Include(x => x.TaskAnswers)
                 .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
+                .Include(x => x.Student)
                 .FirstOrDefaultAsync();
 
             if (answeredTest == null)

@@ -20,7 +20,7 @@ public class TestAnswer
     public DateTime PassingDate { get; set; }
     
     public double Score { get; set; }
-    [JsonIgnore, NotMapped] public int TaskWeight { get; set; } 
+    [JsonIgnore, NotMapped] public double TaskWeight { get; set; } 
     [StringLength(100)] public string? FantomName { get; set; }
     public string ClientConnectionLog { get; set; }
 
