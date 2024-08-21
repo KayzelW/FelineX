@@ -153,7 +153,6 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
             {
                 sqlTasksCount += 1;
                 _sqlTasks.Enqueue(task);
-                task.IsCheckEnded = true;
                 continue;
             }
 
@@ -163,6 +162,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 if (task.StringAnswer == task.AnsweredTask.VariableAnswers!.FirstOrDefault()!.StringAnswer)
                 {
                     score += answeredTest.TaskWeight;
+                    task.IsSuccess = true;
                 }
 
                 task.IsCheckEnded = true;
@@ -174,6 +174,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 if (task.AnsweredTask.VariableAnswers!.Any(varAns => task.StringAnswer == varAns.StringAnswer))
                 {
                     score += answeredTest.TaskWeight;
+                    task.IsSuccess = true;
                 }
 
                 task.IsCheckEnded = true;
@@ -187,8 +188,9 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
             if (allMarkedVariablesMatch)
             {
                 score += answeredTest.TaskWeight;
+                task.IsSuccess = true;
             }
-
+            
             task.IsCheckEnded = true;
         }
 

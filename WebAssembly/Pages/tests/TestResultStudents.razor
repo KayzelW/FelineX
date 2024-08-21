@@ -38,7 +38,7 @@ else
     {
         case InteractionType.LongStringTask:
             <div class="d-flex justify-content-center row">
-                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer); -webkit-text-fill-color: #00003A;">
+                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.IsSuccess); -webkit-text-fill-color: #00003A;">
                     <div class="col-md-10 col-lg-10">
                         <div class="d-flex flex-row justify-content-between  align-items-center mcq">
                             <h4 >Задание @(number)</h4>
@@ -59,7 +59,7 @@ else
             break;
         case InteractionType.ShortStringTask:
             <div class="d-flex justify-content-center row">
-                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer); -webkit-text-fill-color: #00003A;">
+                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.IsSuccess); -webkit-text-fill-color: #00003A;">
                     <div class="col-md-10 col-lg-10">
                         <div class="d-flex flex-row justify-content-between  align-items-center mcq">
                             <h4 >Задание @(number)</h4>
@@ -80,7 +80,7 @@ else
             break;
         case InteractionType.ManyVariantsTask:
             <div class="d-flex justify-content-center row">
-                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer); -webkit-text-fill-color: #00003A;">
+                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.IsSuccess); -webkit-text-fill-color: #00003A;">
                     <div class="col-md-10 col-lg-10">
 
                         <div class="d-flex flex-row justify-content-between  align-items-center mcq">
@@ -107,7 +107,7 @@ else
             break;
         case InteractionType.OneVariantTask:
             <div class="d-flex justify-content-center row">
-                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer); -webkit-text-fill-color: #00003A;">
+                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.IsSuccess); -webkit-text-fill-color: #00003A;">
                     <div class="col-md-10 col-lg-10">
 
                         <div class="d-flex flex-row justify-content-between  align-items-center mcq">
