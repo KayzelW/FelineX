@@ -1,8 +1,10 @@
-﻿using APIServer.Database;
+﻿using System.Text.RegularExpressions;
+using APIServer.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.DB.User;
 using Shared.Models;
+using Task = Shared.DB.Test.Task.Task;
 
 namespace APIServer.Controllers;
 
@@ -17,7 +19,7 @@ public class ClassController : Controller
         _dbContext = dbContext;
         _logger = logger;
     }
-    
+
     [HttpGet("get_classes")]
     public async Task<IActionResult> GetClasses()
     {
@@ -25,7 +27,7 @@ public class ClassController : Controller
         var groups = await _dbContext.Groups.Where(x => x.GroupCreatorId == ownerId).ToListAsync();
         return Ok(groups);
     }
-    
+
     [HttpPost("add_student")]
     public async Task<IActionResult> AddUserToGroup(UserGroupDTO data)
     {
@@ -43,11 +45,13 @@ public class ClassController : Controller
             {
                 return BadRequest("Group not found");
             }
+
             var student = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
             if (student == null)
             {
                 return BadRequest("Student not found");
             }
+
             group.Students?.Add(student);
             return Ok();
         }
@@ -57,7 +61,7 @@ public class ClassController : Controller
             return BadRequest($"Exeption while adding student {data.UserId} to group {data.GroupId}");
         }
     }
-    
+
     [HttpPost("add_group")]
     public async Task<IActionResult> AddGroup(UserGroup? group)
     {
@@ -67,7 +71,13 @@ public class ClassController : Controller
             {
                 return BadRequest("Group was null");
             }
+
+            group.GroupCreatorId = (Guid)HttpContext.Items["User"]!;
             await _dbContext.Groups!.AddAsync(group);
+            foreach (var groupStudent in group.Students)
+            {
+                _dbContext.Entry(groupStudent).State = EntityState.Unchanged;
+            }
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
@@ -77,4 +87,20 @@ public class ClassController : Controller
             return BadRequest("Exeption while adding group");
         }
     }
+
+    [HttpGet("get_students")]
+    public async Task<IActionResult> GetStudents()
+    {
+        try
+        {
+            var students = _dbContext.Users.Where(x => x.AccessFlags == (uint)AccessLevel.Student).ToList();
+            return Ok(students);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Exeption while getting students", e);
+            return BadRequest();
+        }
+    }
+
 }

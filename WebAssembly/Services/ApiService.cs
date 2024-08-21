@@ -10,6 +10,7 @@ using Shared.Extensions;
 using Shared.Interfaces;
 using Shared.Models;
 using MyTest = Shared.DB.Test.Test;
+using MyTask = Shared.DB.Test.Task.Task;
 
 namespace WebAssembly.Services;
 
@@ -158,9 +159,34 @@ public class ApiService
         return null;
     }
 
+    public async Task<bool> AddGroup(UserGroup? group)
+    {
+        var responseMessage = await httpClient.PostAsJsonAsync("Class/add_group", group);
+        return responseMessage.IsSuccessStatusCode;
+    }
+
+    public async Task<List<User>?> GetStudents()
+    {
+        var responseMessage = await httpClient.GetAsync("Class/get_students");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            return await responseMessage.Content.ReadFromJsonAsync<List<User>>();
+        }
+
+        return null;
+    }
+    
     #endregion
+
+    #region Other
+
     public async void SendMessage(string msg)
     {
         await httpClient.PatchAsJsonAsync("User", msg);
     }
+
+    #endregion
+    
+    
+    
 }

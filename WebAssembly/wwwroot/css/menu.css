@@ -1,4 +1,9 @@
-﻿
+﻿.navbar-brand{
+    color: #DDE8FF; 
+    font-size: 1.5rem; 
+    display: flex;
+     
+}
 .logo {
     max-width: 40px;
     height: auto;

@@ -2,51 +2,109 @@
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
 @using Shared.DB.User
+@using System.Text.RegularExpressions
+@using System.Text.Json
+@inject ApiService _apiService
+@inject ILogger<Create_class> _logger
 
 <h3 class="text-center">Новый класс</h3>
 
-<div class="input-group input-group-lg" style="max-width: max-content">
-    <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1"  style="background-color: #EFF4FF; box-shadow: none; max-height: 30px ">
-</div>
-<div style="display: flex; justify-content: space-between;">
-<h3> Добавить нового студента </h3>
-<h3> Студенты этого класса </h3>
-</div>
-<div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px">
-    <input type="text" class="form-control" placeholder="Введите имя" aria-label="Введите название" aria-describedby="basic-addon1"  style="background-color: #EFF4FF; box-shadow: none; max-height: 30px ">
-    <button class="btn" type="button" style=" max-height: 30px; box-shadow: none; font-size: medium; ">Добавить</button>
+<div class="input-group input-group-lg" style="max-width: max-content; padding-bottom: 25px">
+    <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1" style="background-color: #EFF4FF; box-shadow: none; max-height: 30px; " @bind="Group.GroupName">
 </div>
 
-<div style="display: flex; justify-content: space-between;">
-    
-    <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
-        <thead>
-        <tr>
-            <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
-        </tr>
-        </thead>
-    </table>
+<div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px; margin-bottom: 20px;">
+    <input type="text" class="form-control" placeholder="Введите имя" aria-label="Введите название" aria-describedby="basic-addon1" style="background-color: #EFF4FF; box-shadow: none; max-height: 30px">
+    <button class="btn" type="button" style="max-height: 30px; box-shadow: none; font-size: medium;">Добавить</button>
+</div>
 
-    <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
-        <thead>
-        
-        <tr>
-            <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
-        </tr>
-        </thead>
-    </table>
+<div style="display: flex; gap: 20px;"> <!-- Используем Flexbox -->
+    <div style="flex: 1;"> <!-- Первая таблица с заголовком -->
+        <h3>Добавить нового студента</h3>
+        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+            <thead>
+                <tr>
+                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                </tr>
+            </thead>
+            @foreach (var student in Students)
+            {
+                <tr>
+                    <th scope="row">@student.NormalizedUserName</th>
+                    <th scope="col" style="-webkit-text-fill-color: #00003A">
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => AddStudent(student)">
+                            <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
+                        </button>
+                    </th>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div style="flex: 1;"> <!-- Вторая таблица с заголовком -->
+        <h3>Студенты этого класса</h3>
+        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+            <thead>
+                <tr>
+                    <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                    <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                </tr>
+            </thead>
+            @foreach (var student in Group.Students!)
+            {
+                <tr>
+                    <th scope="row">@(Group.Students.IndexOf(student) + 1)</th>
+                    <th scope="row">@student.NormalizedUserName</th>
+                    <th scope="col" style="-webkit-text-fill-color: #00003A">
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => DeleteStudent(student)">
+                            <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                        </button>
+                    </th>
+                </tr>
+            }
+        </table>
+    </div>
 </div>
 
 <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="padding-top: 50px">
-    <button class="btn"  type="button" >
+    <button class="btn" type="button" @onclick="SaveGroup">
         Сохранить
     </button>
 </div>
 
 @code {
+    private List<User>? Students { get; set; }
+    private UserGroup Group { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Students = await _apiService.GetStudents();
+        Group = new UserGroup
+        {
+            Students = new List<User>()
+        };
+    }
+
+    private void AddStudent(User user)
+    {
+        Group.Students?.Add(user);
+        Students?.Remove(user);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void DeleteStudent(User user)
+    {
+        Group.Students!.Remove(user);
+        Students?.Add(user);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveGroup()
+    {
+        var json = JsonSerializer.Serialize(Group, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation(json);
+        await _apiService.AddGroup(Group);
+    }
 }
