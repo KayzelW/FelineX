@@ -74,10 +74,11 @@ public class ClassController : Controller
 
             group.GroupCreatorId = (Guid)HttpContext.Items["User"]!;
             await _dbContext.Groups!.AddAsync(group);
-            foreach (var groupStudent in group.Students)
+            foreach (var groupStudent in group.Students!)
             {
                 _dbContext.Entry(groupStudent).State = EntityState.Unchanged;
             }
+
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
@@ -93,14 +94,16 @@ public class ClassController : Controller
     {
         try
         {
-            var students = _dbContext.Users.Where(x => x.AccessFlags == (uint)AccessLevel.Student).ToList();
+            var students = _dbContext.Users
+                .Where(x => x.AccessFlags == (uint)AccessLevel.Student)
+                // .Select(x => new { x.Id, x.UserName, x.NormalizedUserName })
+                .ToList();
             return Ok(students);
         }
         catch (Exception e)
         {
-            _logger.LogError("Exeption while getting students", e);
+            _logger.LogError(e, "Exeption while getting students");
             return BadRequest();
         }
     }
-
 }

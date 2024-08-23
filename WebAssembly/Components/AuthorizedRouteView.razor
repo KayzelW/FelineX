@@ -36,6 +36,16 @@ else
         _isLoading = true;
         _redirectUrl = "";
 
+        await Task.Run(async() =>
+        {
+            var context = _userContext as UserContextService;
+            while (context.isLoading)
+            {
+                _logger.LogWarning("await setup userContext");
+                await Task.Delay(100);
+            }
+        });
+        
         if (RouteData == null)
         {
             Failed();
@@ -48,8 +58,8 @@ else
         {
             if (!string.IsNullOrEmpty(_redirectUrl))
             {
-                Navigation.NavigateTo(_redirectUrl);
                 _logger.LogInformation($"Navigated to {_redirectUrl}");
+                Navigation.NavigateTo(_redirectUrl);
             }
 
             _isLoading = false;
@@ -57,16 +67,6 @@ else
             StateHasChanged();
             return;
         }
-        
-        await Task.Run(async() =>
-        {
-            var context = _userContext as UserContextService;
-            while (context.isLoading)
-            {
-                _logger.LogWarning("await setup userContext");
-                await Task.Delay(100);
-            }
-        });
         
         if (!_userContext.IsAuthorized)
         {

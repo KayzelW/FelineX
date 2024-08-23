@@ -94,7 +94,7 @@ public class ApiService
         return testAnswer;
     }
 
-    public async Task<Guid> SubmitTest(MyTest? test)
+    public async Task<Guid> SubmitTest(TestDTO? test)
     {
         var responseMessage = await httpClient.PostAsJsonAsync("Test/submit_test", test);
         responseMessage.EnsureSuccessStatusCode();

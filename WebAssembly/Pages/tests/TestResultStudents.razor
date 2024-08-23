@@ -49,7 +49,7 @@ else
                             </div>
 
                             <div class="form-floating">
-                                <textarea class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer)" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
+                                <textarea disabled="disabled" class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer)" type="text" id="floatingTextarea2" @bind="@task.StringAnswer" style="height: 100px"  >t</textarea>
                             </div>
 
                         </div>
@@ -70,7 +70,7 @@ else
                             </div>
 
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer)" @bind="@task.StringAnswer" aria-describedby="basic-addon1">
+                                <input disabled="disabled" type="text" class="form-control @GetAnswerCssClass(task.AnsweredTask.VariableAnswers.FirstOrDefault().StringAnswer == task.StringAnswer)" @bind="@task.StringAnswer" aria-describedby="basic-addon1">
                             </div>
 
                         </div>
@@ -95,8 +95,8 @@ else
                         @foreach (var varAns in task.AnsweredTask.VariableAnswers!)
                         {
                             <div class="form-check @GetAnswerCssClass(varAns)">
-                                <input class="form-check-input" type="checkbox" id="@($"answer-{task.Id}-{varAns.Id}")" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">
-                                <label class="form-check-label" for="@($"answer-{task.Id}-{varAns.Id}")">
+                                <input disabled="disabled" class="form-check-input" type="checkbox" id="@($"answer-{task.Id}-{varAns.Id}")" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">
+                                <label disabled="disabled" class="form-check-label" for="@($"answer-{task.Id}-{varAns.Id}")">
                                     @varAns.StringAnswer
                                 </label>
                             </div>
@@ -111,7 +111,7 @@ else
                     <div class="col-md-10 col-lg-10">
 
                         <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                            <h4 >Задание @(number)</h4>
+                            <h4>Задание @(number)</h4>
                         </div>
                     </div>
                     <div class="question p-3 border-bottom">
@@ -122,7 +122,7 @@ else
                         {
                             <div class="ans ml-2">
                                 <label class="radio @GetAnswerCssClass(varAns)">
-                                    <input type="radio" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">@varAns.StringAnswer
+                                    <input disabled="disabled" type="radio" checked="@task.MarkedVariables.Any(v => v.Id == varAns.Id)" style="padding: 3pt">@varAns.StringAnswer
                                 </label>
                             </div>
                         }
@@ -130,31 +130,38 @@ else
                 </div>
             </div>
             break;
-        case InteractionType.None:
-            continue;
         case InteractionType.SqlQueryTask:
-            <h5 >@task.AnsweredTask.DatabaseType.ToString()</h5>
-                            <h5 style="padding-top: 25px"> Скрипт базы данных</h5>
-                            <div class="form-floating" style="padding-top: 5px">
-                                <textarea class="form-control"  id="floatingTextarea2"  
+            <div class="d-flex justify-content-center row">
+                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: @GetAnswerCssClassRgb(task.IsSuccess); -webkit-text-fill-color: #00003A;">
+                    <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                        <h4>Задание @(number): Скрипт базы данных</h4>
+                    </div>
+                    <h5 >@task.AnsweredTask.DatabaseType.ToString()</h5>
+                    <div class="form-floating" style="padding-top: 5px">
+                        <textarea disabled="disabled" class="form-control"  id="floatingTextarea2"  
                                     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;">@task.AnsweredTask.Settings.SqlQueryInstall</textarea>
 
-                            </div>
+                    </div>
 
-                            <h5 style="padding-top: 25px"> Эталонный запрос</h5>
-            <div class="form-floating1" style="padding-top: 5px">
-                <textarea class="form-control"  id="floatingTextarea2"  
+                    <h5 style="padding-top: 25px"> Эталонный запрос</h5>
+                    <div class="form-floating1" style="padding-top: 5px">
+                        <textarea disabled="disabled" class="form-control"  id="floatingTextarea2"  
                                     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">@task.AnsweredTask.Settings.SqlQueryCheck</textarea>
 
-            </div>
-            <h5 style="padding-top: 25px"> Ответ</h5>
-            <div class="form-floating1" style="padding-top: 5px">
-                <textarea class="form-control"  id="floatingTextarea3" 
+                    </div>
+                    <h5 style="padding-top: 25px"> Ответ</h5>
+                    <div class="form-floating1" style="padding-top: 5px">
+                        <textarea disabled="disabled" class="form-control"  id="floatingTextarea3" 
                                     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">@task.StringAnswer</textarea>
 
+                    </div>
+                    <h5>@task.Result</h5>
+                </div>
             </div>
-            <h5>@task.Result</h5>
-                            break;
+            break;
+        case InteractionType.None:
+            continue;
+
         default:
             continue;
     }

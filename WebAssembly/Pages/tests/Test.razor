@@ -176,7 +176,7 @@ else
     }
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
-        <button class="btn btn-outline-primary" @onclick="SaveAndSubmit" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
+        <button class="btn btn-outline-primary" disabled="@IsSended" @onclick="SaveAndSubmit" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
             Сохранить
         </button>
     </div>
@@ -185,6 +185,7 @@ else
 @code {
     [Parameter] public string TestId { get; set; }
     private TestDTO? test { get; set; } = new();
+    private bool IsSended { get; set; } = false;
     
     protected override async Task OnInitializedAsync()
     {
@@ -204,6 +205,7 @@ else
     
     private async void SaveAndSubmit()
     {
+        IsSended = true;
         var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
         _logger.LogInformation(json);
         var ansTestId = await _ApiService.SubmitTest(test);

@@ -35,6 +35,7 @@ public sealed class UserContextService
         {
             if (value == false)
             {
+                logger.LogInformation("IsAuthorized was set in false");
                 navigationManager.NavigateTo("/auth");
             }
         }
@@ -49,7 +50,6 @@ public sealed class UserContextService
         this.httpClient = httpClient;
         
         FillUserContextStartUp();
-        
     }
 
     /// <summary>
@@ -93,8 +93,8 @@ public sealed class UserContextService
         UserToken = null;
         UserName = string.Empty;
         Access = null;
-        IsAuthorized = false;
-
+        navigationManager.NavigateTo("/auth");
+        // IsAuthorized = false;
     }
 
     private async void FillUserContextStartUp()
@@ -104,7 +104,7 @@ public sealed class UserContextService
         {
             RemoveTokenAsync();
             isLoading = false;
-            IsAuthorized = false;
+            // IsAuthorized = false;
             return;
         }
 
@@ -120,7 +120,7 @@ public sealed class UserContextService
         if (data?.UserToken == null || data?.Access == null)
         {
             RemoveTokenAsync();
-            IsAuthorized = false;
+            // IsAuthorized = false;
             return;
         }
 
@@ -130,7 +130,7 @@ public sealed class UserContextService
         // IsAuthorized = true; not used
         SetTokenAsync(UserToken);
         
-        logger.LogWarning($"CookieToken is {UserToken}");
+        logger.LogInformation($"CookieToken is {UserToken}");
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", UserToken);
     }
 

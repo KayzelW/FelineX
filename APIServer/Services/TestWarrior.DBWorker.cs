@@ -23,6 +23,7 @@ public sealed partial class TestWarrior
             }
 
             var cmd = conn.CreateCommand();
+            //TODO: check for not contains any USE or DROP operators
             cmd.CommandText = taskAnswer.StringAnswer;
             var reader = await cmd.ExecuteReaderAsync();
             var rows = TaskExtension.ExtractItemRows(reader);
