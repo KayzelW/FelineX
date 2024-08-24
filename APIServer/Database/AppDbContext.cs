@@ -58,6 +58,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<TestSettings>()
             .HasMany(x => x.TestGroups)
             .WithMany();
+        modelBuilder.Entity<TestSettings>()
+            .HasMany(x => x.TestUsers)
+            .WithMany();
 
         #endregion
 

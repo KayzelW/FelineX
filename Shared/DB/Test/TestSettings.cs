@@ -12,4 +12,6 @@ public class TestSettings
     public Guid Id { get; set; }
     public List<UserGroup>? TestGroups { get; set; }
     public List<ThemeTask>? TasksThemes { get; set; }
+    public List<User.User>? TestUsers { get; set; }
+    
 }
