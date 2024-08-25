@@ -10,10 +10,6 @@ html, body {
     
 }
 
-font{
-    color: #00003A;
-    -webkit-text-fill-color: #00003A;
-}
 
 a {
     color: #00003A;
@@ -239,4 +235,33 @@ input:-webkit-autofill {
     display: flex;
     justify-content: end;
     align-items: end;
+}
+
+
+.nav-item{
+    display: inline-block;
+}
+.nav {
+    max-height: 45px;
+    white-space: nowrap;
+    overflow-x: auto;
+    display: inline-block;
+    -ms-overflow-style: none;  /* Скрыть скроллбар в IE и Edge */
+    scrollbar-width: none;  /* Скрыть скроллбар в Firefox */
+}
+
+.nav::-webkit-scrollbar {
+    display: none; /* Скрыть скроллбар в WebKit-браузерах (Chrome, Safari, Opera) */
+}
+
+.table-a{
+    white-space: nowrap;
+    overflow-x: auto;
+    display: inline-block;
+    -ms-overflow-style: none;  /* Скрыть скроллбар в IE и Edge */
+    scrollbar-width: none;  /* Скрыть скроллбар в Firefox */
+}
+
+col-a{
+    display: inline-block;
 }

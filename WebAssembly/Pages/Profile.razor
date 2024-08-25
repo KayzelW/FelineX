@@ -9,11 +9,11 @@
 @inject IUserContextService _userContext
 
 <h1 class="text-center" style="font-size: 21px; justify-content: center">Мой профиль</h1>
-<div class="row d-flex justify-content-center align-items-center h-100">
+<div class="container-center">
     <div class="col col-lg-6 mb-4 mb-lg-0">
         
         <div class="card mb-3" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF">
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="box-shadow: none">
+            <div class="container-end" style="box-shadow: none">
                 <button class="btn" style=" border: 0px; box-shadow: none">
                     <i class="bi bi-three-dots-vertical" style="color: #00003A" title="Менеджер ссылок"></i></button>
                 </div>
@@ -39,8 +39,8 @@
                 </div>
             </div>
         </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end" >
-            <button class="btn btn-outline-primary"
+        <div class="container-end" >
+            <button class="btn"
                     style=" box-shadow: none;"
                     type="button" @onclick="Logout">Выход</button>
         </div>
