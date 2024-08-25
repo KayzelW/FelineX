@@ -1,7 +1,6 @@
 using APIServer.Database;
 using APIServer.Middlewares;
 using APIServer.Services;
-using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -29,7 +28,7 @@ public sealed class Program
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed connect to Postgres");
+             Console.WriteLine($"Failed connect to Postgres");
             // mysql
             var connectionString = builder.Configuration.GetConnectionString("mysql") ??
                                    throw new InvalidOperationException(
@@ -41,6 +40,7 @@ public sealed class Program
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
             });
+
         }
 
         #endregion
@@ -48,7 +48,7 @@ public sealed class Program
         builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
-        builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
+        builder.Services.AddSingleton<ITestWarriorQueue,TestWarrior>();
         builder.Services.AddSingleton<CheckQueueService>();
         builder.Services.AddHostedService<TestWarrior>();
 
@@ -57,13 +57,6 @@ public sealed class Program
         {
             logging.AddConsole();
             logging.AddDebug();
-        });
-
-        builder.Services.AddHttpLogging(opt =>
-        {
-            opt.LoggingFields = HttpLoggingFields.All;
-            opt.RequestBodyLogLimit = 4096;
-            opt.ResponseBodyLogLimit = 4096;
         });
 
         #region swagger
@@ -92,10 +85,13 @@ public sealed class Program
         });
 
         #endregion
-
+        
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenAnyIP(7281, listenOptions => { listenOptions.UseHttps(); });
+            options.ListenAnyIP(7281, listenOptions =>
+            {
+                listenOptions.UseHttps();
+            });
         });
 
         builder.Services.AddControllers();
@@ -117,8 +113,6 @@ public sealed class Program
 
     private static void ConfigureApplication(WebApplication app)
     {
-        app.UseHttpLogging();
-        
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
@@ -130,11 +124,12 @@ public sealed class Program
             app.UseRouting();
         }
         
+        
+
         app.UseHttpsRedirection();
         app.MapControllers();
         app.UseCors("AllowSpecificOrigin");
         app.UseMiddleware<TokenCheckingMiddleware>();
-        
 
         app.Run();
     }

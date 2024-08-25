@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using Blazored.Toast;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -44,6 +45,9 @@ public sealed class Program
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddSingleton<IUserContextService, UserContextService>();
         builder.Services.AddLogging();
+        
+        builder.Services.AddBlazoredToast();
+            
 
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");
