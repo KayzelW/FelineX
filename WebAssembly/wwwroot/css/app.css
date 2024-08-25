@@ -5,6 +5,8 @@ html, body {
     justify-content: center;
     align-items: center;
     background-color: #DDEBFF;
+    color: #00003A;
+    user-select: none;
     
 }
 
@@ -42,6 +44,7 @@ a {
 .table{
     /*--bs-table-bg: #DDEBFF; */
     border-radius: .5rem; 
+    border: 0px;
     -webkit-text-fill-color: #00003A
 }
 
@@ -185,3 +188,55 @@ input:-webkit-autofill {
     
 }
 
+
+
+/* Основные стили для контейнера поиска */
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 300px; /* Ширина строки поиска */
+    
+    border: 2px solid #ddd; /* Граница контейнера */
+    border-radius: 25px; /* Скругленные углы */
+    overflow: hidden; /* Скрытие содержимого за границами */
+}
+
+/* Стили для поля ввода */
+.search-container input[type="text"] {
+    flex-grow: 1; /* Поле ввода занимает все доступное пространство */
+    padding: 10px;
+    border: none; /* Удаление стандартной границы */
+    outline: none; /* Удаление стандартной обводки */
+    font-size: 16px; /* Размер шрифта */
+}
+
+/* Стили для кнопки поиска */
+.search-container button {
+    background: #ddd; /* Цвет фона кнопки */
+    border: none; /* Удаление границы */
+    padding: 10px;
+    cursor: pointer; /* Курсор указателя при наведении */
+    transition: background 0.3s ease; /* Плавный переход для фона */
+}
+
+/* Стили для кнопки при наведении */
+.search-container button:hover {
+    background: #ccc; /* Цвет фона кнопки при наведении */
+}
+
+.table-modal{
+    margin: 0 auto; /* Центрирование контейнера */
+}
+
+.container-center{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+
+.container-end{
+    display: flex;
+    justify-content: end;
+    align-items: end;
+}

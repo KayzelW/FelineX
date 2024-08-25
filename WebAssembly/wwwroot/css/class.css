@@ -4,7 +4,8 @@
 
     justify-content: center;
     align-items: center;
-    background-color: #DDDDFC;
+    background-color: #E7E7FC;
+    color: #2b003d;
 
 }
 
@@ -16,13 +17,17 @@
     height: 40px;
     box-shadow: none;
     max-height: max-content;
-    -webkit-text-fill-color: #2b003d;
 
 
 }
 
+.table{
+    border-radius: .5rem;
+    -webkit-text-fill-color: #3F1469
+}
+
 button:hover {
-    background-color: #E7E7FC; /* цвет кнопки при наведении мыши */
+    background-color: #E0CAFF; /* цвет кнопки при наведении мыши */
 }
 
 .container-md{

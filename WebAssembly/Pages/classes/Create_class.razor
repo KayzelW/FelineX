@@ -10,30 +10,31 @@
 <h3 class="text-center">Новый класс</h3>
  <link rel="stylesheet" href="./css/class.css">
 <div class="input-group input-group-lg" style="max-width: max-content; padding-bottom: 25px">
-    <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1" style="background-color: #EFF4FF; box-shadow: none; max-height: 30px; " @bind="Group.GroupName">
+    <input type="text" class="form-control" placeholder="Введите название"  aria-describedby="basic-addon1" style="box-shadow: none; max-height: 30px; " @bind="Group.GroupName">
 </div>
 
-<div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px; margin-bottom: 20px;">
-    <input type="text" class="form-control" placeholder="Введите имя" aria-label="Введите название" aria-describedby="basic-addon1" style="background-color: #EFF4FF; box-shadow: none; max-height: 30px">
-    <button class="btn" type="button" style="max-height: 30px; box-shadow: none; font-size: medium;">Добавить</button>
-</div>
+
 
 <div style="display: flex; gap: 20px;"> <!-- Используем Flexbox -->
     <div style="flex: 1;"> <!-- Первая таблица с заголовком -->
         <h3>Добавить нового студента</h3>
-        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+        <div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px; margin-bottom: 20px;">
+            <input type="text" class="form-control" placeholder="Введите имя"  aria-describedby="basic-addon1" style=" box-shadow: none; max-height: 30px;">
+            <button class="btn" type="button" style="max-height: 30px; box-shadow: none; font-size: medium; padding: 5px">+</button>
+        </div>
+        <table class="table" size="auto" >
             <thead>
                 <tr>
-                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                    <th scope="col" >ФИО</th>
                 </tr>
             </thead>
-            @foreach (var student in Students)
+            @foreach (var student in Students!)
             {
                 <tr>
                     <th scope="row">@student.NormalizedUserName</th>
-                    <th scope="col" style="-webkit-text-fill-color: #00003A">
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => AddStudent(student)">
-                            <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
+                    <th scope="col">
+                        <button type="button" class="btn" style="border: 0px; box-shadow: none;" @onclick="() => AddStudent(student)">
+                            <i class="bi bi-plus-square-dotted" title="Добавить студента"></i>
                         </button>
                     </th>
                 </tr>
@@ -43,12 +44,12 @@
 
     <div style="flex: 1;"> <!-- Вторая таблица с заголовком -->
         <h3>Студенты этого класса</h3>
-        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+        <table class="table" size="auto" >
             <thead>
                 <tr>
-                    <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
-                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
-                    <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                    <th scope="col" >№</th>
+                    <th scope="col" >ФИО</th>
+                    <th scope="col" ></th>
                 </tr>
             </thead>
             @foreach (var student in Group.Students!)
@@ -56,9 +57,9 @@
                 <tr>
                     <th scope="row">@(Group.Students.IndexOf(student) + 1)</th>
                     <th scope="row">@student.NormalizedUserName</th>
-                    <th scope="col" style="-webkit-text-fill-color: #00003A">
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => DeleteStudent(student)">
-                            <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                    <th scope="col" >
+                        <button type="button" class="btn " style="border: 0px; box-shadow: none;" @onclick="() => DeleteStudent(student)">
+                            <i class="bi bi-dash-square-dotted"  title="Удалить студента"></i>
                         </button>
                     </th>
                 </tr>
@@ -67,8 +68,8 @@
     </div>
 </div>
 
-<div class="d-grid gap-2 d-md-flex justify-content-md-start" style="padding-top: 50px">
-    <button class="btn" type="button" @onclick="SaveGroup">
+<div  style="padding-top: 50px">
+    <button class="btn" type="button" style="box-shadow: none" @onclick="SaveGroup">
         Сохранить
     </button>
 </div>

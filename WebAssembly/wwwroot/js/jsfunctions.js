@@ -33,4 +33,10 @@ window.cookieHelper = {
         // Set the cookie with an expired date to delete it
         this.setCookie(name, '', { 'max-age': -1 });
     }
+    
+    
 }
+
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault(); // Блокирует контекстное меню
+});
