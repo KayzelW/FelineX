@@ -3,21 +3,35 @@
 
 @using Shared.DB.User
 @using Shared.Interfaces
+@using Microsoft.AspNetCore.Components.Forms
 
 @inject ILogger<Profile> _logger
 @inject IUserContextService _userContext
 
-<h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль</h1>
+<h1 class="text-center" style="font-size: 21px; justify-content: center">Мой профиль</h1>
 <div class="row d-flex justify-content-center align-items-center h-100">
     <div class="col col-lg-6 mb-4 mb-lg-0">
+        
         <div class="card mb-3" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="box-shadow: none">
+                <button class="btn" style=" border: 0px; box-shadow: none">
+                    <i class="bi bi-three-dots-vertical" style="color: #00003A" title="Менеджер ссылок"></i></button>
+                </div>
             <div class="row g-0">
                 <div class="col-md-4 gradient-custom text-center"
-                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                    <img src="images/profile.png"
-                         alt="Avatar" class="img-fluid my-5" style="width: 80px;"/>
+                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem; padding-bottom: 25px; padding-top: 25px">
+                    <img src="@ProfilePicture"
+                         alt="Avatar" style="width: 120px; border-radius: 50%;"/>
+
+                    <div class="mt-2">
+                        <label class="btn "
+                               style=" border: 0px; box-shadow: none">
+                            <InputFile OnChange="HandleSelectedImage" style="display: none;"/>
+                            <span>Изменить фото</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="col-md-8 justify-content-center" style="-webkit-text-fill-color: #00003A ">
+                <div class="col-md-8 justify-content-center" style="-webkit-text-fill-color: #00003A;">
                     <div class="card-body p-5">
                         <h5>@_userContext.UserName</h5>
                         <p>@_userContext.Access</p>
@@ -25,13 +39,52 @@
                 </div>
             </div>
         </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A;  box-shadow: none;" type="button" @onclick="_userContext.Logout"> Выход </button>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end" >
+            <button class="btn btn-outline-primary"
+                    style=" box-shadow: none;"
+                    type="button" @onclick="Logout">Выход</button>
         </div>
     </div>
 </div>
 
-
 @code {
+    private string ProfilePicture = "images/profile.png";
+    private IBrowserFile selectedImage;
     
+    private async Task HandleSelectedImage(InputFileChangeEventArgs e)
+    {
+        selectedImage = e.File;
+
+        if (selectedImage != null)
+        {
+            var buffer = new byte[selectedImage.Size];
+            await selectedImage.OpenReadStream().ReadAsync(buffer);
+
+            var newImageUrl = await UploadImageToServer(buffer, selectedImage.ContentType);
+
+            if (!string.IsNullOrEmpty(newImageUrl))
+            {
+                ProfilePicture = newImageUrl;
+            }
+        }
+    }
+
+    private async Task<string> UploadImageToServer(byte[] imageData, string contentType)
+    {
+        try
+        {
+            // Реализация загрузки изображения на сервер
+            return "/uploaded/profile-picture.png"; // пример URL
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Ошибка загрузки изображения: {Message}", ex.Message);
+            return string.Empty;
+        }
+    }
+
+    private void Logout()
+    {
+        _userContext.Logout();
+    }
 }

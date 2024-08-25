@@ -1,0 +1,272 @@
+﻿@page "/correctionTest/{TestId}"
+
+@using System.Text.Json
+@using Shared.DB.Test.Task
+@using Shared.DB.Interfaces
+@using Task = System.Threading.Tasks.Task
+@using Microsoft.Extensions.Logging
+@using Shared.DB.Test.Task
+@using Shared.Interfaces
+@using Shared.Models
+
+
+@using Shared.DB.Test.Task
+@using Shared.DB.User
+@using Shared.DB.Test.Task
+@using Shared.Extensions
+@using Shared.Types
+@using MyTest = Shared.DB.Test.Test;
+@using MyTask = Shared.DB.Test.Task.Task;
+
+
+@inject ApiService _ApiService
+@inject ILogger<Auth> _logger
+@inject NavigationManager nav
+@inject IUserContextService _UserContext
+
+
+
+<h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test?.TestName</h3>
+
+
+    <div class="container mt-5">
+        @foreach (var task in test.Tasks!)
+        {
+            <div class="d-flex justify-content-center row">
+                <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A; box-shadow: none;">
+                    <div class="col-md-10 col-lg-10">
+
+                        <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                            <h4>Задание @(test.Tasks!.IndexOf(task) + 1) </h4>
+                            <span>(@(test.Tasks!.IndexOf(task) + 1) of @test.Tasks!.Count)</span>
+                        </div>
+                    </div>
+                    <div class="input-group input-group-md">
+                        <span class="input-group-text" id="basic-addon1" style="background-color: #E7EEFF;  "></span>
+                        <input type="text" class="form-control" placeholder="Введите задание" aria-describedby="basic-addon1" @bind="task.Question" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
+                    </div>
+                    <div class="container-md" style="min-height: 20px"></div>
+                    <div class="container-md">
+                        @switch (task.InteractionType)
+                        {
+                            case InteractionType.ManyVariantsTask:
+                                <div class="d-flex justify-content-lg-start row-cols-1">
+                                    <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF; box-shadow: none;">
+                                        <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF;  box-shadow: none;">кол-во</span>
+                                        <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
+                                               @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
+                                    </div>
+                                </div>
+
+                                @foreach (var varAnswer in task.VariableAnswers!)
+                                {
+                                    <div class="form-check" style="min-height: 50px; outline-color: #0a3622">
+                                        <input class="form-check-input" aria-label="Правдивый" type="checkbox" id="defaultCheck1" @bind="@varAnswer.Truthful" style="box-shadow: none; width: 20px; height: 20px;">
+                                        <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; border-left-color: #BDD3FF; box-shadow: none; height: 30px; margin-left: 5px;">
+                                    </div>
+                                }
+
+                                break;
+
+                            case InteractionType.OneVariantTask:
+                                <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF; box-shadow: none; ">кол-во</span>
+                                    <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
+                                           @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
+                                </div>
+
+                                @foreach (var varAnswer in task.VariableAnswers!)
+                                {
+                                    <div class="form-check" style="min-height: 50px">
+                                        <input class="form-check-input" type="radio" name="flexRadioDefault" checked="@varAnswer.Truthful" @onchange="@(e => UpdateOneAnswer(task, varAnswer))" aria-label="Правдивый" style="box-shadow: none;">
+                                        <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
+
+                                    </div>
+                                }
+
+                                break;
+
+                            case InteractionType.ShortStringTask:
+                                <div class="input-group input-group-sm mb-3" style="max-width: max-content; border-color: #DDE8FF">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm4" style="background-color: #E7EEFF; box-shadow: none; ">кол-во</span>
+                                    <input type="text" class="form-control" placeholder="Количество вариантов" aria-describedby="inputGroup-sizing-sm"
+                                           @bind="task.CountVariables" style="background-color: #EFF4FF; border-color: #BDD3FF; box-shadow: none;">
+                                </div>
+                                @foreach (var varAnswer in task.VariableAnswers!)
+                                {
+                                    varAnswer.Truthful = true;
+                                    <div class="form-check" style="min-height: 50px">
+                                        <input type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@varAnswer.StringAnswer"
+                                               style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
+                                    </div>
+                                }
+
+                                break;
+
+                            case InteractionType.LongStringTask:
+
+                                <div class="form-floating">
+                                    <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
+                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;"></textarea>
+
+                                </div>
+                                break;
+                            case InteractionType.SqlQueryTask:
+                                <div class="dropdown">
+                                    <a class="btn" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="  box-shadow: none;" data-toggle="dropdown">
+                                        СУБД
+                                    </a>
+                                    <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
+                                        <li>
+                                            <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.SqLite; }">@DBMS.SqLite.DBMSTypeToString()</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.MySQL; }">@DBMS.MySQL.DBMSTypeToString()</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.PostgreSQL; }">@DBMS.PostgreSQL.DBMSTypeToString()</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <h5 style="padding-top: 25px"> Скрипт базы данных</h5>
+                                <div class="form-floating" style="padding-top: 5px">
+                                    @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall" *@
+                                    @*     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;"> CREATE TABLE if not exists Blogs ( *@
+                                    @*                   BlogId INTEGER PRIMARY KEY, *@
+                                    @*                   Url TEXT *@
+                                    @*               ); *@
+                                    @* *@
+                                    @*               INSERT INTO Blogs (Url) VALUES ('https://example.com'); *@
+                                    @*               INSERT INTO Blogs (Url) VALUES ('https://another.com');</textarea> *@
+                                    <AceEditor @bind-Value="@task.Settings.SqlQueryInstall"></AceEditor>
+
+
+                                </div>
+
+                                <h5 style="padding-top: 25px"> Эталонный запрос</h5>
+                                <div class="form-floating1" style="padding-top: 5px">
+                                    @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck" *@
+                                    @*     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea> *@
+                                    <AceEditor @bind-Value="@task.Settings.SqlQueryCheck"></AceEditor>
+
+
+                                </div>
+                                break;
+                        }
+                    </div>
+
+                    <div class="d-flex justify-content-end" style="min-height: 60px; padding-top: 25px; padding-bottom: 10px">
+                        <button class="btn " style="box-shadow: none;" type="button" @onclick="(() => { Delete(task); })">
+                            <img src="images/del.png" alt="Фото" style="width: 24px; height: 24px;">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <div class="d-flex justify-content-end">
+            <div class="dropdown">
+                <a class="btn" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; --bs-dropdown-border-color: #00003A;  box-shadow: none;" data-toggle="dropdown">
+                    +
+                </a>
+                <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
+                    <li>
+                        <a class="dropdown-item" @onclick="(() => { Plus(InteractionType.ShortStringTask); })">@InteractionType.ShortStringTask.TaskTypeToString()</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" @onclick="(() => { Plus(InteractionType.LongStringTask); })">@InteractionType.LongStringTask.TaskTypeToString()</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" @onclick="(() => { Plus(InteractionType.OneVariantTask); })">@InteractionType.OneVariantTask.TaskTypeToString()</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" @onclick="(() => { Plus(InteractionType.ManyVariantsTask); })">@InteractionType.ManyVariantsTask.TaskTypeToString()</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" @onclick="(() => { Plus(InteractionType.SqlQueryTask); })">@InteractionType.SqlQueryTask.TaskTypeToString()</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
+            <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button" @onclick="Save">
+                Сохранить
+            </button>
+        </div>
+    </div>
+
+
+@code {
+
+    private MyTest _test = new MyTest();
+
+    [Parameter] public string TestId { get; set; }
+    private TestDTO? test { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        test = await _ApiService.GetTest(TestId);
+        _logger.LogInformation($"Got test {TestId}");
+    }
+
+    private static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
+    {
+        foreach (var varAns in task.VariableAnswers)
+        {
+            varAns.Truthful = varAns == selectedAnswer;
+        }
+    }
+
+    private async void SaveAndSubmit()
+    {
+        var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation(json);
+        var ansTestId = await _ApiService.SubmitTest(test);
+        nav.NavigateTo($"result_test/{ansTestId}");
+    }
+
+
+    private void Plus(InteractionType interactionType)
+    {
+        try
+        {
+            var t = new MyTask(null, interactionType);
+            if (t.InteractionType is InteractionType.LongStringTask or InteractionType.SqlQueryTask)
+            {
+                var v = new VariableAnswer
+                {
+                    Truthful = true
+                };
+                t.VariableAnswers!.Add(v);
+            }
+
+            test.Tasks!.Add(t);
+
+            _logger.LogInformation($"Added task with type {t.InteractionType}");
+            var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+            _logger.LogInformation(json);
+            // InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error adding task {e}");
+        }
+    }
+
+    private async void Save()
+    {
+        // await _apiService.PostTest(_test);
+        Console.WriteLine(_test.TestName);
+    }
+
+    private void Delete(MyTask task)
+    {
+        _test.Tasks?.Remove(task);
+        InvokeAsync(StateHasChanged);
+    }
+
+}

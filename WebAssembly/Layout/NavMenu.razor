@@ -1,44 +1,29 @@
-﻿
-<link rel="stylesheet" href="css/menu.css">
-<nav class="navbar navbar-expand-lg" style="height: auto; display: flex; align-items: center;">
-    <div class="container-fluid" style="display: flex; justify-content: space-between; align-items: center;">
-        <button style="border: none; background: none; padding: 0; cursor: pointer;" onclick="location.href='/game'">
-            <img class="img-fluid my-5 logo" src="images/icon1.png" alt=""/>
-        </button>
+﻿      
+        <ul class="nav" style="max-height: 45px">
+            <li class="nav-item">
+                <a class="nav-link " aria-disabled="true">
+                    <button style="border: none; background: none; padding: 0; cursor: pointer;" onclick="location.href='/game'">
+                        <img class="img-fluid my-5 logo" src="images/icon1.png" alt=""  style="max-height: 40px"/>
+                    </button>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " aria-disabled="true" href="/" style="font-size: x-large">
+                    FelineX
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " aria-current="page" href="/my_tests">Мои тесты</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/my_classes">Классы</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/profile">Профиль</a>
+            </li>
 
-        <a class="navbar-brand" href="/" >
-            FelineX
-        </a>
-        
-        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="flex-grow: 1;">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="/my_tests" style="color: #EFF4FF; font-size: 1.2rem;">
-                        Мои тесты
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="/my_classes" style="font-size: 1rem;">
-                        Классы
-                    </NavLink>
-                </li>
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="/profile" style="font-size: 1rem;">
-                        Профиль
-                    </NavLink>
-                </li>
-            </ul>
-        </div>
-        
-        <div class="float-md-end">
-            <div class="search-container" style="display: flex; justify-content: flex-end; align-items: center; gap: 5px; padding-left: 25px">
-                <input type="text" @bind="TestId" placeholder="Введите id теста" @onkeydown="KeyboardEventHandler"
-                       class="search-input">
-                <button @onclick="NavigateToTest" class="search-button">Go</button>
-            </div>
-            </div>
-    </div>
-</nav>
+        </ul>
+
 
 
 @code {

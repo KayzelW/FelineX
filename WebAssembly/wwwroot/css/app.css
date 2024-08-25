@@ -10,6 +10,7 @@ html, body {
 
 font{
     color: #00003A;
+    -webkit-text-fill-color: #00003A;
 }
 
 a {
@@ -28,7 +29,9 @@ a {
     
 }
 
-
+.nav-link{
+    font-size: large;
+}
 .body{
     font-size: 21px;
     justify-content: center;
@@ -36,7 +39,11 @@ a {
     
 }
 
-
+.table{
+    /*--bs-table-bg: #DDEBFF; */
+    border-radius: .5rem; 
+    -webkit-text-fill-color: #00003A
+}
 
 .content {
     padding-top: 1.1rem;
@@ -152,14 +159,29 @@ input:-webkit-autofill {
     box-shadow: none;
 }
 
+.correct-answer:checked {
+    background-color: #146c43;
+    border-color: #0a3622;
+}
+
 .correct-answer {
-    background-color: lightgreen;
+    background-color: #CCFFCC;
+    border-color: #146c43;
 }
 
 .incorrect-answer {
-    background-color: lightcoral;
+    background-color: #FFCCCC;
+    border-color: #ff5733;
 }
 
-.modal-body{
-    background: #BDD3FF;
+.incorrect-answer:checked {
+    background-color: #ff5733;
+    border-color: #6a1a21;
 }
+
+
+.blocked {
+    pointer-events: none;
+    
+}
+

@@ -9,10 +9,11 @@
 @inject IUserContextService _userContext
 
 @inject NavigationManager _navigationManager
-
-<div class="d-grid gap-2 d-md-flex justify-content-md-center" >
-    <button class="btn"  type="button" style="box-shadow: none" @onclick="NavigateToCreateClass"> Создать новый класс </button>
-</div>
+ <link rel="stylesheet" href="./css/class.css">
+ <div class="container-md"  >
+     <button class="btn"  type="button"  @onclick="NavigateToCreateClass"> Создать новый класс </button>
+ </div>
+ 
 <div class="text-success" style="border-color:  #00003A; height: 1px">
     <hr>
 </div>
@@ -20,7 +21,7 @@
 
 <h3>Мои классы</h3>
 
-<table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
+<table class="table table-borderless table-responsive" size="auto" >
     <thead>
     <tr>
         <th scope="col" style=" border-radius: .5rem;"></th>
