@@ -43,6 +43,14 @@ public partial class TestController
 
         try
         {
+            foreach (var settingsTestGroup in test.Settings.TestGroups)
+            {
+                dbContext.Entry(settingsTestGroup).State = EntityState.Unchanged;
+            }
+            foreach (var settingsTestUser in test.Settings.TestUsers)
+            {
+                dbContext.Entry(settingsTestUser).State = EntityState.Unchanged;
+            }
             var userId = (Guid)HttpContext.Items["User"]!;
             test.CreatorId = userId;
             if (test.Tasks is not null)

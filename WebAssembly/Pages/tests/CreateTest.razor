@@ -16,6 +16,8 @@
 @inject ApiService _apiService
 @inject NavigationManager _navigationManager
 @inject ILogger<CreatedTest> _logger
+@inject SearchService<User> _userSearchService
+@inject SearchService<UserGroup> _groupSearchService
 
 <h3 class="text-center">Новый тест</h3>
 
@@ -229,13 +231,15 @@
                                 <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
                             </tr>
                             </thead>
-                            @foreach (var student in Students!)
+                            @foreach (var student in test.Settings.TestUsers)
                             {
                                 <tr>
-                                    <th scope="row">@student.UserName</th>
+                                    <th scope="row">@student.NormalizedUserName</th>
                                     <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;">
-                                            <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
+                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                @onclick="() => {test.Settings.TestUsers.Remove(student); 
+                                                    InvokeAsync(StateHasChanged);}">
+                                            <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
                                         </button>
                                     </th>
                                 </tr>
@@ -247,11 +251,11 @@
                         <!-- Вторая таблица с заголовком -->
                         <h4>Добавить нового студента</h4>
                         <div class="search-container" >
-                            <input type="text" placeholder="Search...">
+                            <input type="text" placeholder="Поиск..." @oninput="@OnSearchUserInput">
                             <button type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
-                        
+           
                         </div>
                         <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
                             <thead>
@@ -261,17 +265,22 @@
                                 <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
                             </tr>
                             </thead>
-                            @foreach (var group in Groups)
+                            @if (userSuggestions.Count>0)
                             {
-                                <tr>
-                                    <th scope="row">@(Groups.IndexOf(group) + 1)</th>
-                                    <th scope="row">@group.GroupName</th>
-                                    <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;">
-                                            <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
-                                        </button>
-                                    </th>
-                                </tr>
+                                @foreach (var user in userSuggestions)
+                                {
+                                    <tr>
+                                        <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
+                                        <th scope="row">@user.NormalizedUserName</th>
+                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" 
+                                                    @onclick="() => {test.Settings.TestUsers.Add(user); 
+                                                    InvokeAsync(StateHasChanged);}">
+                                                <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
                             }
                         </table>
                     </div>
@@ -291,7 +300,7 @@
 {
     
     <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
-    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%"> <!-- Установлены ширина и max-width -->
+    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%"> 
         <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
             <div class="modal-header">
                 <h3 class="modal-title">Группы этого теста</h3>
@@ -300,9 +309,7 @@
             <div class="modal-body">
                 
                 <div style="display: flex; gap: 20px;">
-                    <!-- Используем Flexbox -->
                     <div style="flex: 1;">
-                        <!-- Первая таблица с заголовком -->
                         <h4>Добавленные группы</h4>
                         <table class="table table-borderless table-responsive" size="auto">
                             <thead>
@@ -310,14 +317,16 @@
                                 <th scope="col" >ФИО</th>
                             </tr>
                             </thead>
-                            @foreach (var group in Groups)
+                            @foreach (var group in test.Settings.TestGroups)
                             {
                                 <tr>
-                                    <th scope="row">@(Groups.IndexOf(group) + 1)</th>
+                                    <th scope="row">@(test.Settings.TestGroups.IndexOf(group) + 1)</th>
                                     <th scope="row">@group.GroupName</th>
                                     <th scope="col" >
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;">
-                                            <i class="bi bi-dash-square-dotted" title="Удалить студента"></i>
+                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                @onclick="() => { test.Settings.TestGroups.Remove(group);
+                                                InvokeAsync(StateHasChanged);}">
+                                            <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
                                         </button>
                                     </th>
                                 </tr>
@@ -326,10 +335,9 @@
                     </div>
 
                     <div style="flex: 1;">
-                        <!-- Вторая таблица с заголовком -->
                         <h4>Добавить новую группу</h4>
                         <div class="search-container" >
-                            <input type="text" placeholder="Search...">
+                            <input type="text" placeholder="Поиск..." @oninput="OnSearchGroupInput">
                             <button type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
@@ -343,14 +351,16 @@
                                 <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
                             </tr>
                             </thead>
-                            @foreach (var group in Groups)
+                            @foreach (var group in groupSuggestions)
                             {
                                 <tr>
-                                    <th scope="row">@(Groups.IndexOf(group) + 1)</th>
+                                    <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
                                     <th scope="row">@group.GroupName</th>
                                     <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;">
-                                            <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                @onclick="() => { test.Settings.TestGroups.Add(group);
+                                                InvokeAsync(StateHasChanged);}">
+                                            <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить группу"></i>
                                         </button>
                                     </th>
                                 </tr>
@@ -367,22 +377,48 @@
 }
 
 @code {
-    private List<User>? Students { get; set; } = [];
-    private List<UserGroup>? Groups { get; set; } = [];
-
-    MyTest test = new MyTest();
+    MyTest test = new();
     private bool isModalVisibleStudent;
     private bool isModalVisibleGroup;
+
+    private List<User>? userSuggestions = [];
+    private List<UserGroup>? groupSuggestions = [];
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        //Students = await _apiService.GetStudents();
-        for (int i = 0; i < 20; i++)
-        {
-            Students?.Add(new User($"student{i}"));
-        }
-        Groups = await _apiService.GetClasses();
+        _userSearchService.SuggestionsUpdated += UpdateUserSuggestions;
+        _groupSearchService.SuggestionsUpdated += UpdateGroupSuggestions;
+    }
+
+    private void UpdateUserSuggestions(object newSuggestions)
+    {
+        userSuggestions = (List<User>)newSuggestions;
+        _logger.LogCritical($"userSuggestions.Count is {userSuggestions.Count} ");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateGroupSuggestions(object newSuggestions)
+    {
+        groupSuggestions = (List<UserGroup>)newSuggestions;
+        _logger.LogCritical($"groupSuggestions.Count is {groupSuggestions.Count} ");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnSearchUserInput(ChangeEventArgs e)
+    {
+        _userSearchService.OnSearchInput(e.Value.ToString());
+    }
+
+    private void OnSearchGroupInput(ChangeEventArgs e)
+    {
+        _groupSearchService.OnSearchInput(e.Value.ToString());
+    }
+
+    public void Dispose()
+    {
+        _userSearchService.SuggestionsUpdated -= UpdateUserSuggestions;
+        _groupSearchService.SuggestionsUpdated -= UpdateGroupSuggestions;
     }
 
     private void Plus(InteractionType interactionType)
@@ -435,7 +471,7 @@
         InvokeAsync(StateHasChanged);
     }
 
-    
-    
+
+
 
 }

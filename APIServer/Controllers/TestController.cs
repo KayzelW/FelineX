@@ -26,7 +26,13 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
     [HttpGet("get_tests")]
     public async Task<IActionResult> GetTests()
     {
-        var tests = await dbContext.Tests.ToListAsync();
+        var userId = (Guid)HttpContext.Items["User"]!;
+        var tests = await dbContext.Tests
+            .Where(t =>
+                t.Settings.TestUsers!.Any(u => u.Id == userId) ||  // Проверка на наличие пользователя в TestUsers
+                t.Settings.TestGroups!.Any(g => g.Students!.Any(u => u.Id == userId)) ||
+                t.CreatorId == userId)  // Проверка на наличие пользователя в любой из групп TestGroups
+            .ToListAsync();
         return Ok(tests);
     }
 

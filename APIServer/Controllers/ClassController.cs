@@ -96,7 +96,7 @@ public class ClassController : Controller
         {
             var students = _dbContext.Users
                 .Where(x => x.AccessFlags == (uint)AccessLevel.Student)
-                // .Select(x => new { x.Id, x.UserName, x.NormalizedUserName })
+                .Select(x => new { x.Id, x.UserName, x.NormalizedUserName })
                 .ToList();
             return Ok(students);
         }
@@ -106,4 +106,6 @@ public class ClassController : Controller
             return BadRequest();
         }
     }
+    
+
 }

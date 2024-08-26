@@ -45,6 +45,8 @@ public sealed class Program
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddSingleton<IUserContextService, UserContextService>();
         builder.Services.AddLogging();
+        builder.Services.AddScoped<SearchService<User>>();
+        builder.Services.AddScoped<SearchService<UserGroup>>();
         
         builder.Services.AddBlazoredToast();
             

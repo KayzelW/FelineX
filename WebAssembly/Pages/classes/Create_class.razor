@@ -75,17 +75,17 @@
 </div>
 
 @code {
-    private List<User>? Students { get; set; }
-    private UserGroup Group { get; set; }
+    private List<User>? Students { get; set; } = [];
+    private UserGroup? Group { get; set; } = new()
+    {
+        Students = new List<User>()
+    };
 
     protected override async Task OnInitializedAsync()
     {
+        
         await base.OnInitializedAsync();
         Students = await _apiService.GetStudents();
-        Group = new UserGroup
-        {
-            Students = new List<User>()
-        };
     }
 
     private void AddStudent(User user)
