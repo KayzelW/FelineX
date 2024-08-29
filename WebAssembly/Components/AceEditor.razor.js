@@ -1,7 +1,7 @@
 ﻿export class AceEditor {
-    static initialize(dotNetObject) {
-        console.log("start init ace")
-        var editor = ace.edit("editor");
+    static initialize(dotNetObject, editorId) {
+        console.log("start init ace with id" + editorId)
+        var editor = ace.edit(editorId);
         editor.setTheme("ace/theme/textmate");
         editor.session.setMode("ace/mode/sql");
 
@@ -17,7 +17,7 @@
                 showLineNumbers: true,
                 tabSize: 4
             });
-            
+
         });
 
         // Обработка изменений текста
@@ -26,14 +26,13 @@
             dotNetObject.invokeMethodAsync('UpdateValue', value);
         });
     };
-    static getText() {
-        
-        var editor = ace.edit("editor");
+    static getText(editorId) {
+        var editor = ace.edit(editorId);
         return editor.getValue();
     };
 
-    static setText(value) {
-        var editor = ace.edit("editor");
+    static setText(editorId, value) {
+        var editor = ace.edit(editorId);
         editor.setValue(value, -1);
     };
 }

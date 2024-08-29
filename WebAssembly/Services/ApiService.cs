@@ -40,13 +40,22 @@ public class ApiService
     #region ForTests
 
 
-    public async Task<bool> PostTest(MyTest test)
+    public async Task<bool> PostTest(MyTest test, bool forEdit = false)
     {
-        _logger.LogInformation("Got test in APIservice");
-        var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
-        _logger.LogInformation("Send test to API");
-        return responseMessage.IsSuccessStatusCode;
+        if (forEdit)
+        {
+            var responseMessage = await httpClient.PostAsJsonAsync("Test/edit_test", test);
+            return responseMessage.IsSuccessStatusCode;
+        }
+        else
+        {
+            var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
+            return responseMessage.IsSuccessStatusCode;
+        }
+        
     }
+    
+    
     
     public async Task<List<MyTest>> GetTests()
     {
@@ -66,13 +75,24 @@ public class ApiService
         return responseMessage.IsSuccessStatusCode;
     }
 
-    public async Task<TestDTO?> GetTest(string testId)
+    public async Task<TestDTO?> GetTest(string testId, bool AsOriginal = false)
     {
         TestDTO? test = null;
-        var responseMessage = await httpClient.GetAsync($"Test/get_test/{testId}");
-        if (responseMessage.IsSuccessStatusCode)
+        if (AsOriginal)
         {
-            test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
+            var responseMessage = await httpClient.GetAsync($"Test/get_original_test/{testId}");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
+            }
+        }
+        else
+        {
+            var responseMessage = await httpClient.GetAsync($"Test/get_test_for_solving/{testId}");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
+            }
         }
 
         return test;

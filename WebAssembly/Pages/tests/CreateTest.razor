@@ -141,25 +141,25 @@
                             </div>
                             <h5 style="padding-top: 25px"> Скрипт базы данных</h5>
                             <div class="form-floating" style="padding-top: 5px">
-                                <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall"
-                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;"> 
-                                        CREATE TABLE if not exists Blogs (
-                                            BlogId INTEGER PRIMARY KEY,
-                                            Url TEXT
-                                        );
-                                
-                                        INSERT INTO Blogs (Url) VALUES ('https://example.com');
-                                        INSERT INTO Blogs (Url) VALUES ('https://another.com');
-                                </textarea>
-                                @* <AceEditor @bind-Value="@task.Settings.SqlQueryInstall"></AceEditor> *@
+                                @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall" *@
+                                @*     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;">  *@
+                                @*         CREATE TABLE if not exists Blogs ( *@
+                                @*             BlogId INTEGER PRIMARY KEY, *@
+                                @*             Url TEXT *@
+                                @*         ); *@
+                                @* *@
+                                @*         INSERT INTO Blogs (Url) VALUES ('https://example.com'); *@
+                                @*         INSERT INTO Blogs (Url) VALUES ('https://another.com'); *@
+                                @* </textarea> *@
+                                <AceEditor EditorId="ForSqlQueryInstall" @bind-Value="@task.Settings.SqlQueryInstall"></AceEditor>
                             </div>
 
                             <div class="form-floating" style="padding-top: 5px">
                                 <h5 style="padding-top: 25px"> Эталонный запрос</h5>
                                 <div class="form-floating1" style="padding-top: 5px">
-                                    <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck"
-                                    style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea>
-                                    @* <AceEditor  @bind-Value="@task.Settings.SqlQueryCheck"></AceEditor> *@
+                                    @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck" *@
+                                    @* style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea> *@
+                                    <AceEditor EditorId="ForSqlQueryCheck" @bind-Value="@task.Settings.SqlQueryCheck"></AceEditor>
                                 </div>
                             </div>
                             break;
@@ -207,11 +207,10 @@
         </button>
     </div>
 </div>
-
 @if (isModalVisibleStudent)
 {
-    
-    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+
+<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
     <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%"> <!-- Установлены ширина и max-width -->
         <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
             <div class="modal-header">
@@ -219,7 +218,7 @@
                 <button type="button" class="btn-close" aria-label="Close" @onclick="() => {isModalVisibleStudent = false; }"></button>
             </div>
             <div class="modal-body">
-                
+
                 <div style="display: flex; gap: 20px;">
                     <!-- Используем Flexbox -->
                     <div style="flex: 1;">
@@ -233,16 +232,16 @@
                             </thead>
                             @foreach (var student in test.Settings.TestUsers)
                             {
-                                <tr>
-                                    <th scope="row">@student.NormalizedUserName</th>
-                                    <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                                @onclick="() => {test.Settings.TestUsers.Remove(student); 
+                            <tr>
+                                <th scope="row">@student.NormalizedUserName</th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                            @onclick="() => {test.Settings.TestUsers.Remove(student); 
                                                     InvokeAsync(StateHasChanged);}">
-                                            <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
-                                        </button>
-                                    </th>
-                                </tr>
+                                        <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
+                                    </button>
+                                </th>
+                            </tr>
                             }
                         </table>
                     </div>
@@ -255,7 +254,7 @@
                             <button type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
-           
+
                         </div>
                         <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
                             <thead>
@@ -267,20 +266,20 @@
                             </thead>
                             @if (userSuggestions.Count>0)
                             {
-                                @foreach (var user in userSuggestions)
-                                {
-                                    <tr>
-                                        <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
-                                        <th scope="row">@user.NormalizedUserName</th>
-                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" 
-                                                    @onclick="() => {test.Settings.TestUsers.Add(user); 
+                            @foreach (var user in userSuggestions)
+                            {
+                            <tr>
+                                <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
+                                <th scope="row">@user.NormalizedUserName</th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                            @onclick="() => {test.Settings.TestUsers.Add(user); 
                                                     InvokeAsync(StateHasChanged);}">
-                                                <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
-                                            </button>
-                                        </th>
-                                    </tr>
-                                }
+                                        <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                                    </button>
+                                </th>
+                            </tr>
+                            }
                             }
                         </table>
                     </div>
@@ -298,16 +297,16 @@
 
 @if (isModalVisibleGroup)
 {
-    
-    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
-    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%"> 
+
+<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
         <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
             <div class="modal-header">
                 <h3 class="modal-title">Группы этого теста</h3>
                 <button type="button" class="btn-close" aria-label="Close" @onclick="() => {isModalVisibleGroup = false; }"></button>
             </div>
             <div class="modal-body">
-                
+
                 <div style="display: flex; gap: 20px;">
                     <div style="flex: 1;">
                         <h4>Добавленные группы</h4>
@@ -319,17 +318,17 @@
                             </thead>
                             @foreach (var group in test.Settings.TestGroups)
                             {
-                                <tr>
-                                    <th scope="row">@(test.Settings.TestGroups.IndexOf(group) + 1)</th>
-                                    <th scope="row">@group.GroupName</th>
-                                    <th scope="col" >
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                                @onclick="() => { test.Settings.TestGroups.Remove(group);
+                            <tr>
+                                <th scope="row">@(test.Settings.TestGroups.IndexOf(group) + 1)</th>
+                                <th scope="row">@group.GroupName</th>
+                                <th scope="col" >
+                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                            @onclick="() => { test.Settings.TestGroups.Remove(group);
                                                 InvokeAsync(StateHasChanged);}">
-                                            <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
-                                        </button>
-                                    </th>
-                                </tr>
+                                        <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
+                                    </button>
+                                </th>
+                            </tr>
                             }
                         </table>
                     </div>
@@ -341,7 +340,7 @@
                             <button type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
-                        
+
                         </div>
                         <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
                             <thead>
@@ -353,17 +352,17 @@
                             </thead>
                             @foreach (var group in groupSuggestions)
                             {
-                                <tr>
-                                    <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
-                                    <th scope="row">@group.GroupName</th>
-                                    <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                                @onclick="() => { test.Settings.TestGroups.Add(group);
+                            <tr>
+                                <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
+                                <th scope="row">@group.GroupName</th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                            @onclick="() => { test.Settings.TestGroups.Add(group);
                                                 InvokeAsync(StateHasChanged);}">
-                                            <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить группу"></i>
-                                        </button>
-                                    </th>
-                                </tr>
+                                        <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить группу"></i>
+                                    </button>
+                                </th>
+                            </tr>
                             }
                         </table>
                     </div>
@@ -375,6 +374,7 @@
 
 
 }
+
 
 @code {
     MyTest test = new();

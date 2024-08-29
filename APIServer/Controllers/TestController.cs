@@ -41,8 +41,8 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
     /// </summary>
     /// <param name="id"></param>
     /// <returns><see cref="Test"/>></returns>
-    [HttpGet("get_test/{id:guid}")]
-    public async Task<IActionResult> GetTest(Guid id)
+    [HttpGet("get_test_for_solving/{id:guid}")]
+    public async Task<IActionResult> GetTestForSolving(Guid id)
     {
         Test? test;
         try
@@ -77,6 +77,15 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             return NotFound(id);
         }
 
+        return Ok(test);
+    }
+    [HttpGet("get_original_test/{id:guid}")]
+    public async Task<IActionResult?> GetOriginalTest(Guid id)
+    {
+        var test = await dbContext.Tests
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.Settings)
+            .FirstOrDefaultAsync(x => x.Id == id);
         return Ok(test);
     }
 
@@ -164,8 +173,6 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
         }
     }
     
-    
-
     private string GetConnectionLog()
     {
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();

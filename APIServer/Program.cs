@@ -22,13 +22,16 @@ public sealed class Program
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
+                #if DEBUG
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
+
+                #endif
             });
         }
         catch (Exception e)
         {
-             Console.WriteLine($"Failed connect to Postgres");
+            Console.WriteLine($"Failed connect to Postgres");
             // mysql
             var connectionString = builder.Configuration.GetConnectionString("mysql") ??
                                    throw new InvalidOperationException(
@@ -37,10 +40,13 @@ public sealed class Program
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
             {
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+                #if DEBUG
+                
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
-            });
 
+                #endif
+            });
         }
 
         #endregion
@@ -48,7 +54,7 @@ public sealed class Program
         builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
-        builder.Services.AddSingleton<ITestWarriorQueue,TestWarrior>();
+        builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
         builder.Services.AddSingleton<CheckQueueService>();
         builder.Services.AddHostedService<TestWarrior>();
 
@@ -85,13 +91,10 @@ public sealed class Program
         });
 
         #endregion
-        
+
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenAnyIP(7281, listenOptions =>
-            {
-                listenOptions.UseHttps();
-            });
+            options.ListenAnyIP(7281, listenOptions => { listenOptions.UseHttps(); });
         });
 
         builder.Services.AddControllers();
@@ -123,8 +126,7 @@ public sealed class Program
             app.UseDeveloperExceptionPage();
             app.UseRouting();
         }
-        
-        
+
 
         app.UseHttpsRedirection();
         app.MapControllers();

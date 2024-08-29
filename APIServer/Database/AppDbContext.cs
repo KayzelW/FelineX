@@ -61,6 +61,15 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<TestSettings>()
             .HasMany(x => x.TestUsers)
             .WithMany();
+        modelBuilder.Entity<TestSettings>()
+            .Navigation(x => x.TestGroups)
+            .AutoInclude();
+        modelBuilder.Entity<TestSettings>()
+            .Navigation(x => x.TestUsers)
+            .AutoInclude();
+        modelBuilder.Entity<TestSettings>()
+            .Navigation(x => x.TasksThemes)
+            .AutoInclude();
 
         #endregion
 
