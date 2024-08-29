@@ -57,8 +57,8 @@ public class ClassController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"Exeption while adding student {data.UserId} to group {data.GroupId}", e);
-            return BadRequest($"Exeption while adding student {data.UserId} to group {data.GroupId}");
+            _logger.LogError($"Exсeption while adding student {data.UserId} to group {data.GroupId}", e);
+            return BadRequest($"Exсeption while adding student {data.UserId} to group {data.GroupId}");
         }
     }
 
@@ -84,8 +84,8 @@ public class ClassController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"Exeption while adding group {e}");
-            return BadRequest("Exeption while adding group");
+            _logger.LogError($"Exсeption while adding group {e}");
+            return BadRequest("Exсeption while adding group");
         }
     }
 
@@ -102,7 +102,7 @@ public class ClassController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exeption while getting students");
+            _logger.LogError(e, "Exсeption while getting students");
             return BadRequest();
         }
     }
