@@ -90,10 +90,10 @@ public partial class TestController
             {
                 return BadRequest("Test was null");
             }
-            
+
             dbContext.Attach(incomingTest);
             UpdateTestUsers(incomingTest.Settings);
-            
+
             dbContext.Update(incomingTest);
 
             await dbContext.SaveChangesAsync();
@@ -174,24 +174,23 @@ public partial class TestController
 
     private void UpdateTestUsers(TestSettings settings)
     {
-        if (settings.TestUsers == null)
+        var expectedIds = settings.TestUsers?.Select(x => x.Id).ToList();
+        if (expectedIds == null)
         {
             return;
         }
 
-        var expectedIds = settings.TestUsers?.Select(x => x.Id).ToList();
-        var existingIds = dbContext.TestSettings.First(x => x.Id == settings.Id).TestUsers?.Select(x => x.Id);
-
-        var mustToStay = existingIds.Intersect(expectedIds);
-        var newUsers = expectedIds.Except(existingIds);
-        foreach (var user in settings.TestUsers)
+        var existingIds = dbContext.TestSettings.First(x => x.Id == settings.Id).TestUsers?.Select(x => x.Id).ToList();
+        if (existingIds == null || existingIds.Count == 0)
         {
-            if (!mustToStay.Contains(user.Id))
-            {
-                settings.TestUsers.Remove(user);
-            }
+            settings.TestUsers!.AddRange(dbContext.Users.Where(x => expectedIds!.Contains(x.Id)));
+            return;
         }
 
-        settings.TestUsers.AddRange(dbContext.Users.Where(x => newUsers.Contains(x.Id)));
+        var mustToStay = existingIds.Intersect(expectedIds);
+        var newUsers = expectedIds.Except(existingIds).ToList();
+
+        settings.TestUsers!.RemoveAll(x => !mustToStay.Contains(x.Id));
+        settings.TestUsers!.AddRange(dbContext.Users.Where(x => newUsers.Contains(x.Id)));
     }
 }
