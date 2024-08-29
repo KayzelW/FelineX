@@ -21,7 +21,7 @@ public partial class TestController
             {
                 return NotFound("testId doesn't exists in database or already deleted");
             }
-            
+
             dbContext.Remove(test);
             await dbContext.SaveChangesAsync();
         }
@@ -49,10 +49,12 @@ public partial class TestController
             {
                 dbContext.Entry(settingsTestGroup).State = EntityState.Unchanged;
             }
+
             foreach (var settingsTestUser in test.Settings.TestUsers)
             {
                 dbContext.Entry(settingsTestUser).State = EntityState.Unchanged;
             }
+
             var userId = (Guid)HttpContext.Items["User"]!;
             test.CreatorId = userId;
             if (test.Tasks is not null)
@@ -78,6 +80,7 @@ public partial class TestController
 
         return Ok();
     }
+
     [HttpPost("edit_test")]
     public async Task<IActionResult> EditTest([FromBody] Test? incomingTest)
     {
@@ -88,16 +91,13 @@ public partial class TestController
                 return BadRequest("Test was null");
             }
             
-            var testUsers =  UpdateTestUsers(incomingTest.Settings);
-            
             dbContext.Attach(incomingTest);
-            incomingTest.Settings.TestUsers.Clear();
-            incomingTest.Settings.TestUsers.AddRange(testUsers);
-            dbContext.Update(incomingTest.Settings);
+            UpdateTestUsers(incomingTest.Settings);
+            
             dbContext.Update(incomingTest);
-            
+
             await dbContext.SaveChangesAsync();
-            
+
             // var existingTest = dbContext.Tests
             //     .Include(t => t.Settings)
             //     .ThenInclude(s => s.TestUsers)
@@ -135,13 +135,10 @@ public partial class TestController
             _logger.LogError($"Exception while editing test {e}");
             return BadRequest(e);
         }
-        
-
     }
-    
+
     private void UpdateTasks(List<Shared.DB.Test.Task.Task> existingTasks, List<Shared.DB.Test.Task.Task> incomingTasks)
     {
-    
         foreach (var existingTask in existingTasks)
         {
             if (!incomingTasks.Any(t => t.Id == existingTask.Id))
@@ -149,7 +146,7 @@ public partial class TestController
                 existingTasks.Remove(existingTask);
             }
         }
-        
+
         foreach (var incomingTask in incomingTasks)
         {
             var existingTask = existingTasks.FirstOrDefault(t => t.Id == incomingTask.Id);
@@ -175,12 +172,26 @@ public partial class TestController
         }
     }
 
-    private List<User> UpdateTestUsers(TestSettings settings)
+    private void UpdateTestUsers(TestSettings settings)
     {
-        var ids = settings.TestUsers.Select(x => x.Id).ToList();
-        settings.TestUsers.Clear();
-        return dbContext.Users.Where(x => ids.Contains(x.Id)).ToList();
+        if (settings.TestUsers == null)
+        {
+            return;
+        }
+
+        var expectedIds = settings.TestUsers?.Select(x => x.Id).ToList();
+        var existingIds = dbContext.TestSettings.First(x => x.Id == settings.Id).TestUsers?.Select(x => x.Id);
+
+        var mustToStay = existingIds.Intersect(expectedIds);
+        var newUsers = expectedIds.Except(existingIds);
+        foreach (var user in settings.TestUsers)
+        {
+            if (!mustToStay.Contains(user.Id))
+            {
+                settings.TestUsers.Remove(user);
+            }
+        }
+
+        settings.TestUsers.AddRange(dbContext.Users.Where(x => newUsers.Contains(x.Id)));
     }
-    
-    
 }
