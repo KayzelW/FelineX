@@ -5,6 +5,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging.Abstractions;
 using MySqlConnector;
 using Npgsql;
+using Shared.Interfaces;
 using Shared.Types;
 using Task = Shared.DB.Test.Task.Task;
 
@@ -113,7 +114,8 @@ public static class TaskExtension
         return null;
     }
 
-    public static void SyncList<T>(this ICollection<T>? existing, ICollection<T>? incoming)// where T : update inner fields Interface
+    public static void SyncList<T>(this ICollection<T>? existing, ICollection<T>? incoming)
+        where T : IInnerIdentity<T> //update inner fields Interface
     {
         if (existing == null)
         {
@@ -127,15 +129,12 @@ public static class TaskExtension
 
         foreach (var cur in existing.ToList())
         {
-            if (!incoming.Contains(cur))
+            if (!incoming.Any(x => x.Id == cur.Id))
             {
                 existing.Remove(cur);
             }
         }
 
-        foreach (var cur in incoming.Except(existing))
-        {
-            existing.Add(cur);
-        }
+        (existing as List<T>)?.AddRange(incoming.Except(existing));
     }
 }

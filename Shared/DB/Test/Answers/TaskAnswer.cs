@@ -2,11 +2,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Shared.DB.Test.Task;
+using Shared.Interfaces;
 using OriginalTask = Shared.DB.Test.Task.Task;
 
 namespace Shared.DB.Test.Answers;
 
-public class TaskAnswer
+public class TaskAnswer : IInnerIdentity<TaskAnswer>
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

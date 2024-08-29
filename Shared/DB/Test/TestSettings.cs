@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Shared.DB.Test.Task;
 using Shared.DB.User;
 using Shared.DB.Test.Task;
+using Shared.Interfaces;
 
 namespace Shared.DB.Test;
 
-public class TestSettings
+public class TestSettings : IInnerIdentity<TestSettings>
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

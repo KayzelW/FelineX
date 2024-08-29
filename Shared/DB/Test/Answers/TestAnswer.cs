@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Shared.Interfaces;
 
 namespace Shared.DB.Test.Answers;
 
-public class TestAnswer
+public class TestAnswer : IInnerIdentity<TestAnswer>
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Shared.Interfaces;
 
 namespace Shared.DB.Test.Task;
 
-public class VariableAnswer
+public class VariableAnswer : IInnerIdentity<VariableAnswer>
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

@@ -5,11 +5,12 @@ using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Shared.Interfaces;
 
 namespace Shared.DB.User;
 
 // Add profile data for application users by adding properties to the User class
-public sealed class User
+public sealed class User : IInnerIdentity<User>
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

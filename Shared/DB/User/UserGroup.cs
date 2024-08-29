@@ -2,10 +2,11 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.AccessControl;
 using System.Text.Json.Serialization;
+using Shared.Interfaces;
 
 namespace Shared.DB.User;
 
-public class UserGroup
+public class UserGroup : IInnerIdentity<UserGroup>
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }

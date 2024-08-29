@@ -3,11 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Shared.DB.Test.Task;
 using Shared.DB.Interfaces;
+using Shared.Interfaces;
 using Shared.Types;
 
 namespace Shared.DB.Test.Task;
 
-public sealed partial class Task : ITask
+public sealed class Task : ITask, IInnerIdentity<Task>
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; } = new Guid();
