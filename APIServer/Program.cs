@@ -92,10 +92,10 @@ public sealed class Program
 
         #endregion
 
-        builder.WebHost.ConfigureKestrel(options =>
-        {
-            options.ListenAnyIP(7281, listenOptions => { listenOptions.UseHttps(); });
-        });
+        // builder.WebHost.ConfigureKestrel(options =>
+        // {
+        //     options.ListenAnyIP(7281, listenOptions => { listenOptions.UseHttps(); });
+        // });
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

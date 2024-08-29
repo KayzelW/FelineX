@@ -50,7 +50,7 @@
                 <div class="col-md-10 col-lg-10">
 
                     <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                        <h4>Задание @(test.Tasks!.IndexOf(task) + 1) </h4>
+                        <h4>Задание @(test.Tasks!.IndexOf(task) + 1): @task.InteractionType.ToString()</h4>
                         <span>(@(test.Tasks!.IndexOf(task) + 1) of @test.Tasks!.Count)</span>
                     </div>
                 </div>

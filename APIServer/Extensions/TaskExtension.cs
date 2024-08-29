@@ -112,4 +112,30 @@ public static class TaskExtension
 
         return null;
     }
+
+    public static void SyncList<T>(this ICollection<T>? existing, ICollection<T>? incoming)// where T : update inner fields Interface
+    {
+        if (existing == null)
+        {
+            return;
+        }
+
+        if (incoming == null)
+        {
+            existing.Clear();
+        }
+
+        foreach (var cur in existing.ToList())
+        {
+            if (!incoming.Contains(cur))
+            {
+                existing.Remove(cur);
+            }
+        }
+
+        foreach (var cur in incoming.Except(existing))
+        {
+            existing.Add(cur);
+        }
+    }
 }
