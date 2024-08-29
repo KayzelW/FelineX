@@ -87,34 +87,42 @@ public partial class TestController
             {
                 return BadRequest("Test was null");
             }
-            var existingTest = dbContext.Tests.AsNoTracking()
-                .Include(t => t.Settings)
-                .ThenInclude(s => s.TestUsers).AsNoTracking()
-                .Include(t => t.Tasks).AsNoTracking()
-                .FirstOrDefault(t => t.Id == incomingTest.Id);
-
-            if (existingTest != null)
-            {
-                // Обновляем свойства вручную или с использованием автомаппера.
-                dbContext.Entry(existingTest).CurrentValues.SetValues(incomingTest);
-                await dbContext.SaveChangesAsync();
-                
-                UpdateTasks(existingTest.Tasks, incomingTest.Tasks);
-                await dbContext.SaveChangesAsync();
-
-                // existingTest.Tasks = incomingTest.Tasks;
-                
-                UpdateTestUsers(existingTest.Settings.TestUsers, incomingTest.Settings.TestUsers);
-                await dbContext.SaveChangesAsync();
-                
-                
-                
-                await dbContext.SaveChangesAsync();
-                
-            }
-            var json = JsonSerializer.Serialize(existingTest, new JsonSerializerOptions { WriteIndented = true });
-            _logger.LogInformation(json);
             
+            var testUsers =  UpdateTestUsers(incomingTest.Settings);
+            
+            dbContext.Attach(incomingTest);
+            incomingTest.Settings.TestUsers.Clear();
+            incomingTest.Settings.TestUsers.AddRange(testUsers);
+            dbContext.Update(incomingTest.Settings);
+            dbContext.Update(incomingTest);
+            
+            await dbContext.SaveChangesAsync();
+            
+            // var existingTest = dbContext.Tests
+            //     .Include(t => t.Settings)
+            //     .ThenInclude(s => s.TestUsers)
+            //     .Include(t => t.Tasks)
+            //     .FirstOrDefault(t => t.Id == incomingTest.Id);
+            //
+            // if (existingTest != null)
+            // {
+            //     // Обновляем свойства вручную или с использованием автомаппера.
+            //     dbContext.Entry(existingTest).CurrentValues.SetValues(incomingTest);
+            //
+            //     UpdateTasks(existingTest.Tasks, incomingTest.Tasks);
+            //     
+            //     // existingTest.Tasks = incomingTest.Tasks;
+            //     
+            //     UpdateTestUsers(existingTest.Settings.TestUsers, incomingTest.Settings.TestUsers);
+            //
+            //     dbContext.Update(existingTest);
+            //
+            //     await dbContext.SaveChangesAsync();
+            //     
+            // }
+            // var json = JsonSerializer.Serialize(existingTest, new JsonSerializerOptions { WriteIndented = true });
+            // _logger.LogInformation(json);
+            //
             return Ok($"Test with id {incomingTest.Id} was modified");
         }
         catch (DbUpdateConcurrencyException ex)
@@ -167,15 +175,11 @@ public partial class TestController
         }
     }
 
-    private void UpdateTestUsers(List<User> existingUsers, List<User> incomingUsers)
+    private List<User> UpdateTestUsers(TestSettings settings)
     {
-        existingUsers.Clear();
-        foreach (var incomingUser in incomingUsers)
-        {
-            var userFromDb = dbContext.Users.Find(incomingUser.Id);
-            existingUsers.Add(userFromDb);
-        }
-        
+        var ids = settings.TestUsers.Select(x => x.Id).ToList();
+        settings.TestUsers.Clear();
+        return dbContext.Users.Where(x => ids.Contains(x.Id)).ToList();
     }
     
     
