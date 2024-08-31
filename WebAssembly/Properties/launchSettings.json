@@ -1,20 +1,9 @@
 {
-  "ConnectionStrings": {
-    "ApiUrl": "http://localhost:5071/"
-  },
   "Jwt": {
     "Key": "68590BB1-EEDF-4BBA-9F3E-C0C24AA524C3",
     "ExpireMinutes": 60
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:52659",
-      "sslPort": 44344
-    }
-  },
   "profiles": {
     "http": {
       "commandName": "Project",
@@ -36,10 +25,12 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "httpsProduction": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "applicationUrl": "https://localhost:7158;https://*:7158;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

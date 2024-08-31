@@ -64,7 +64,7 @@ public class AuthController : Controller
     // }
 
     [HttpPost("auth")]
-    public async Task<IActionResult> TryAuth([FromBody]AuthData auth)
+    public async Task<IActionResult> TryAuth([FromBody] AuthData auth)
     {
         if (auth.HashedPassword == null || auth.Login == null)
             return NotFound();
@@ -74,7 +74,7 @@ public class AuthController : Controller
         if (user == null) return NotFound();
 
         var token = _tokenService.RegisterSession(user.Id);
-                
+
         return Ok(new AuthAnswer()
         {
             UserToken = token,
@@ -89,13 +89,13 @@ public class AuthController : Controller
         if (!_tokenService.TryGetUserId(token, out var userId)) return NotFound();
 
         var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == userId);
-        
+
         if (user == null)
         {
             _tokenService.RemoveToken(token);
             return NotFound("User doesn't exists, but token exists....");
         }
-        
+
         return Ok(new AuthAnswer()
         {
             UserToken = token,
@@ -104,9 +104,20 @@ public class AuthController : Controller
         });
     }
 
-    [HttpGet("test_hash")]
+    [HttpGet("test_hash"), My("vbjegfobnrgjibngrjbnkjr")]
     public async Task<string> TestHash(string password)
     {
         return await UserExtensions.HashPasswordAsync(password);
     }
+}
+
+public class MyAttribute : Attribute
+{
+    public string MyString { get; set; }
+
+    public MyAttribute()
+    {
+    }
+
+    public MyAttribute(string str) => (MyString) = (str);
 }

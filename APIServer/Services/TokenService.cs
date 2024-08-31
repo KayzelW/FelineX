@@ -9,7 +9,8 @@ namespace APIServer.Services;
 
 public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)
 {
-    private readonly ConcurrentDictionary<string, Guid> _activeTokens = [];
+    //TODO: replace with MemoryCache TTL: https://stackoverflow.com/questions/7435832/c-sharp-list-where-items-have-a-ttl
+    private readonly ConcurrentDictionary<string, Guid> _activeTokens = []; 
     private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
 
     public bool TryGetUserId(string? token, out Guid userId)

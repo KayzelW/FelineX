@@ -22,29 +22,35 @@ public sealed class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        if (builder.HostEnvironment.BaseAddress.StartsWith("https"))
+        builder.Services.AddSingleton(sp => new HttpClient
         {
-            builder.Services.AddSingleton(sp => new HttpClient
-            {
-                BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrlHttps")
-                                      ?? throw new ApplicationException("ApiUrl are not existing")),
-            });
-
-        }
-        else
-        {
-            builder.Services.AddSingleton(sp => new HttpClient
-            {
-                BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
-                                      ?? throw new ApplicationException("ApiUrl are not existing")),
-            });
-            
-        }
+            BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
+                                  ?? throw new ApplicationException("ApiUrl are not existing")),
+        });
         
+        // if (builder.HostEnvironment.BaseAddress.StartsWith("https"))
+        // {
+        //     builder.Services.AddSingleton(sp => new HttpClient
+        //     {
+        //         BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrlHttp")
+        //                               ?? throw new ApplicationException("ApiUrl are not existing")),
+        //     });
+        //
+        // }
+        // else
+        // {
+        //     builder.Services.AddSingleton(sp => new HttpClient
+        //     {
+        //         BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
+        //                               ?? throw new ApplicationException("ApiUrl are not existing")),
+        //     });
+        //     
+        // }
+        
+        builder.Services.AddLogging();
         builder.Services.AddSingleton<ILocalStorageService, LocalStorageService>();
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddSingleton<IUserContextService, UserContextService>();
-        builder.Services.AddLogging();
         builder.Services.AddScoped<SearchService<User>>();
         builder.Services.AddScoped<SearchService<UserGroup>>();
         

@@ -1,5 +1,6 @@
 ﻿using UAParser;
 using APIServer.Database;
+using APIServer.Extensions;
 using APIServer.Services;
 using Microsoft.AspNetCore.Authorization;
 using Shared.Models;
@@ -123,7 +124,7 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
         {
 
             var testAnswer = new TestAnswer();
-            testAnswer.ClientConnectionLog = GetConnectionLog();
+            testAnswer.ClientConnectionLog = AuthExtensions.GetConnectionLog(HttpContext);
             
             dbContext.Add(testAnswer);
             await dbContext.SaveChangesAsync();
@@ -171,17 +172,5 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
             _logger.LogInformation(e, $"Exception while saving new testAnswer from user");
             return BadRequest(solvedTest);
         }
-    }
-    
-    private string GetConnectionLog()
-    {
-        var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
-        var userAgentString = HttpContext.Request.Headers["User-Agent"].ToString();
-        var userAgentParser = Parser.GetDefault();
-        var clientInfo = userAgentParser.Parse(userAgentString);
-        var operatingSystem = clientInfo.OS.Family;
-        var device = clientInfo.Device.Family;
-        var logString = $"Браузер: {clientInfo.UA}, IP: {ipAddress}, ОС: {operatingSystem}, Устройство: {device}";
-        return logString;
     }
 }
