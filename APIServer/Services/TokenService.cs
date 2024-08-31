@@ -3,32 +3,34 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Shared.DB.User;
 using Shared.Extensions;
+using Shared.Models;
 
 namespace APIServer.Services;
 
 public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)
 {
     //TODO: replace with MemoryCache TTL: https://stackoverflow.com/questions/7435832/c-sharp-list-where-items-have-a-ttl
-    private readonly ConcurrentDictionary<string, Guid> _activeTokens = []; 
+    private readonly ConcurrentDictionary<string, UserDto?> _activeTokens = []; 
     private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
 
-    public bool TryGetUserId(string? token, out Guid userId)
+    public bool TryGetUserId(string? token, out UserDto? userData)
     {
         logger.LogInformation($"Try get token({token})");
         if (!ValidateToken(token))
         {
-            userId = Guid.Empty;
+            userData = null;
             return false;
         }
 
-        return _activeTokens.TryGetValue(token!, out userId);
+        return _activeTokens.TryGetValue(token!, out userData);
     }
 
-    public string RegisterSession(Guid userId)
+    public string RegisterSession(UserDto userData)
     {
-        var token = GenerateJwtToken(userId);
-        if (!_activeTokens.TryAdd(token, userId))
+        var token = GenerateJwtToken(userData.Id);
+        if (!_activeTokens.TryAdd(token, userData))
         {
             //TODO:continue token lifetime logic
             return token;

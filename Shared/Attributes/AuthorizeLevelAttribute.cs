@@ -1,8 +1,8 @@
 ﻿using Shared.DB.User;
 
-namespace WebAssembly.Components;
+namespace Shared.Attributes;
 
-[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
 public sealed class AuthorizeLevelAttribute : Attribute
 {
     public uint RequiredLevel { get; }
@@ -17,3 +17,4 @@ public sealed class AuthorizeLevelAttribute : Attribute
         RequiredLevel = (uint)requiredLevel;
     }
 }
+

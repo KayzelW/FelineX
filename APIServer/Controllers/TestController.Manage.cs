@@ -3,6 +3,7 @@ using APIServer.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Attributes;
 using Shared.DB.Test;
 using Shared.DB.User;
 
@@ -10,7 +11,7 @@ namespace APIServer.Controllers;
 
 public partial class TestController
 {
-    [HttpDelete("delete_test/{testId:guid}")]
+    [HttpDelete("delete_test/{testId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
     public async Task<IActionResult> DeleteTest(Guid testId)
     {
         try
@@ -34,7 +35,7 @@ public partial class TestController
         return Ok();
     }
 
-    [HttpPost("create_test")]
+    [HttpPost("create_test"), AuthorizeLevel(AccessLevel.Teacher)]
     public async Task<IActionResult> CreateTest([FromBody] Test? test)
     {
         if (test is null)
@@ -81,7 +82,7 @@ public partial class TestController
         return Ok();
     }
 
-    [HttpPost("edit_test")]
+    [HttpPost("edit_test"), AuthorizeLevel(AccessLevel.Teacher)]
     public async Task<IActionResult> EditTest([FromBody] Test? incomingTest)
     {
         try

@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Attributes;
+using Shared.DB.User;
 
 namespace APIServer.Controllers;
 
 public partial class TestController
 {
-    [HttpGet("get_test_answer_id_by_id/{testAnswerId:guid}")]
-    public async Task<IActionResult> GetTestAnswerId(Guid testAnswerId)
+    [HttpGet("get_test_score/{testAnswerId:guid}")]
+    public async Task<IActionResult> GetTestScore(Guid testAnswerId)
     {
         var answeredTest = await dbContext.TestAnswers.Where(x => x.Id == testAnswerId)
-            .Include(x => x.TaskAnswers)!
-            .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
+            .Include(x => x.TaskAnswers)
             .FirstOrDefaultAsync();
 
         if (answeredTest == null)
@@ -18,10 +19,16 @@ public partial class TestController
             return NotFound();
         }
 
-        return Ok(answeredTest);
+        if (answeredTest.TaskAnswers.All(x => x.IsCheckEnded) && answeredTest.TaskAnswers.Count != 0)
+        {
+            return Ok(answeredTest.Score);
+        }
+
+        return NotFound("Test not checked yet");
+
     }
 
-    [HttpGet("get_test_result/{testAnswerId:guid}")]
+    [HttpGet("get_test_result/{testAnswerId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
     public async Task<IActionResult> GetTestResult(Guid testAnswerId)
     {
         try

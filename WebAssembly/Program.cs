@@ -26,7 +26,9 @@ public sealed class Program
         {
             BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
                                   ?? throw new ApplicationException("ApiUrl are not existing")),
+            
         });
+        
         
         // if (builder.HostEnvironment.BaseAddress.StartsWith("https"))
         // {

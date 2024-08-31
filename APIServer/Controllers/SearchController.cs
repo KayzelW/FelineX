@@ -1,10 +1,12 @@
 ﻿using APIServer.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Attributes;
+using Shared.DB.User;
 
 namespace APIServer.Controllers;
 
-[ApiController, Route("[controller]")]
+[ApiController, Route("[controller]"), AuthorizeLevel(AccessLevel.Teacher)]
 public class SearchController : Controller
 {
     private readonly AppDbContext _dbContext;

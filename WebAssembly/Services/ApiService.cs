@@ -114,6 +114,18 @@ public class ApiService
         return testAnswer;
     }
 
+    public async Task<double?> GetTestScore(Guid testAnswerId)
+    {
+        var responseMessage = await httpClient.GetAsync($"Test/get_test_score/{testAnswerId}");
+        double? testAnswerScore = null;
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            testAnswerScore = await responseMessage.Content.ReadFromJsonAsync<double>();
+        }
+        return testAnswerScore;
+        
+    }
+
     public async Task<Guid> SubmitTest(TestDTO? test)
     {
         var responseMessage = await httpClient.PostAsJsonAsync("Test/submit_test", test);

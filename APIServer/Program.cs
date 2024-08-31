@@ -70,7 +70,6 @@ public sealed class Program
         }
 
         #endregion
-
         
         builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
@@ -125,12 +124,6 @@ public sealed class Program
         #endregion
 
         
-        // builder.WebHost.ConfigureKestrel(options => //https working
-        // {
-        //     options.ListenAnyIP(7281, listenOptions => { listenOptions.UseHttps(); });
-        // });
-
-        
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
     }
@@ -138,6 +131,7 @@ public sealed class Program
 
     private static void ConfigureApplication(WebApplication app)
     {
+      
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -145,13 +139,17 @@ public sealed class Program
 
             app.UseDeveloperExceptionPage();
         }
-
+        
         app.UseRouting();
+
+        app.UseCors("AllowSpecificOrigin");
+        app.UseMiddleware<TokenCheckingMiddleware>();
+        
         app.UseHttpLogging();
 
-        app.UseMiddleware<TokenCheckingMiddleware>();
+      
         app.UseHttpsRedirection();
         app.MapControllers();
-        app.UseCors("AllowSpecificOrigin");
+
     }
 }

@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.Attributes;
 using Shared.DB.Test;
 using Shared.DB.Test.Answers;
 using Shared.DB.Test.Task;
+using Shared.DB.User;
 using Task = System.Threading.Tasks.Task;
 
 namespace APIServer.Controllers;
@@ -24,15 +26,21 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
     /// Must be used when Teacher trying to see all available tests 
     /// </summary>
     /// <returns>list of <see cref="Test"/></returns>
-    [HttpGet("get_tests")]
+    [HttpGet("get_tests"), AuthorizeLevel(AccessLevel.Exists)]
     public async Task<IActionResult> GetTests()
     {
-        var userId = (Guid)HttpContext.Items["User"]!;
+        if (!HttpContext.Items.TryGetValue("User", out var user))
+        {
+            return BadRequest("Unauthorized");
+        }
+
+        var userId = (Guid)user!;
+        
         var tests = await dbContext.Tests
             .Where(t =>
-                t.Settings.TestUsers!.Any(u => u.Id == userId) ||  // Проверка на наличие пользователя в TestUsers
+                t.Settings.TestUsers!.Any(u => u.Id == userId) ||  
                 t.Settings.TestGroups!.Any(g => g.Students!.Any(u => u.Id == userId)) ||
-                t.CreatorId == userId)  // Проверка на наличие пользователя в любой из групп TestGroups
+                t.CreatorId == userId)  
             .ToListAsync();
         return Ok(tests);
     }
@@ -42,7 +50,7 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
     /// </summary>
     /// <param name="id"></param>
     /// <returns><see cref="Test"/>></returns>
-    [HttpGet("get_test_for_solving/{id:guid}")]
+    [HttpGet("get_test_for_solving/{id:guid}"), AllowAnonymous]
     public async Task<IActionResult> GetTestForSolving(Guid id)
     {
         Test? test;
@@ -80,7 +88,7 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
 
         return Ok(test);
     }
-    [HttpGet("get_original_test/{id:guid}")]
+    [HttpGet("get_original_test/{id:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
     public async Task<IActionResult?> GetOriginalTest(Guid id)
     {
         var test = await dbContext.Tests
@@ -90,7 +98,7 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
         return Ok(test);
     }
 
-    [HttpGet("get_list_students_test_answers/{testId:guid}")]
+    [HttpGet("get_list_students_test_answers/{testId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
     public async Task<IActionResult> GetListStudentsTestAnswers(Guid testId)
     {
         try
@@ -112,7 +120,7 @@ public partial class TestController(AppDbContext dbContext, ILogger<TestControll
     /// </summary>
     /// <param name="solvedTest"></param>
     /// <returns> TestAnswer id as <see cref="Guid"/></returns>
-    [AllowAnonymous, HttpPost("submit_test")]
+    [HttpPost("submit_test"), AllowAnonymous]
     public async Task<ActionResult<Guid>> SubmitTest([FromBody]TestDTO solvedTest)
     {
         if (solvedTest?.Tasks == null)

@@ -16,7 +16,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace APIServer.Controllers;
 
-[ApiController, Route("[controller]")]
+[ApiController, Route("[controller]"), AllowAnonymous]
 public class AuthController : Controller
 {
     private readonly AppDbContext _dbContext;
@@ -62,7 +62,7 @@ public class AuthController : Controller
     //
     //     return Ok(_user.Id);
     // }
-
+    
     [HttpPost("auth")]
     public async Task<IActionResult> TryAuth([FromBody] AuthData auth)
     {
@@ -73,7 +73,11 @@ public class AuthController : Controller
             x.UserName == auth.Login && x.PasswordHash == auth.HashedPassword);
         if (user == null) return NotFound();
 
-        var token = _tokenService.RegisterSession(user.Id);
+        var token = _tokenService.RegisterSession(new UserDto
+        {
+            Id = user.Id,
+            Access = user.Access
+        });
 
         return Ok(new AuthAnswer()
         {
@@ -86,9 +90,9 @@ public class AuthController : Controller
     [HttpPost("auth_token")]
     public async Task<IActionResult> TryAuthByToken([FromBody] string token)
     {
-        if (!_tokenService.TryGetUserId(token, out var userId)) return NotFound();
+        if (!_tokenService.TryGetUserId(token, out var userData)) return NotFound();
 
-        var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == userId);
+        var user = await _dbContext.Users!.FirstOrDefaultAsync(x => x.Id == userData.Id);
 
         if (user == null)
         {
@@ -104,20 +108,10 @@ public class AuthController : Controller
         });
     }
 
-    [HttpGet("test_hash"), My("vbjegfobnrgjibngrjbnkjr")]
+    [HttpGet("test_hash")]
     public async Task<string> TestHash(string password)
     {
         return await UserExtensions.HashPasswordAsync(password);
     }
 }
 
-public class MyAttribute : Attribute
-{
-    public string MyString { get; set; }
-
-    public MyAttribute()
-    {
-    }
-
-    public MyAttribute(string str) => (MyString) = (str);
-}
