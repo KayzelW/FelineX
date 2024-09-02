@@ -11,16 +11,19 @@ namespace APIServer.Services;
 
 public class TokenService(ILogger<TokenService> logger, IConfiguration configuration)
 {
+    private JwtSecurityTokenHandler _tokenHandler { get; } = new();
     //TODO: replace with MemoryCache TTL: https://stackoverflow.com/questions/7435832/c-sharp-list-where-items-have-a-ttl
-    private readonly ConcurrentDictionary<string, UserDto?> _activeTokens = []; 
-    private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
+    private ConcurrentDictionary<string, UserDto?> _activeTokens { get; } = [];
+    private byte[] JwtKey { get; } = Encoding.UTF8.GetBytes(configuration["Jwt:JwtKey"]!);
+    private double JwtExpiresInMinutes { get; } = Convert.ToDouble(configuration["Jwt:JwtExpiresInMinutes"]!);
 
-    public bool TryGetUserId(string? token, out UserDto? userData)
+    public bool TryGetUserId(string? token, out UserDto userData)
     {
+        userData = default!;
+
         logger.LogInformation($"Try get token({token})");
         if (!ValidateToken(token))
         {
-            userData = null;
             return false;
         }
 
@@ -47,14 +50,13 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
     private bool ValidateToken(string? token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
 
         try
         {
             var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+                IssuerSigningKey = new SymmetricSecurityKey(JwtKey),
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateLifetime = true, // необходимость проверки срока действия токена
@@ -67,24 +69,22 @@ public class TokenService(ILogger<TokenService> logger, IConfiguration configura
         }
         catch (Exception ex)
         {
-            logger.LogInformation($"Token({token}) not passed check", ex);
+            logger.LogInformation(ex, $"Token({token}) not passed check");
             return false;
         }
     }
 
     private string GenerateJwtToken(Guid userId)
     {
-        logger.LogInformation($"Generating token for {userId}");
-        var key = Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
+            Subject = new ClaimsIdentity(
+            [
                 new Claim(JwtExtensions.JwtCookieName, userId.ToString())
-            }),
-            Expires = DateTime.Now.AddMinutes(Convert.ToDouble(configuration["Jwt:ExpireMinutes"])),
+            ]),
+            Expires = DateTime.Now.AddMinutes(JwtExpiresInMinutes),
             SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                new SigningCredentials(new SymmetricSecurityKey(JwtKey), SecurityAlgorithms.HmacSha256Signature)
         };
         var token = _tokenHandler.CreateToken(tokenDescriptor);
         logger.LogInformation($"Generated token for {userId}:{token}");

@@ -29,26 +29,6 @@ public sealed class Program
             
         });
         
-        
-        // if (builder.HostEnvironment.BaseAddress.StartsWith("https"))
-        // {
-        //     builder.Services.AddSingleton(sp => new HttpClient
-        //     {
-        //         BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrlHttp")
-        //                               ?? throw new ApplicationException("ApiUrl are not existing")),
-        //     });
-        //
-        // }
-        // else
-        // {
-        //     builder.Services.AddSingleton(sp => new HttpClient
-        //     {
-        //         BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
-        //                               ?? throw new ApplicationException("ApiUrl are not existing")),
-        //     });
-        //     
-        // }
-        
         builder.Services.AddLogging();
         builder.Services.AddSingleton<ILocalStorageService, LocalStorageService>();
         builder.Services.AddSingleton<ApiService>();

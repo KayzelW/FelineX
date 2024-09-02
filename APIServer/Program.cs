@@ -3,6 +3,7 @@ using APIServer.Middlewares;
 using APIServer.Services;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using Microsoft.OpenApi.Models;
 
 namespace APIServer;
@@ -18,13 +19,12 @@ public sealed class Program
         ConfigureApplication(app);
 
         app.Run();
-        
+
         using var dbContext = app.Services.GetRequiredService<AppDbContext>();
         {
             Console.WriteLine("Trying to verify DB");
             dbContext.Database.EnsureCreated();
         }
-
     }
 
 
@@ -36,32 +36,35 @@ public sealed class Program
         {
             //postrges
             var connectionString = builder.Configuration.GetConnectionString("postgres")
-                                   ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                                   ?? throw new InvalidOperationException(
+                                       "Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContextFactory<AppDbContext>(options =>
+            builder.Services.AddNpgsql<AppDbContext>(connectionString, 
+                npgOptions => { }, options =>
             {
-                options.UseNpgsql(connectionString);
 #if DEBUG
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
 #endif
             });
         }
-        catch (Exception e) 
+        catch (Exception e)
         {
             if (e is InvalidOperationException)
             {
                 throw;
             }
-            Console.WriteLine($"Failed connect to Postgres");
-            
-            // mysql
-            var connectionString = builder.Configuration.GetConnectionString("mysql") 
-                                   ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddDbContextFactory<AppDbContext>(options =>
+            Console.WriteLine($"Failed connect to Postgres");
+
+            // mysql
+            var connectionString = builder.Configuration.GetConnectionString("mysql")
+                                   ?? throw new InvalidOperationException(
+                                       "Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddMySql<AppDbContext>(connectionString, ServerVersion.AutoDetect(connectionString),
+                mySqlOptions => { }, options =>
             {
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 #if DEBUG
                 options.EnableDetailedErrors();
                 options.EnableSensitiveDataLogging();
@@ -70,21 +73,21 @@ public sealed class Program
         }
 
         #endregion
-        
+
         builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
         builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
         builder.Services.AddSingleton<CheckQueueService>();
         builder.Services.AddHostedService<TestWarrior>();
-        
+
         builder.Services.AddHttpLogging(logging =>
         {
             logging.LoggingFields = HttpLoggingFields.All;
             logging.RequestBodyLogLimit = 4096;
             logging.ResponseBodyLogLimit = 4096;
         });
-        
+
         builder.Services.AddLogging(logging =>
         {
             logging.AddConsole();
@@ -94,7 +97,7 @@ public sealed class Program
             }
         });
 
-        
+
         #region swagger
 
         if (builder.Environment.IsDevelopment())
@@ -107,23 +110,21 @@ public sealed class Program
 
         #endregion
 
-        
+
         #region Cors
 
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigin",
-                config =>
-                {
-                    config.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
+            options.AddDefaultPolicy(policyBuilder =>
+            {
+                policyBuilder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
         });
 
         #endregion
 
-        
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
     }
@@ -131,7 +132,6 @@ public sealed class Program
 
     private static void ConfigureApplication(WebApplication app)
     {
-      
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -141,15 +141,14 @@ public sealed class Program
         }
         
         app.UseRouting();
-
-        app.UseCors("AllowSpecificOrigin");
+        app.UseCors();
+        app.UseMiddleware<ListenerMiddleware>();
+        app.UseMiddleware<AllowCorsOptionsMiddleware>();
         app.UseMiddleware<TokenCheckingMiddleware>();
-        
-        app.UseHttpLogging();
 
-      
-        app.UseHttpsRedirection();
+        // app.UseHttpLogging();
+
+        // app.UseHttpsRedirection();
         app.MapControllers();
-
     }
 }

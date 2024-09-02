@@ -9,7 +9,8 @@ window.cookieHelper = {
     setCookie: function (name, value, options = {}) {
         options = {
             path: '/',
-            // add other defaults if necessary
+            sameSite: 'strict',
+            secure: true,
             ...options
         };
 
@@ -33,8 +34,6 @@ window.cookieHelper = {
         // Set the cookie with an expired date to delete it
         this.setCookie(name, '', { 'max-age': -1 });
     }
-    
-    
 }
 
 document.addEventListener('contextmenu', function(event) {

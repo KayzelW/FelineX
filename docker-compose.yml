@@ -1,0 +1,8 @@
+﻿services:
+  apiserver:
+    image: apiserver
+    build:
+      context: .
+      dockerfile: APIServer/Dockerfile
+    ports:
+      - "8080:8081"
