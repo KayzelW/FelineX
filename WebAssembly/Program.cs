@@ -1,7 +1,10 @@
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -22,22 +25,27 @@ public sealed class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-        builder.Services.AddSingleton(sp => new HttpClient
+        // var adress = builder.Configuration.GetConnectionString("ApiUrl");
+        // var baseAdress = adress == null ? null : new Uri(adress, UriKind.RelativeOrAbsolute);
+
+        builder.Services.AddSingleton(x =>
         {
-            BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")
-                                  ?? throw new ApplicationException("ApiUrl are not existing")),
-            
+            return new HttpClient()
+            {
+                BaseAddress = new Uri(builder.Configuration.GetConnectionString("ApiUrl")!)
+            };
         });
-        
+            
+
         builder.Services.AddLogging();
         builder.Services.AddSingleton<ILocalStorageService, LocalStorageService>();
         builder.Services.AddSingleton<ApiService>();
         builder.Services.AddSingleton<IUserContextService, UserContextService>();
         builder.Services.AddScoped<SearchService<User>>();
         builder.Services.AddScoped<SearchService<UserGroup>>();
-        
+
         builder.Services.AddBlazoredToast();
-            
+
 
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after");

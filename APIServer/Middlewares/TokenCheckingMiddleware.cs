@@ -12,6 +12,14 @@ public class TokenCheckingMiddleware(RequestDelegate next)
 {
     public async Task InvokeAsync(HttpContext context)
     {
+#if DEBUG
+        if (context.Request.Host.Host == "localhost")
+        {
+            await next(context);
+            return;
+        }
+#endif
+
         var tokenService = context.RequestServices.GetRequiredService<TokenService>();
         var logger = context.RequestServices.GetRequiredService<ILogger<TokenCheckingMiddleware>>();
 

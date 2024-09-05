@@ -6,3 +6,12 @@
       dockerfile: APIServer/Dockerfile
     ports:
       - "8080:8081"
+
+  db:
+    image: redis
+
+  blazorapp1:
+    image: blazorapp1
+    build:
+      context: .
+      dockerfile: BlazorApp1/BlazorApp1/Dockerfile

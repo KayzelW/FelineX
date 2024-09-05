@@ -4,6 +4,7 @@ using System.Text;
 using APIServer.Database;
 using APIServer.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace APIServer.Controllers;
 
-[ApiController, Route("[controller]"), AllowAnonymous]
+[ApiController, Route("[controller]"), EnableCors("AllowAll"), AllowAnonymous]
 public class AuthController : Controller
 {
     private readonly AppDbContext _dbContext;

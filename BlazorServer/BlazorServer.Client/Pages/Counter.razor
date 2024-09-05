@@ -1,0 +1,41 @@
+﻿@page "/counter"
+@using Shared.DB.Test
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: true))
+@inject ApiService api
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@if (_tests != null)
+{
+    foreach (var test in _tests)
+    {
+        <p>@test.Id</p>
+    }
+}
+
+@code {
+    private int currentCount = 0;
+    private List<Test>? _tests;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _tests = await api.GetTests();
+            await InvokeAsync(StateHasChanged);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+}

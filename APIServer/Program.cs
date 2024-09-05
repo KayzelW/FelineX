@@ -1,6 +1,7 @@
 using APIServer.Database;
 using APIServer.Middlewares;
 using APIServer.Services;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
@@ -13,11 +14,19 @@ public sealed class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        #region Aspire
+
+        // builder.AddServiceDefaults();
+        // builder.Services.AddProblemDetails();
+
+        #endregion
+
         ConfigureServices(builder);
 
         var app = builder.Build();
         ConfigureApplication(app);
-
+        
         app.Run();
 
         using var dbContext = app.Services.GetRequiredService<AppDbContext>();
@@ -39,14 +48,14 @@ public sealed class Program
                                    ?? throw new InvalidOperationException(
                                        "Connection string 'DefaultConnection' not found.");
 
-            builder.Services.AddNpgsql<AppDbContext>(connectionString, 
+            builder.Services.AddNpgsql<AppDbContext>(connectionString,
                 npgOptions => { }, options =>
-            {
+                {
 #if DEBUG
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                    options.EnableSensitiveDataLogging();
 #endif
-            });
+                });
         }
         catch (Exception e)
         {
@@ -64,17 +73,23 @@ public sealed class Program
 
             builder.Services.AddMySql<AppDbContext>(connectionString, ServerVersion.AutoDetect(connectionString),
                 mySqlOptions => { }, options =>
-            {
+                {
 #if DEBUG
-                options.EnableDetailedErrors();
-                options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                    options.EnableSensitiveDataLogging();
 #endif
-            });
+                });
         }
 
         #endregion
 
-        builder.Services.AddHttpContextAccessor();
+//        builder.Services.AddStackExchangeRedisCache(options =>
+//        {
+//            options.Configuration = "redis:6379";
+//            options.InstanceName = "SampleInstance";
+//        });
+        
+        // builder.Services.AddHttpContextAccessor();
         // builder.Services.AddHostedService<TokenService>();
         builder.Services.AddSingleton<TokenService>();
         builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
@@ -110,20 +125,23 @@ public sealed class Program
 
         #endregion
 
-
-        #region Cors
+        #region CORS
 
         builder.Services.AddCors(options =>
         {
-            options.AddDefaultPolicy(policyBuilder =>
-            {
-                policyBuilder.AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
+            options.AddPolicy("AllowAll",
+                builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            options.DefaultPolicyName = "AllowAll";
         });
 
         #endregion
+
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -132,6 +150,7 @@ public sealed class Program
 
     private static void ConfigureApplication(WebApplication app)
     {
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -139,16 +158,18 @@ public sealed class Program
 
             app.UseDeveloperExceptionPage();
         }
-        
+
+        // app.UseHttpLogging();
+        // app.UseHttpsRedirection();
         app.UseRouting();
-        app.UseCors();
+        app.UseCors("AllowAll");
+        app.UseExceptionHandler();
+
         app.UseMiddleware<ListenerMiddleware>();
         app.UseMiddleware<AllowCorsOptionsMiddleware>();
         app.UseMiddleware<TokenCheckingMiddleware>();
 
-        // app.UseHttpLogging();
 
-        // app.UseHttpsRedirection();
         app.MapControllers();
     }
 }

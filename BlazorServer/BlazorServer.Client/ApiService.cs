@@ -12,7 +12,7 @@ using Shared.Models;
 using MyTest = Shared.DB.Test.Test;
 using MyTask = Shared.DB.Test.Task.Task;
 
-namespace WebAssembly.Services;
+namespace BlazorServer.Client;
 
 public class ApiService
 {
@@ -32,12 +32,12 @@ public class ApiService
     {
         if (forEdit)
         {
-            var responseMessage = await httpClient.PostAsJsonAsync("Test/edit_test", test);
+            var responseMessage = await httpClient.PostAsJsonAsync("api/Test/edit_test", test);
             return responseMessage.IsSuccessStatusCode;
         }
         else
         {
-            var responseMessage = await httpClient.PostAsJsonAsync("Test/create_test", test);
+            var responseMessage = await httpClient.PostAsJsonAsync("api/Test/create_test", test);
             return responseMessage.IsSuccessStatusCode;
         }
         
@@ -48,7 +48,7 @@ public class ApiService
     public async Task<List<MyTest>> GetTests()
     {
         List<MyTest>? tests = null;
-        var responseMessage = await httpClient.GetAsync("Test/get_tests");
+        var responseMessage = await httpClient.GetAsync("api/Test/get_tests");
         if (responseMessage.IsSuccessStatusCode)
         {
             tests = await responseMessage.Content.ReadFromJsonAsync<List<MyTest>>();
@@ -59,7 +59,7 @@ public class ApiService
 
     public async Task<bool> DeleteTest(Guid testId)
     {
-        var responseMessage = await httpClient.DeleteAsync($"Test/delete_test/{testId}");
+        var responseMessage = await httpClient.DeleteAsync($"api/Test/delete_test/{testId}");
         return responseMessage.IsSuccessStatusCode;
     }
 
@@ -68,7 +68,7 @@ public class ApiService
         TestDTO? test = null;
         if (AsOriginal)
         {
-            var responseMessage = await httpClient.GetAsync($"Test/get_original_test/{testId}");
+            var responseMessage = await httpClient.GetAsync($"api/Test/get_original_test/{testId}");
             if (responseMessage.IsSuccessStatusCode)
             {
                 test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
@@ -76,7 +76,7 @@ public class ApiService
         }
         else
         {
-            var responseMessage = await httpClient.GetAsync($"Test/get_test_for_solving/{testId}");
+            var responseMessage = await httpClient.GetAsync($"api/Test/get_test_for_solving/{testId}");
             if (responseMessage.IsSuccessStatusCode)
             {
                 test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
@@ -93,7 +93,7 @@ public class ApiService
 
     public async Task<TestAnswer?> GetTestResult(Guid testAnswerId)
     {
-        var responseMessage = await httpClient.GetAsync($"Test/get_test_result/{testAnswerId}");
+        var responseMessage = await httpClient.GetAsync($"api/Test/get_test_result/{testAnswerId}");
         TestAnswer? testAnswer = null;
         if (responseMessage.IsSuccessStatusCode)
         {
@@ -104,7 +104,7 @@ public class ApiService
 
     public async Task<double?> GetTestScore(Guid testAnswerId)
     {
-        var responseMessage = await httpClient.GetAsync($"Test/get_test_score/{testAnswerId}");
+        var responseMessage = await httpClient.GetAsync($"api/Test/get_test_score/{testAnswerId}");
         double? testAnswerScore = null;
         if (responseMessage.IsSuccessStatusCode)
         {
@@ -116,14 +116,14 @@ public class ApiService
 
     public async Task<Guid> SubmitTest(TestDTO? test)
     {
-        var responseMessage = await httpClient.PostAsJsonAsync("Test/submit_test", test);
+        var responseMessage = await httpClient.PostAsJsonAsync("api/Test/submit_test", test);
         responseMessage.EnsureSuccessStatusCode();
         return await responseMessage.Content.ReadFromJsonAsync<Guid>();
     }
 
     public async Task<List<TestAnswer>?> GetListStudentsTestAnswers(string testId)
     {
-        var responseMessage = await httpClient.GetAsync($"Test/get_list_students_test_answers/{testId}");
+        var responseMessage = await httpClient.GetAsync($"api/Test/get_list_students_test_answers/{testId}");
         responseMessage.EnsureSuccessStatusCode();
         return await responseMessage.Content.ReadFromJsonAsync<List<TestAnswer>>();
 
@@ -143,7 +143,7 @@ public class ApiService
     {
         var hash = await UserExtensions.HashPasswordAsync(password);
 
-        var responseMessage = await httpClient.PostAsJsonAsync("Auth/auth", new AuthData
+        var responseMessage = await httpClient.PostAsJsonAsync("api/Auth/auth", new AuthData
         {
             Login = login,
             HashedPassword = WebUtility.UrlEncode(hash)
@@ -157,7 +157,7 @@ public class ApiService
 
     public async Task<AuthAnswer?> AuthUserByToken(string token)
     {
-        var responseMessage = await httpClient.PostAsJsonAsync("Auth/auth_token", token);
+        var responseMessage = await httpClient.PostAsJsonAsync("api/Auth/auth_token", token);
         if (!responseMessage.IsSuccessStatusCode) return null;
         var data = await responseMessage.Content.ReadFromJsonAsync<AuthAnswer>();
         Console.WriteLine($"Got |{data?.UserToken} - {data?.Access} - {data?.UserName}| from Auth/auth_token");
@@ -170,7 +170,7 @@ public class ApiService
 
     public async Task<List<UserGroup>?> GetClasses()
     {
-        var responseMessage = await httpClient.GetAsync("Class/get_classes");
+        var responseMessage = await httpClient.GetAsync("api/Class/get_classes");
         if (responseMessage.IsSuccessStatusCode)
         {
             return await responseMessage.Content.ReadFromJsonAsync<List<UserGroup>>();
@@ -181,13 +181,13 @@ public class ApiService
 
     public async Task<bool> AddGroup(UserGroup? group)
     {
-        var responseMessage = await httpClient.PostAsJsonAsync("Class/add_group", group);
+        var responseMessage = await httpClient.PostAsJsonAsync("api/Class/add_group", group);
         return responseMessage.IsSuccessStatusCode;
     }
 
     public async Task<List<User>?> GetStudents()
     {
-        var responseMessage = await httpClient.GetAsync("Class/get_students");
+        var responseMessage = await httpClient.GetAsync("api/Class/get_students");
         if (responseMessage.IsSuccessStatusCode)
         {
             return await responseMessage.Content.ReadFromJsonAsync<List<User>>();
@@ -202,7 +202,7 @@ public class ApiService
 
     public async void SendMessage(string msg)
     {
-        await httpClient.PatchAsJsonAsync("User", msg);
+        await httpClient.PatchAsJsonAsync("api/User", msg);
     }
 
     #endregion

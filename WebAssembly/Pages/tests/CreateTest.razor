@@ -26,19 +26,19 @@
 </div>
 
 <div style="display: flex; gap: 20px; padding-top: 2%">
-<div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 1;">
-    <label>Добавить студентов</label>
-    <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => {isModalVisibleStudent = true; }">
-        +
-    </button>
-</div>
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 1;">
+        <label>Добавить студентов</label>
+        <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => { isModalVisibleStudent = true; }">
+            +
+        </button>
+    </div>
 
-<div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 3">
-    <label>Добавить классы</label>
-    <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => {isModalVisibleGroup = true; }">
-        +
-    </button>
-</div>
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 3">
+        <label>Добавить классы</label>
+        <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => { isModalVisibleGroup = true; }">
+            +
+        </button>
+    </div>
 </div>
 
 <div class="container mt-5">
@@ -201,178 +201,168 @@
         </div>
     </div>
 
-    <div  style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
         <button class="btn" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button" @onclick="Save">
             Сохранить
         </button>
     </div>
 </div>
+
 @if (isModalVisibleStudent)
 {
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
+            <!-- Установлены ширина и max-width -->
+            <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
+                <div class="modal-header">
+                    <h3 class="modal-title">Студенты этого теста</h3>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="() => { isModalVisibleStudent = false; }"></button>
+                </div>
+                <div class="modal-body">
 
-<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
-    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%"> <!-- Установлены ширина и max-width -->
-        <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
-            <div class="modal-header">
-                <h3 class="modal-title">Студенты этого теста</h3>
-                <button type="button" class="btn-close" aria-label="Close" @onclick="() => {isModalVisibleStudent = false; }"></button>
-            </div>
-            <div class="modal-body">
-
-                <div style="display: flex; gap: 20px;">
-                    <!-- Используем Flexbox -->
-                    <div style="flex: 1;">
-                        <!-- Первая таблица с заголовком -->
-                        <h4>Добавленные студенты</h4>
-                        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
-                            <thead>
-                            <tr>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
-                            </tr>
-                            </thead>
-                            @foreach (var student in test.Settings.TestUsers)
-                            {
-                            <tr>
-                                <th scope="row">@student.NormalizedUserName</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                            @onclick="() => {test.Settings.TestUsers.Remove(student); 
-                                                    InvokeAsync(StateHasChanged);}">
-                                        <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
-                                    </button>
-                                </th>
-                            </tr>
-                            }
-                        </table>
-                    </div>
-
-                    <div style="flex: 1;">
-                        <!-- Вторая таблица с заголовком -->
-                        <h4>Добавить нового студента</h4>
-                        <div class="search-container" >
-                            <input type="text" placeholder="Поиск..." @oninput="@OnSearchUserInput">
-                            <button type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-
+                    <div style="display: flex; gap: 20px;">
+                        <!-- Используем Flexbox -->
+                        <div style="flex: 1;">
+                            <!-- Первая таблица с заголовком -->
+                            <h4>Добавленные студенты</h4>
+                            <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                </tr>
+                                </thead>
+                                @foreach (var student in test.Settings.TestUsers)
+                                {
+                                    <tr>
+                                        <th scope="row">@student.NormalizedUserName</th>
+                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => { test.Settings.TestUsers.Remove(student); InvokeAsync(StateHasChanged); }">
+                                                <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            </table>
                         </div>
-                        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
-                            <thead>
-                            <tr>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
-                            </tr>
-                            </thead>
-                            @if (userSuggestions.Count>0)
-                            {
-                            @foreach (var user in userSuggestions)
-                            {
-                            <tr>
-                                <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
-                                <th scope="row">@user.NormalizedUserName</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                            @onclick="() => {test.Settings.TestUsers.Add(user); 
-                                                    InvokeAsync(StateHasChanged);}">
-                                        <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
-                                    </button>
-                                </th>
-                            </tr>
-                            }
-                            }
-                        </table>
+
+                        <div style="flex: 1;">
+                            <!-- Вторая таблица с заголовком -->
+                            <h4>Добавить нового студента</h4>
+                            <div class="search-container">
+                                <input type="text" placeholder="Поиск..." @oninput="@OnSearchUserInput">
+                                <button type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+
+                            </div>
+                            <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                                </tr>
+                                </thead>
+                                @if (userSuggestions.Count > 0)
+                                {
+                                    @foreach (var user in userSuggestions)
+                                    {
+                                        <tr>
+                                            <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
+                                            <th scope="row">@user.NormalizedUserName</th>
+                                            <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                                <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                        @onclick="() => { test.Settings.TestUsers.Add(user); InvokeAsync(StateHasChanged); }">
+                                                    <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                                                </button>
+                                            </th>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
 }
-
-
 
 
 @if (isModalVisibleGroup)
 {
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
+            <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
+                <div class="modal-header">
+                    <h3 class="modal-title">Группы этого теста</h3>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="() => { isModalVisibleGroup = false; }"></button>
+                </div>
+                <div class="modal-body">
 
-<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
-    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
-        <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
-            <div class="modal-header">
-                <h3 class="modal-title">Группы этого теста</h3>
-                <button type="button" class="btn-close" aria-label="Close" @onclick="() => {isModalVisibleGroup = false; }"></button>
-            </div>
-            <div class="modal-body">
-
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <h4>Добавленные группы</h4>
-                        <table class="table table-borderless table-responsive" size="auto">
-                            <thead>
-                            <tr>
-                                <th scope="col" >ФИО</th>
-                            </tr>
-                            </thead>
-                            @foreach (var group in test.Settings.TestGroups)
-                            {
-                            <tr>
-                                <th scope="row">@(test.Settings.TestGroups.IndexOf(group) + 1)</th>
-                                <th scope="row">@group.GroupName</th>
-                                <th scope="col" >
-                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                            @onclick="() => { test.Settings.TestGroups.Remove(group);
-                                                InvokeAsync(StateHasChanged);}">
-                                        <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
-                                    </button>
-                                </th>
-                            </tr>
-                            }
-                        </table>
-                    </div>
-
-                    <div style="flex: 1;">
-                        <h4>Добавить новую группу</h4>
-                        <div class="search-container" >
-                            <input type="text" placeholder="Поиск..." @oninput="OnSearchGroupInput">
-                            <button type="submit">
-                                <i class="bi bi-search"></i>
-                            </button>
-
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1;">
+                            <h4>Добавленные группы</h4>
+                            <table class="table table-borderless table-responsive" size="auto">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ФИО</th>
+                                </tr>
+                                </thead>
+                                @foreach (var group in test.Settings.TestGroups)
+                                {
+                                    <tr>
+                                        <th scope="row">@(test.Settings.TestGroups.IndexOf(group) + 1)</th>
+                                        <th scope="row">@group.GroupName</th>
+                                        <th scope="col">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => { test.Settings.TestGroups.Remove(group); InvokeAsync(StateHasChanged); }">
+                                                <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            </table>
                         </div>
-                        <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
-                            <thead>
-                            <tr>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
-                            </tr>
-                            </thead>
-                            @foreach (var group in groupSuggestions)
-                            {
-                            <tr>
-                                <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
-                                <th scope="row">@group.GroupName</th>
-                                <th scope="col" style="-webkit-text-fill-color: #00003A">
-                                    <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
-                                            @onclick="() => { test.Settings.TestGroups.Add(group);
-                                                InvokeAsync(StateHasChanged);}">
-                                        <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить группу"></i>
-                                    </button>
-                                </th>
-                            </tr>
-                            }
-                        </table>
+
+                        <div style="flex: 1;">
+                            <h4>Добавить новую группу</h4>
+                            <div class="search-container">
+                                <input type="text" placeholder="Поиск..." @oninput="OnSearchGroupInput">
+                                <button type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+
+                            </div>
+                            <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                                </tr>
+                                </thead>
+                                @foreach (var group in groupSuggestions)
+                                {
+                                    <tr>
+                                        <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
+                                        <th scope="row">@group.GroupName</th>
+                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => { test.Settings.TestGroups.Add(group); InvokeAsync(StateHasChanged); }">
+                                                <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить группу"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
 }
 
 
@@ -470,8 +460,6 @@
         test.Tasks?.Remove(task);
         InvokeAsync(StateHasChanged);
     }
-
-
 
 
 }
