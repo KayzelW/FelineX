@@ -12,7 +12,7 @@ using Shared.Models;
 using MyTest = Shared.DB.Test.Test;
 using MyTask = Shared.DB.Test.Task.Task;
 
-namespace BlazorServer.Client;
+namespace BlazorServer.Client.Services;
 
 public class ApiService
 {

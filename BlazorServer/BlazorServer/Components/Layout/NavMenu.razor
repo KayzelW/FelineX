@@ -1,29 +1,23 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorServer</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+﻿<ul class="nav">
+    <li class="nav-item">
+        <a class="nav-link" aria-disabled="true">
+            <button style="border: none; background: none; padding: 0; cursor: pointer;" onclick="location.href='/game'">
+                <img class="img-fluid my-5 logo" src="images/icon1.png" alt="" style="max-height: 40px"/>
+            </button>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-disabled="true" href="/" style="font-size: x-large">
+            FelineX
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="/my_tests">Мои тесты</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/my_classes">Классы</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/profile">Профиль</a>
+    </li>
+</ul>

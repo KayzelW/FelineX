@@ -1,7 +1,9 @@
 using BlazorServer.Client;
 using BlazorServer.Client.Pages;
+using BlazorServer.Client.Services;
 using BlazorServer.Components;
 using Microsoft.AspNetCore.Components;
+using Shared.Interfaces;
 
 
 namespace BlazorServer;
@@ -18,7 +20,7 @@ public sealed class Program
 
         ConfigureApplication(app);
 
-        app.Run();
+        app.Run();  
     }
 
 
@@ -37,6 +39,8 @@ public sealed class Program
             };
         });
         builder.Services.AddScoped<ApiService>();
+        builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+        builder.Services.AddSingleton<IUserContextService, UserContextService>();
     }
 
     private static void ConfigureApplication(WebApplication app)
