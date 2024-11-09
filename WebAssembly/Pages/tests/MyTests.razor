@@ -2,8 +2,8 @@
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Exists)]
 
 @using MyTest = Shared.DB.Test.Test;
-@using Shared.DB.User
 @using QRCoder
+@using Shared.Types
 @using System.IO
 @inject ApiService _ApiService
 @inject NavigationManager _navigationManager

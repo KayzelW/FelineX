@@ -1,6 +1,4 @@
-﻿using Shared.DB.Test.Answers;
-
-namespace APIServer.Services;
+﻿namespace APIServer.Services.Interfaces;
 
 public interface ITestWarriorQueue
 {

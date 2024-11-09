@@ -1,7 +1,6 @@
 ﻿@page "/my-class"
+@using Shared.Types
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
-
-@using Shared.DB.User
 
 @inject NavigationManager nav
 

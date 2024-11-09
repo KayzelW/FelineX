@@ -1,17 +1,11 @@
-﻿using UAParser;
-using APIServer.Database;
+﻿using APIServer.Database;
 using APIServer.Extensions;
-using APIServer.Services;
+using APIServer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Attributes;
-using Shared.DB.Test;
-using Shared.DB.Test.Answers;
-using Shared.DB.Test.Task;
-using Shared.DB.User;
-using Task = System.Threading.Tasks.Task;
+using Shared.Types;
 
 namespace APIServer.Controllers;
 

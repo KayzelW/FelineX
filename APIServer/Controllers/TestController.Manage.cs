@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Attributes;
 using Shared.DB.Test;
-using Shared.DB.User;
+using Shared.Types;
 
 namespace APIServer.Controllers;
 

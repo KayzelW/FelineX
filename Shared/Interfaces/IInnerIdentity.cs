@@ -1,8 +1,8 @@
 ﻿namespace Shared.Interfaces;
 
-public interface IInnerIdentity<T>
+public interface IInnerIdentity
 {
-    Guid Id { get; set; }
+    Guid Id { get; }
 
-    // void SyncFields(ICollection<T>? existing, ICollection<T>? incoming);
+    // void SyncFields(ICollection<T>? existing, ICollection<T>? incoming); //TODO: using AutoMapper Lib
 }

@@ -1,5 +1,4 @@
-﻿using Shared.DB.User;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace WebAssembly.Services
 {

@@ -1,9 +1,8 @@
 ﻿@page "/profile"
 @attribute [AuthorizeLevel(AccessLevel.Exists)]
-
-@using Shared.DB.User
 @using Shared.Interfaces
 @using Microsoft.AspNetCore.Components.Forms
+@using Shared.Types
 
 @inject ILogger<Profile> _logger
 @inject IUserContextService _userContext

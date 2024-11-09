@@ -4,7 +4,6 @@ using System.Net.Http.Json;
 using System.Net.Mime;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.JSInterop;
-using Shared.DB.User;
 using Shared.DB.Test.Answers;
 using Shared.Extensions;
 using Shared.Interfaces;

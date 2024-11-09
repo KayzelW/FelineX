@@ -1,9 +1,8 @@
 ﻿@page "/my_classes"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
-
-@using Shared.DB.User
 @using Shared.Interfaces
+@using Shared.Types
 @inject NavigationManager nav
 @inject ApiService _ApiService
 @inject IUserContextService _userContext

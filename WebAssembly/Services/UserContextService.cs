@@ -4,10 +4,10 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Shared.DB.User;
 using Shared.Extensions;
 using Shared.Interfaces;
 using Shared.Models;
+using Shared.Types;
 
 namespace WebAssembly.Services;
 

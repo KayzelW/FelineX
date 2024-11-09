@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic.CompilerServices;
-using Shared.DB.User;
 using Shared.Extensions;
 using Shared.Models;
 using Swashbuckle.AspNetCore.Annotations;

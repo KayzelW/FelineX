@@ -3,7 +3,6 @@ using APIServer.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Shared.Attributes;
-using Shared.DB.User;
 using Shared.Extensions;
 
 namespace APIServer.Middlewares;

@@ -1,6 +1,7 @@
 using APIServer.Database;
 using APIServer.Middlewares;
 using APIServer.Services;
+using APIServer.Services.Interfaces;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;

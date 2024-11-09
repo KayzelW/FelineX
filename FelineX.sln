@@ -7,11 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIServer", "APIServer\APIServer.csproj", "{7F87C278-4EE8-42CB-A008-906DE6BB655F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAssembly", "WebAssembly\WebAssembly.csproj", "{E55E2C7D-67B1-4675-B718-7E646FC074FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAssembly", "WebAssembly\WebAssembly.csproj", "{E55E2C7D-67B1-4675-B718-7E646FC074FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorServer", "BlazorServer\BlazorServer\BlazorServer.csproj", "{9DC2EC95-C861-48B6-9673-9309F9D3E4CE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deprecated", "Deprecated", "{C324BC65-1BF0-4362-8E9E-029178CA17F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorServer.Client", "BlazorServer\BlazorServer.Client\BlazorServer.Client.csproj", "{CDAC726E-9B31-42FC-92F6-7969387F12B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web\Web.csproj", "{AB612C1F-5DA5-4252-8A55-77B5FFA2361C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Client", "Web\Web.Client\Web.Client.csproj", "{73B64A30-9A4C-4FE5-B7D6-5ACAB2D83BEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android", "Android\Android.csproj", "{B35972DB-7CD5-4979-97A0-91CA7958BA63}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{659351E1-D474-4A08-9BDF-1E74100D45BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,24 +37,36 @@ Global
 		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E55E2C7D-67B1-4675-B718-7E646FC074FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DC2EC95-C861-48B6-9673-9309F9D3E4CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DC2EC95-C861-48B6-9673-9309F9D3E4CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DC2EC95-C861-48B6-9673-9309F9D3E4CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DC2EC95-C861-48B6-9673-9309F9D3E4CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CDAC726E-9B31-42FC-92F6-7969387F12B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDAC726E-9B31-42FC-92F6-7969387F12B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDAC726E-9B31-42FC-92F6-7969387F12B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDAC726E-9B31-42FC-92F6-7969387F12B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB612C1F-5DA5-4252-8A55-77B5FFA2361C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB612C1F-5DA5-4252-8A55-77B5FFA2361C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB612C1F-5DA5-4252-8A55-77B5FFA2361C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB612C1F-5DA5-4252-8A55-77B5FFA2361C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73B64A30-9A4C-4FE5-B7D6-5ACAB2D83BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73B64A30-9A4C-4FE5-B7D6-5ACAB2D83BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73B64A30-9A4C-4FE5-B7D6-5ACAB2D83BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73B64A30-9A4C-4FE5-B7D6-5ACAB2D83BEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35972DB-7CD5-4979-97A0-91CA7958BA63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B35972DB-7CD5-4979-97A0-91CA7958BA63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B35972DB-7CD5-4979-97A0-91CA7958BA63}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B35972DB-7CD5-4979-97A0-91CA7958BA63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B35972DB-7CD5-4979-97A0-91CA7958BA63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35972DB-7CD5-4979-97A0-91CA7958BA63}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{659351E1-D474-4A08-9BDF-1E74100D45BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{659351E1-D474-4A08-9BDF-1E74100D45BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{659351E1-D474-4A08-9BDF-1E74100D45BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{659351E1-D474-4A08-9BDF-1E74100D45BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7F87C278-4EE8-42CB-A008-906DE6BB655F} = {C324BC65-1BF0-4362-8E9E-029178CA17F3}
+		{E55E2C7D-67B1-4675-B718-7E646FC074FC} = {C324BC65-1BF0-4362-8E9E-029178CA17F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E1D8068C-FFAC-4019-94E8-A389E925960B}
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
 		File = RunConfigs.run\Web + API https.run.xml
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal

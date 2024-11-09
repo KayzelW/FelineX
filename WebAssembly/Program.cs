@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shared.DB.User;
 using Shared.Extensions;
 using Shared.Interfaces;
 using WebAssembly.Auth;

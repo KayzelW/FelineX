@@ -1,4 +1,4 @@
-﻿using Shared.DB.User;
+﻿using Shared.Types;
 
 namespace Shared.Attributes;
 
