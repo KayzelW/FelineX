@@ -1,30 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Attributes;
 using Shared.Models;
 using Shared.Types;
 using Web.Data;
+using Web.Extensions;
 
 namespace Web.Controllers;
 
-[ApiController, Route("[controller]"), AuthorizeLevel(AccessLevel.Teacher)]
+[ApiController, Route("[controller]"), Authorize(Roles = "Teacher,Admin")]
 public class ClassController : Controller
 {
     private readonly AppDbContext _dbContext;
-    private readonly ILogger<AuthController> _logger;
+    private readonly ILogger<ClassController> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ClassController(AppDbContext dbContext, ILogger<AuthController> logger)
+    public ClassController(AppDbContext dbContext, ILogger<ClassController> logger,
+        UserManager<ApplicationUser> userManager)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _userManager = userManager;
     }
 
     [HttpGet("get_classes")]
-    public async Task<ActionResult<List<UserGroup>>> GetClasses()
+    public async Task<IEnumerable<UserGroup>> GetClasses()
     {
-        var ownerId = (Guid)HttpContext.Items["User"]!;
-        var groups = await _dbContext.Groups.Where(x => x.GroupCreatorId == ownerId).ToListAsync();
-        return Ok(groups);
+        var ownerId = this.GetUserId().ToString();
+        var groups = _dbContext.Groups.Where(x => x.GroupCreatorId == ownerId);
+        return groups;
     }
 
     [HttpPost("add_student")]
@@ -45,7 +52,7 @@ public class ClassController : Controller
                 return BadRequest("Group not found");
             }
 
-            var student = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var student = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId.ToString());
             if (student == null)
             {
                 return BadRequest("Student not found");
@@ -71,8 +78,8 @@ public class ClassController : Controller
                 return BadRequest("Group was null");
             }
 
-            group.GroupCreatorId = (Guid)HttpContext.Items["User"]!;
-            await _dbContext.Groups!.AddAsync(group);
+            group.GroupCreatorId = this.GetUserId().ToString()!;
+            await _dbContext.Groups.AddAsync(group);
             foreach (var groupStudent in group.Students!)
             {
                 _dbContext.Entry(groupStudent).State = EntityState.Unchanged;
@@ -89,20 +96,18 @@ public class ClassController : Controller
     }
 
     [HttpGet("get_students")]
-    public async Task<ActionResult<List<SimpleUser>>> GetStudents()
+    public async Task<IEnumerable<SimpleUser>?> GetStudents()
     {
         try
         {
-            var students = await _dbContext.Users
-                .Where(x => x.AccessFlags == (uint)AccessLevel.Student)
-                .Select(x => new SimpleUser(x.Id, x.UserName, x.NormalizedUserName))
-                .ToListAsync();
-            return Ok(students);
+            var students = (await _userManager.GetUsersInRoleAsync("Student"))
+                .Select(x => new SimpleUser(x.Id, x.UserName, x.NormalizedUserName));
+            return students;
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Exсeption while getting students");
-            return BadRequest();
+            return null;
         }
     }
 }

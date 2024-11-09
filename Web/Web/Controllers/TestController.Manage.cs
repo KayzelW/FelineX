@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Attributes;
@@ -11,7 +12,7 @@ namespace Web.Controllers;
 
 public partial class TestController
 {
-    [HttpDelete("delete_test/{testId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
+    [HttpDelete("delete_test/{testId:guid}"), Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> DeleteTest(Guid testId)
     {
         try
@@ -35,7 +36,7 @@ public partial class TestController
         return Ok();
     }
 
-    [HttpPost("create_test"), AuthorizeLevel(AccessLevel.Teacher)]
+    [HttpPost("create_test"), Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> CreateTest([FromBody] UniqueTest? test)
     {
         if (test is null)
@@ -56,8 +57,8 @@ public partial class TestController
                 dbContext.Entry(settingsTestUser).State = EntityState.Unchanged;
             }
 
-            var userId = (Guid)HttpContext.Items["User"]!;
-            test.CreatorId = userId;
+            var userId = this.GetUserId();
+            test.CreatorId = userId.Value.ToString();
             if (test.Tasks is not null)
             {
                 foreach (var task in test.Tasks)
@@ -82,7 +83,7 @@ public partial class TestController
         return Ok();
     }
 
-    [HttpPost("edit_test"), AuthorizeLevel(AccessLevel.Teacher)]
+    [HttpPost("edit_test"), Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> EditTest([FromBody] UniqueTest? incomingTest)
     {
         try

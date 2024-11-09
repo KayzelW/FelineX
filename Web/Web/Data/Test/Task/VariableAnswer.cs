@@ -6,7 +6,7 @@ namespace Web.Data.Test.Task;
 public class VariableAnswer : IInnerIdentity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public string? StringAnswer { get; set; } = "";
     public bool? Truthful { get; set; } = false;

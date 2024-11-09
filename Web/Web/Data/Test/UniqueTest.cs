@@ -9,10 +9,10 @@ namespace Web.Data.Test;
 public class UniqueTest : IInnerIdentity
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonIgnore] public ApplicationUser? Creator { get; set; }
-    public Guid? CreatorId { get; set; }
+    public string CreatorId { get; set; }
     public TestSettings Settings { get; set; }
 
     [StringLength(100)] public string? TestName { get; set; }
@@ -21,6 +21,6 @@ public class UniqueTest : IInnerIdentity
 
     public UniqueTest()
     {
-        Settings = new TestSettings { AssignedTest = this };
+        Settings = new TestSettings();
     }
 }

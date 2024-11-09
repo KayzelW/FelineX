@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -21,15 +22,90 @@ namespace Web.Components.Account
 
             var accountGroup = endpoints.MapGroup("/Account");
 
+            #region Mobile
+
+            accountGroup.MapPost("/MobileLogin", async (
+                [FromServices] HttpContent httpContent,
+                [FromServices] SignInManager<ApplicationUser> signInManager,
+                [FromServices] UserManager<ApplicationUser> userManager,
+                [FromForm] string login,
+                [FromForm] string password
+            ) =>
+            {
+                var result = await signInManager.PasswordSignInAsync(login, password, false, lockoutOnFailure: false);
+
+                if (!result.Succeeded)
+                {
+                    if (result.IsLockedOut)
+                    {
+                        return TypedResults.BadRequest("Account is locked out");
+                    }
+
+                    if (result.IsNotAllowed)
+                    {
+                        return TypedResults.BadRequest("Account is not allowed");
+                    }
+
+                    if (result.RequiresTwoFactor)
+                    {
+                        return TypedResults.BadRequest("Two-factor authentication is required");
+                    }
+
+                    return TypedResults.BadRequest("Invalid login or password");
+                }
+
+                return (IResult)TypedResults.Ok();
+            });
+
+            accountGroup.MapPost("/MobileReg", async (
+                [FromServices] HttpContent httpContent,
+                [FromServices] SignInManager<ApplicationUser> signInManager,
+                [FromServices] UserManager<ApplicationUser> userManager,
+                [FromForm] string login,
+                [FromForm] string password
+            ) =>
+            {
+                var user = await userManager.FindByNameAsync(login);
+                if (user != null)
+                {
+                    return TypedResults.BadRequest("User already exists");
+                }
+
+                user = new ApplicationUser
+                {
+                    UserName = login
+                };
+
+                var result = await userManager.CreateAsync(user, password);
+
+                if (!result.Succeeded)
+                {
+                    if (result.Errors.Any())
+                    {
+                        return TypedResults.BadRequest(result.Errors);
+                    }
+
+                    return TypedResults.BadRequest("Invalid operation");
+                }
+
+                await signInManager.SignInAsync(user, isPersistent: false);
+
+                return (IResult)TypedResults.Ok();
+            });
+
+            #endregion
+
             accountGroup.MapPost("/PerformExternalLogin", (
                 HttpContext context,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
                 [FromForm] string provider,
                 [FromForm] string returnUrl) =>
             {
-                IEnumerable<KeyValuePair<string, StringValues>> query = [
+                IEnumerable<KeyValuePair<string, StringValues>> query =
+                [
                     new("ReturnUrl", returnUrl),
-                    new("Action", ExternalLogin.LoginCallbackAction)];
+                    new("Action", ExternalLogin.LoginCallbackAction)
+                ];
 
                 var redirectUrl = UriHelper.BuildRelative(
                     context.Request.PathBase,
@@ -64,7 +140,8 @@ namespace Web.Components.Account
                     "/Account/Manage/ExternalLogins",
                     QueryString.Create("Action", ExternalLogins.LinkLoginCallbackAction));
 
-                var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, signInManager.UserManager.GetUserId(context.User));
+                var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl,
+                    signInManager.UserManager.GetUserId(context.User));
                 return TypedResults.Challenge(properties, [provider]);
             });
 
@@ -104,7 +181,8 @@ namespace Web.Components.Account
                 var fileBytes = JsonSerializer.SerializeToUtf8Bytes(personalData);
 
                 context.Response.Headers.TryAdd("Content-Disposition", "attachment; filename=PersonalData.json");
-                return TypedResults.File(fileBytes, contentType: "application/json", fileDownloadName: "PersonalData.json");
+                return TypedResults.File(fileBytes, contentType: "application/json",
+                    fileDownloadName: "PersonalData.json");
             });
 
             return accountGroup;

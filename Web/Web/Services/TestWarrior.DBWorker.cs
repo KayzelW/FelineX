@@ -6,14 +6,14 @@ namespace Web.Services;
 
 public sealed partial class TestWarrior
 {
-    private async void CheckSqlQuery(TaskAnswer taskAnswer)
+    private async Task CheckSqlQueryAsync(TaskAnswer taskAnswer)
     {
         try
         {
             var conn = await TaskExtension.SetupConnection(taskAnswer.AnsweredTask!);
             if (conn == null)
             {
-                MissingSqlTasks(taskAnswer);
+                await MissingSqlTasksAsync(taskAnswer);
                 return;
             }
 
@@ -28,7 +28,7 @@ public sealed partial class TestWarrior
                 taskAnswer.IsFailedCheck = false;
                 taskAnswer.TestAnswer.Score += taskAnswer.TestAnswer.TaskWeight;
                 taskAnswer.Result = "Exit queries are completely identical";
-                SaveSqlTask(taskAnswer);
+                await SaveSqlTaskAsync(taskAnswer);
                 return;
             }
 
@@ -36,29 +36,27 @@ public sealed partial class TestWarrior
             taskAnswer.IsSuccess = false;
             taskAnswer.IsFailedCheck = false;
             taskAnswer.Result = $"Queries are different: \n{string.Join(", ", needRows)}";
-            SaveSqlTask(taskAnswer);
+            await SaveSqlTaskAsync(taskAnswer);
             return;
         }
         catch (Exception e)
         {
-            FailedToCheckSqlTask(taskAnswer, e);
+            await FailedToCheckSqlTaskAsync(taskAnswer, e);
             return;
         }
 
-        FailedToCheckSqlTask(taskAnswer, new Exception("Something wonderful was happened(all checks are crushed....)"));
+        await FailedToCheckSqlTaskAsync(taskAnswer, new Exception("Something wonderful was happened(all checks are crushed....)"));
     }
 
-    private void SaveSqlTask(TaskAnswer taskAnswer)
+    private async Task SaveSqlTaskAsync(TaskAnswer taskAnswer)
     {
-        using var scope = _serviceProvider.CreateScope();
-        dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         // dbContext.Entry(taskAnswer.AnsweredTask.Settings).State = EntityState.Unchanged;//TODO fix cringe State
         taskAnswer.IsCheckEnded = true;
-        dbContext.Update(taskAnswer);
-        dbContext.SaveChanges();
+        _dbContext.Update(taskAnswer);
+        await _dbContext.SaveChangesAsync();
     }
 
-    private void MissingSqlTasks(TaskAnswer taskAnswer)
+    private async Task MissingSqlTasksAsync(TaskAnswer taskAnswer)
     {
         var testAnswer = taskAnswer.TestAnswer;
         testAnswer.Score += testAnswer.TaskWeight;
@@ -66,17 +64,16 @@ public sealed partial class TestWarrior
         taskAnswer.IsSuccess = true;
         taskAnswer.IsFailedCheck = true;
 
-        SaveSqlTask(taskAnswer);
+        await SaveSqlTaskAsync(taskAnswer);
     }
 
-    private void FailedToCheckSqlTask(TaskAnswer taskAnswer, Exception ex)
+    private async Task FailedToCheckSqlTaskAsync(TaskAnswer taskAnswer, Exception ex)
     {
         _logger.LogWarning(ex, "Error while try exec taskAnswer query");
         taskAnswer.Result = ex.Message;
         taskAnswer.IsFailedCheck = true;
         taskAnswer.IsSuccess = false;
 
-        SaveSqlTask(taskAnswer);
+        await SaveSqlTaskAsync(taskAnswer);
     }
 }
-

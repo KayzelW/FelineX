@@ -13,7 +13,7 @@ using TestDTO = Web.Controllers.Models.TestDTO;
 
 namespace Web.Controllers;
 
-[ApiController, Route("[controller]")]
+[ApiController, Route("[controller]"), Authorize]
 public partial class TestController(
     AppDbContext dbContext,
     ILogger<TestController> logger,
@@ -27,15 +27,10 @@ public partial class TestController(
     /// Must be used when Teacher trying to see all available tests 
     /// </summary>
     /// <returns>list of <see cref="Test"/></returns>
-    [HttpGet("get_tests"), AuthorizeLevel(AccessLevel.Exists)]
-    public async Task<IActionResult> GetTests()
+    [HttpGet("get_tests")]
+    public async Task<ActionResult<IEnumerable<UniqueTest>>> GetTests()
     {
-        if (!HttpContext.Items.TryGetValue("User", out var user))
-        {
-            return BadRequest("Unauthorized");
-        }
-
-        var userId = (Guid)user!;
+        var userId = this.GetUserId().ToString();
 
         var tests = await dbContext.Tests
             .Where(t =>
@@ -90,7 +85,7 @@ public partial class TestController(
         return Ok(test);
     }
 
-    [HttpGet("get_original_test/{id:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
+    [HttpGet("get_original_test/{id:guid}"), Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult?> GetOriginalTest(Guid id)
     {
         var test = await dbContext.Tests
@@ -100,7 +95,7 @@ public partial class TestController(
         return Ok(test);
     }
 
-    [HttpGet("get_list_students_test_answers/{testId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
+    [HttpGet("get_list_students_test_answers/{testId:guid}"), Authorize(Roles = "Teacher,Admin")]
     public async Task<IActionResult> GetListStudentsTestAnswers(Guid testId)
     {
         try
@@ -145,7 +140,7 @@ public partial class TestController(
             }
             else
             {
-                testAnswer.StudentId = (Guid)HttpContext.Items["User"]!;
+                testAnswer.StudentId = this.GetUserId().ToString()!;
             }
 
             testAnswer.PassingDate = DateTime.Now; // fill pass date
@@ -154,7 +149,7 @@ public partial class TestController(
             // fill list of tasksAnswers 
             foreach (var task in solvedTest.Tasks)
             {
-                var taskAnswer = new TaskAnswer(testAnswer.StudentId!.Value, task); //TODO: get studentId from .NET session
+                var taskAnswer = new TaskAnswer(testAnswer.StudentId, task); //TODO: get studentId from .NET session
                 var originalTask = await dbContext
                     .Tasks
                     .Include(x => x.VariableAnswers)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Attributes;
 using Shared.Types;
@@ -6,7 +7,7 @@ using Web.Data;
 
 namespace Web.Controllers;
 
-[ApiController, Route("[controller]"), AuthorizeLevel(AccessLevel.Teacher)]
+[ApiController, Route("[controller]"), Authorize(Roles = "Teacher,Admin")]
 public class SearchController : Controller
 {
     private readonly AppDbContext _dbContext;

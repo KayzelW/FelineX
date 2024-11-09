@@ -9,12 +9,12 @@ namespace Web.Data.Test.Answers;
 public class TaskAnswer : IInnerIdentity
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonIgnore] public ApplicationUser? Student { get; set; }
     public UniqueTask? AnsweredTask { get; set; }
     [JsonIgnore] public TestAnswer? TestAnswer { get; set; }
-    public Guid? StudentId { get; set; }
+    public string StudentId { get; set; }
     public Guid? AnsweredTaskId { get; set; }
     public Guid TestAnswerId { get; set; }
 
@@ -35,7 +35,7 @@ public class TaskAnswer : IInnerIdentity
     {
     }
 
-    public TaskAnswer(Guid userId, UniqueTask uniqueTask) : this()
+    public TaskAnswer(string userId, UniqueTask uniqueTask) : this()
     {
         StudentId = userId;
         AnsweredTaskId = uniqueTask.Id;

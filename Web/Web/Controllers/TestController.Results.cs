@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Shared.Attributes;
 using Shared.Types;
+using Web.Extensions;
 
 namespace Web.Controllers;
 
@@ -10,22 +11,21 @@ public partial class TestController
     [HttpGet("get_test_score/{testAnswerId:guid}")]
     public async Task<IActionResult> GetTestScore(Guid testAnswerId)
     {
-        var answeredTest = await dbContext.TestAnswers.Where(x => x.Id == testAnswerId)
+        var answeredTest = await dbContext.TestAnswers
             .Include(x => x.TaskAnswers)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(x => x.Id == testAnswerId);
 
-        if (answeredTest == null)
+        if (answeredTest == null || answeredTest.StudentId == this.GetUserId().ToString())
         {
             return NotFound();
         }
 
-        if (answeredTest.TaskAnswers.All(x => x.IsCheckEnded) && answeredTest.TaskAnswers.Count != 0)
+        if (answeredTest.TaskAnswers!.All(x => x.IsCheckEnded) && answeredTest.TaskAnswers!.Count != 0)
         {
             return Ok(answeredTest.Score);
         }
 
         return NotFound("Test not checked yet");
-
     }
 
     [HttpGet("get_test_result/{testAnswerId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]

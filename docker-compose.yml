@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db:
     image: postgres
     environment:
       POSTGRES_USER: "FelineX"
@@ -7,7 +7,7 @@ services:
       POSTGRES_DB: FelineX
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
   
   web:
     image: ${DOCKER_REGISTRY-}web
@@ -24,4 +24,8 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    depends_on:
+      - db
+    links:
+      - db
   

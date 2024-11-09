@@ -8,10 +8,10 @@ namespace Web.Data;
 public class UserGroup : IInnerIdentity
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonIgnore] public ApplicationUser? GroupCreator { get; set; }
-    public Guid? GroupCreatorId { get; set; }
+    public string GroupCreatorId { get; set; }
 
     public List<ApplicationUser>? Students { get; set; }
 

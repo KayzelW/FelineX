@@ -8,10 +8,10 @@ namespace Web.Data.Test.Answers;
 public class TestAnswer : IInnerIdentity
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public ApplicationUser? Student { get; set; }
-    public Guid? StudentId { get; set; }
+    public string StudentId { get; set; }
     public UniqueTest? AnsweredTest { get; set; }
     public Guid? AnsweredTestId { get; set; }
     

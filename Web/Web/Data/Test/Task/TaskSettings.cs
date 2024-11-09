@@ -7,7 +7,7 @@ namespace Web.Data.Test.Task;
 public class TaskSettings : IInnerIdentity
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public UniqueTask AssignedTask { get; set; }
 

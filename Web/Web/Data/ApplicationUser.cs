@@ -8,21 +8,14 @@ using Shared.Types;
 namespace Web.Data;
 
 // Add profile data for application users by adding properties to the ApplicationUser class
-public sealed class ApplicationUser : IdentityUser, IInnerIdentity
+public sealed class ApplicationUser : IdentityUser
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public new Guid Id { get; } = Guid.NewGuid();
-
-    public uint AccessFlags { get; set; }
-
-    [NotMapped, JsonIgnore]
-    public AccessLevel Access
-    {
-        get => (AccessLevel)AccessFlags;
-        set => AccessFlags = (uint)value;
-    }
-
     [JsonIgnore] public List<UserGroup>? UserGroups { get; set; } = [];
 
     public override string ToString() => NormalizedUserName ?? UserName ?? Email ?? Id.ToString();
+}
+
+public sealed class ApplicationRole : IdentityRole
+{
+    
 }

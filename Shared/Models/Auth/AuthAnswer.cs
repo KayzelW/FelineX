@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Shared.Models;
+﻿namespace Shared.Models.Auth;
 
 /// <summary>
 /// DTO, contains the UserToken, UserName and Access(<see cref="uint"/>)

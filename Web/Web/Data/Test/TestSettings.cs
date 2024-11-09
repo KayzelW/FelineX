@@ -8,9 +8,7 @@ namespace Web.Data.Test;
 public class TestSettings : IInnerIdentity
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid Id { get; } = Guid.NewGuid();
-
-    public UniqueTest AssignedTest { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     public List<UserGroup>? TestGroups { get; set; } = [];
     public List<ThemeTask>? TasksThemes { get; set; } = [];

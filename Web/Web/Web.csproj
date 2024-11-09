@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Web.Client\Web.Client.csproj" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.15" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
@@ -31,6 +33,12 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1"/>
     <PackageReference Include="MyCSharp.HttpUserAgentParser" Version="3.0.4" />
     <PackageReference Include="UAParser" Version="3.1.47" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Services\TestWarrior.DBWorker.cs">
+      <DependentUpon>TestWarrior.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

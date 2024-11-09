@@ -8,25 +8,21 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Web.Services;
 
-public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
+public sealed partial class TestWarrior : ITestWarriorQueue
 {
-    private AppDbContext dbContext;
+    private readonly AppDbContext _dbContext;
     private readonly ILogger<TestWarrior> _logger;
     private readonly IConfiguration _configuration;
-    private readonly IServiceProvider _serviceProvider;
 
     public static Dictionary<DBMS, string> AvailableDBMS = [];
 
     private readonly ConcurrentQueue<TestAnswer> _testAnswers;
     private readonly ConcurrentQueue<TaskAnswer> _sqlTasks;
-    private const int BaseLimitThreads = 10;
 
-    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, IServiceProvider serviceProvider,
-        CheckQueueService checkQueueService)
+    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, CheckQueueService checkQueueService)
     {
-        this._logger = logger;
-        this._configuration = configuration;
-        _serviceProvider = serviceProvider;
+        _logger = logger;
+        _configuration = configuration;
 
         _testAnswers = checkQueueService.TestAnswers;
         _sqlTasks = checkQueueService.SqlTasks;
@@ -66,77 +62,29 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
         _logger.LogInformation($"Test registered in TestWarrior to {_testAnswers.GetHashCode()}");
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task ProcessTestAnswers()
     {
-        _logger.LogInformation("TestWarrior service started.");
-        // if (!int.TryParse(configuration["Settings:CountThreadsForTestChecking"], out var maxThreads))
-        // {
-        //     maxThreads = BaseLimitThreads;
-        // }
-
-        var workers = new List<Task>();
-
-        #region TestAnswer worker
-
-        workers.Add(Task.Run(async () =>
+        while (_testAnswers.TryDequeue(out var testAnswer))
         {
-            try
-            {
-                while (!stoppingToken.IsCancellationRequested)
-                {
-                    if (_testAnswers!.TryDequeue(out var testAnswer))
-                    {
-                        _logger.LogInformation($"Dequeued test answer: {testAnswer}");
-                        CheckTasks(testAnswer);
-                    }
-                    else
-                    {
-                        await Task.Delay(100, stoppingToken);
-                    }
-
-                    // logger.LogInformation($"Current {_testAnswers.GetType()} count: {_testAnswers.Count}");
-                    await Task.Delay(1000, stoppingToken);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred in TestAnswer worker.");
-            }
-        }, stoppingToken));
-
-        #endregion
-
-        #region SqlTask Worker
-
-        workers.Add(Task.Run(async () =>
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_sqlTasks.TryDequeue(out var taskAnswer))
-                {
-                    CheckSqlQuery(taskAnswer);
-                }
-                else
-                {
-                    await Task.Delay(1000, stoppingToken);
-                }
-            }
-        }, stoppingToken));
-
-        #endregion
-
-        return Task.WhenAll(workers);
+            _logger.LogInformation($"Dequeued test answer: {testAnswer}");
+            await CheckTasksAsync(testAnswer);
+        }
     }
 
-    private void CheckTasks(TestAnswer answeredTest)
+    public async Task ProcessSqlTasks()
     {
-        using var scope = _serviceProvider.CreateScope();
-        dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        while (_sqlTasks.TryDequeue(out var taskAnswer))
+        {
+            await CheckSqlQueryAsync(taskAnswer);
+        }
+    }
 
+    private async Task CheckTasksAsync(TestAnswer answeredTest)
+    {
         var sqlTasksCount = 0;
-        double taskCount = answeredTest.TaskAnswers!.Count;
-        double taskWeight = 100.0 / taskCount;
-        
+        var taskCount = answeredTest.TaskAnswers!.Count;
+        var taskWeight = 100.0 / taskCount;
+
         answeredTest.TaskWeight = taskWeight;
         double score = 0;
 
@@ -148,7 +96,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 continue;
             }
 
-            dbContext.Entry(task.AnsweredTask).State = EntityState.Unchanged;
+            _dbContext.Entry(task.AnsweredTask).State = EntityState.Unchanged;
             if (task.AnsweredTask.IsSqlTask())
             {
                 sqlTasksCount += 1;
@@ -190,7 +138,7 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
                 score += answeredTest.TaskWeight;
                 task.IsSuccess = true;
             }
-            
+
             task.IsCheckEnded = true;
         }
 
@@ -200,9 +148,9 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
         }
         else
         {
-            answeredTest.Score = Math.Round(score,2);
+            answeredTest.Score = Math.Round(score, 2);
         }
-        
+
         foreach (var testAnswerTaskAnswer in answeredTest.TaskAnswers)
         {
             if (testAnswerTaskAnswer.MarkedVariables == null)
@@ -210,11 +158,11 @@ public sealed partial class TestWarrior : BackgroundService, ITestWarriorQueue
 
             foreach (var variable in testAnswerTaskAnswer.MarkedVariables)
             {
-                dbContext.Entry(variable).State = EntityState.Unchanged;
+                _dbContext.Entry(variable).State = EntityState.Unchanged;
             }
         }
 
-        dbContext.Update(answeredTest);
-        dbContext.SaveChanges();
+        _dbContext.Update(answeredTest);
+        await _dbContext.SaveChangesAsync();
     }
 }

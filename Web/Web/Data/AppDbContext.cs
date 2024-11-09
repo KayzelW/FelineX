@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Web.Data.Test;
@@ -7,7 +8,7 @@ using Web.Data.Test.Task;
 namespace Web.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options)
-    : IdentityDbContext<ApplicationUser>(options)
+    : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
 {
     public DbSet<ApplicationUser> Users { get; set; }
     public DbSet<ThemeTask> ThemeTasks { get; set; }
@@ -29,17 +30,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
             .Build();
         var connectionString = config.GetConnectionString("postgres");
 
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-        {
-            optionsBuilder.EnableSensitiveDataLogging();
-            optionsBuilder.EnableDetailedErrors();
-        }
+        // if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+        // {
+        //     optionsBuilder.EnableSensitiveDataLogging();
+        //     optionsBuilder.EnableDetailedErrors();
+        // }
 
         optionsBuilder.UseNpgsql(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         #region SettingsConfigure
 
         modelBuilder.Entity<TestSettings>()
@@ -101,12 +104,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
         #region UserConfigure
 
-        modelBuilder.Entity<ApplicationUser>()
-            .HasIndex(e => e.UserName)
-            .IsUnique();
-        modelBuilder.Entity<ApplicationUser>()
-            .HasMany(x => x.UserGroups)
-            .WithMany(x => x.Students);
+        modelBuilder.Entity<ApplicationUser>((t) =>
+        {
+            t.HasMany(x => x.UserGroups)
+                .WithMany(x => x.Students);
+        });
 
         #endregion
 
