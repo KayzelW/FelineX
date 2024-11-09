@@ -1,76 +1,89 @@
 ﻿@page "/profile"
 @attribute [AuthorizeLevel(AccessLevel.Exists)]
+@using Shared.Interfaces
+@using Microsoft.AspNetCore.Components.Forms
+@using Shared.Types
 
-@using Shared.DB.Classes.User
-
-@inject ApiService _apiService
 @inject ILogger<Profile> _logger
-@inject NavigationManager _navigationManager
-@inject LocalStorageService _localStorageService
+@inject IUserContextService _userContext
 
-<h1 class="text-center" style="font-size: 21px; justify-content: center ">Мой профиль @User?.Id</h1>
-<div class="row d-flex justify-content-center align-items-center h-100">
+<h1 class="text-center" style="font-size: 21px; justify-content: center">Мой профиль</h1>
+<div class="container-center">
     <div class="col col-lg-6 mb-4 mb-lg-0">
+        
         <div class="card mb-3" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF">
+            <div class="container-end" style="box-shadow: none">
+                <button class="btn" style=" border: 0px; box-shadow: none">
+                    <i class="bi bi-three-dots-vertical" style="color: #00003A" title="Менеджер ссылок"></i></button>
+                </div>
             <div class="row g-0">
                 <div class="col-md-4 gradient-custom text-center"
-                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                    <img src="images/profile.png"
-                         alt="Avatar" class="img-fluid my-5" style="width: 80px;"/>
+                     style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem; padding-bottom: 25px; padding-top: 25px">
+                    <img src="@ProfilePicture"
+                         alt="Avatar" style="width: 120px; border-radius: 50%;"/>
+
+                    <div class="mt-2">
+                        <label class="btn "
+                               style=" border: 0px; box-shadow: none">
+                            <InputFile OnChange="HandleSelectedImage" style="display: none;"/>
+                            <span>Изменить фото</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="col-md-8 justify-content-center" style="-webkit-text-fill-color: #00003A ">
+                <div class="col-md-8 justify-content-center" style="-webkit-text-fill-color: #00003A;">
                     <div class="card-body p-5">
-                        <h5>@User?.NormalizedUserName</h5>
-                        <p>@CurAccessLevel</p>
+                        <h5>@_userContext.UserName</h5>
+                        <p>@_userContext.Access</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A;  box-shadow: none;" type="button" @onclick="Logout"> Выход </button>
+        <div class="container-end" >
+            <button class="btn"
+                    style=" box-shadow: none;"
+                    type="button" @onclick="Logout">Выход</button>
         </div>
     </div>
 </div>
 
-
 @code {
-
-    private User? User { get; set; }
-
-    private AccessLevel? CurAccessLevel { get; set; }
+    private string ProfilePicture = "images/profile.png";
+    private IBrowserFile selectedImage;
     
-    protected override async Task OnInitializedAsync()
+    private async Task HandleSelectedImage(InputFileChangeEventArgs e)
     {
-        _logger.LogInformation($"start init {this.GetType()}");
-        await base.OnInitializedAsync();
-        var userId = await _localStorageService.GetUserIdAsync();
+        selectedImage = e.File;
 
-        if (userId == null)
+        if (selectedImage != null)
         {
-            _logger.LogInformation($"userId is null on {this.GetType()}");
-            _navigationManager.NavigateTo("/auth");
-            return;
-        }
+            var buffer = new byte[selectedImage.Size];
+            await selectedImage.OpenReadStream().ReadAsync(buffer);
 
-        User = await _apiService.GetUser(userId.Value);
+            var newImageUrl = await UploadImageToServer(buffer, selectedImage.ContentType);
 
-        if (User != null)
-        {
-            CurAccessLevel = User.Access;
+            if (!string.IsNullOrEmpty(newImageUrl))
+            {
+                ProfilePicture = newImageUrl;
+            }
         }
-        else
-        {
-            _logger.LogInformation($"User with ID {userId.Value} doesn't exists");
-        }
-
-        _logger.LogInformation($"loading {this.GetType()}");
-        await InvokeAsync(StateHasChanged);
     }
-    
+
+    private async Task<string> UploadImageToServer(byte[] imageData, string contentType)
+    {
+        try
+        {
+            // Реализация загрузки изображения на сервер
+            return "/uploaded/profile-picture.png"; // пример URL
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Ошибка загрузки изображения: {Message}", ex.Message);
+            return string.Empty;
+        }
+    }
+
     private void Logout()
     {
-        _localStorageService.RemoveJwtToken();
-        _navigationManager.NavigateTo("/auth");
+        _userContext.Logout();
     }
-
 }

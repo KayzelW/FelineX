@@ -10,7 +10,7 @@ public static class JwtExtensions
 
     public static Guid? GetUserIdFromToken(this JwtSecurityToken? token)
     {
-        // return token?.ValidTo <= DateTime.UtcNow.AddMinutes(3)
+        // return token?.ValidTo <= DateTime.Now.AddMinutes(3)
         //     ? token.GetValueFromToken(JwtCookieName)!.ToGuid()
         //     : null;
         return token != null 

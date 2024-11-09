@@ -1,25 +1,24 @@
 ﻿@page "/test/{TestId}"
 
-@using MyTest = Shared.DB.Classes.Test.Test;
-@using Shared.DB.Classes.Test.Task
+@using System.Text.Json
 @using Shared.DB.Interfaces
-@using Shared.Extensions
 @using Task = System.Threading.Tasks.Task
-@using System.IdentityModel.Tokens.Jwt
 @using Microsoft.Extensions.Logging
-@using Shared.DB.Classes.User
-@using WebAssembly.Services
+@using Shared.Interfaces
+@using Shared.Types
+@using Shared.Models
+
 
 @inject ApiService _ApiService
 @inject ILogger<Auth> _logger
 @inject NavigationManager nav
-@inject LocalStorageService LocalStorageService
+@inject IUserContextService _UserContext
 
 
 
 <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест: @test?.TestName</h3>
 
-@if (userId is null)
+@if (!_UserContext.IsAuthorized)
 {
     <div class="d-flex justify-content-center row">
         <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
@@ -57,7 +56,7 @@ else
                     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
                         <div class="col-md-10 col-lg-10">
                             <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                                <h4 >Задание @(number)</h4>
+                                <h4>Задание @(number): @task.InteractionType.ToString()</h4>
                             </div>
                             <div class="question p-3 border-bottom">
                                 <div class="d-flex flex-row align-items-center question-title">
@@ -78,7 +77,7 @@ else
                     <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
                         <div class="col-md-10 col-lg-10">
                             <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                                <h4 >Задание @(number)</h4>
+                                <h4>Задание @(number): @task.InteractionType.ToString()</h4>
                             </div>
                             <div class="question p-3 border-bottom">
                                 <div class="d-flex flex-row align-items-center question-title">
@@ -100,7 +99,7 @@ else
                         <div class="col-md-10 col-lg-10">
 
                             <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                                <h4 >Задание @(number)</h4>
+                                <h4>Задание @(number): @task.InteractionType.ToString()</h4>
                             </div>
                         </div>
                         <div class="question p-3 border-bottom">
@@ -127,7 +126,7 @@ else
                         <div class="col-md-10 col-lg-10">
 
                             <div class="d-flex flex-row justify-content-between  align-items-center mcq">
-                                <h4 >Задание @(number)</h4>
+                                <h4>Задание @(number): @task.InteractionType.ToString()</h4>
                             </div>
                         </div>
                         <div class="question p-3 border-bottom">
@@ -146,9 +145,29 @@ else
                     </div>
                 </div>
                 break;
-            case InteractionType.None:
-                continue;
             case InteractionType.SqlQueryTask:
+                <div class="d-flex justify-content-center row">
+                    <div class="card mb-3" style="border-radius: 5px  ; border-color: #00003A; background-color: #EFF4FF; -webkit-text-fill-color: #00003A;">
+                        <div class="col-md-10 col-lg-10">
+                            <div class="d-flex flex-row justify-content-between  align-items-center mcq">
+                                <h4>Задание @(number): @task.InteractionType.ToString()</h4>
+                            </div>
+                            <div class="question p-3 border-bottom">
+                                <div class="d-flex flex-row align-items-center question-title">
+                                    <h5 class="mt-1 ml-2">@task.Question</h5>
+                                </div>
+
+                                <div class="form-floating">
+                                    <AceEditor @bind-Value="@task.VariableAnswers[0].StringAnswer" > </AceEditor>
+                                   
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+            case InteractionType.None:
                 continue;
             default:
                 continue;
@@ -156,7 +175,7 @@ else
     }
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
-        <button class="btn btn-outline-primary" @onclick="SaveAndSubmit" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
+        <button class="btn btn-outline-primary" disabled="@IsSended" @onclick="SaveAndSubmit" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button">
             Сохранить
         </button>
     </div>
@@ -164,12 +183,18 @@ else
 
 @code {
     [Parameter] public string TestId { get; set; }
+    private TestDTO? test { get; set; } = new();
+    private bool IsSended { get; set; } = false;
     
-    private Guid? userId { get; set; }
-    
-    private MyTest? test { get; set; } = new MyTest();
-    
-    void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+       
+        test = await _ApiService.GetTest(TestId);
+        _logger.LogInformation($"Got test {TestId}");
+    }
+
+    private static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
     {
         foreach (var varAns in task.VariableAnswers)
         {
@@ -177,27 +202,11 @@ else
         }
     }
     
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    
-        _logger.LogInformation($"Now at {this.GetType()}");
-    
-        // userId = await LocalStorageService.GetUserIdAsync();
-        _logger.LogInformation($"Got userId {userId} at {this.GetType()} from LocalStorage");
-    
-        test = await _ApiService.GetTest(TestId);
-        _logger.LogInformation($"Got test {TestId}");
-    }
-    
     private async void SaveAndSubmit()
     {
-        if (userId != null)
-        {
-            _logger.LogInformation($"Token is {this.userId} at {nameof(this.SaveAndSubmit)}");
-            test!.StudentId = userId;
-        }
-    
+        IsSended = true;
+        var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation(json);
         var ansTestId = await _ApiService.SubmitTest(test);
         nav.NavigateTo($"result_test/{ansTestId}");
     }

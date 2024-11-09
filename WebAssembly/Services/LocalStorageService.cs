@@ -2,24 +2,25 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Shared.Extensions;
+using Shared.Interfaces;
 
 namespace WebAssembly.Services;
 
-public partial class LocalStorageService(IJSRuntime jsRuntime)
+public partial class LocalStorageService(IJSRuntime jsRuntime) : ILocalStorageService
 {
-    public async Task<Guid?> GetUserIdAsync()
+    public async Task SetItemAsync(string name, string value, int days = 7)
     {
-        var strToken = await GetItemAsync(JwtExtensions.JwtCookieName);
-        return JwtExtensions.TokenFromString(strToken).GetUserIdFromToken();
+        await jsRuntime.InvokeVoidAsync("cookieHelper.setCookie", name, value, days);
     }
 
-    public async void RemoveJwtToken()
+    public async Task<string?> GetItemAsync(string name)
     {
-        await jsRuntime.InvokeVoidAsync("cookieHelper.deleteCookie", JwtExtensions.JwtCookieName);
+        var cookie = await jsRuntime.InvokeAsync<string>("cookieHelper.getCookie", name);
+        return string.IsNullOrEmpty(cookie) ? null : cookie;
     }
 
-    public async Task SetJwtTokenAsync(string value)
+    public async Task RemoveItemAsync(string name)
     {
-        await SetItemAsync(JwtExtensions.JwtCookieName, value, 7);
+        await jsRuntime.InvokeVoidAsync("cookieHelper.deleteCookie", name);
     }
 }

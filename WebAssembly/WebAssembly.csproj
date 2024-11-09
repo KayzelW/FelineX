@@ -5,12 +5,20 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+        <Authors />
+        <Company />
+        <Product>FelineX</Product>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazored.Toast" Version="4.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7"/>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.7" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.7" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.8" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="QRCoder" Version="1.6.0" />
+        <PackageReference Include="System.Net.Http" Version="4.3.4" />
         
     </ItemGroup>
 
@@ -23,12 +31,15 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Services\LocalStorageService.Cookie.cs">
-        <DependentUpon>LocalStorageService.cs</DependentUpon>
-      </Compile>
       <Compile Update="Authentication\AuthorizeLevelAttribute.cs">
         <DependentUpon>AccessLevelRouteView.cs</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 

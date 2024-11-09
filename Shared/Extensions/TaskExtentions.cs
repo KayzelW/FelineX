@@ -1,10 +1,8 @@
-﻿
-
-using Shared.DB.Classes.Test.Task;
+﻿using Shared.Types;
 
 namespace Shared.Extensions;
 
-public static partial class TaskExtentions
+public static class TaskExtentions
 {
     public static string TaskTypeToString(this InteractionType taskType)
     {
@@ -16,6 +14,18 @@ public static partial class TaskExtentions
             InteractionType.OneVariantTask => "Один вариант ответа",
             InteractionType.ManyVariantsTask => "Несколько вариантов ответа",
             InteractionType.SqlQueryTask => "SQL запрос",
+            _ => "Unknown"
+        };
+    }
+    
+    public static string DBMSTypeToString(this DBMS dbType)
+    {
+        return dbType switch
+        {
+            DBMS.None => "Неизвестен",
+            DBMS.SqLite => "SQLite",
+            DBMS.MySQL => "MySQL",
+            DBMS.PostgreSQL => "PostgreSQL",
             _ => "Unknown"
         };
     }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Shared.DB.Classes.User;
+using Shared.Types;
 
 namespace WebAssembly.Auth;
 

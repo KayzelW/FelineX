@@ -1,54 +1,69 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using APIServer.Database;
-using Shared.Models;
+﻿using APIServer.Database;
+using APIServer.Extensions;
+using APIServer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.DB.Classes;
-using Shared.DB.Classes.Test;
-using Shared.DB.Classes.Test.Task.TaskAnswer;
-using Shared.DB.Classes.User;
-using Shared.Extensions;
-using MyTask = Shared.DB.Classes.Test.Task.Task;
+using Shared.Attributes;
+using Shared.Types;
 
 namespace APIServer.Controllers;
 
 [ApiController, Route("[controller]")]
-public class TestController : Controller
+public partial class TestController(AppDbContext dbContext, ILogger<TestController> logger, ITestWarriorQueue testWarrior)
+    : Controller
 {
-    private readonly AppDbContext _dbContext;
-    private readonly ILogger _logger;
+    private readonly ILogger _logger = logger;
+    private readonly ITestWarriorQueue _testWarrior = testWarrior;
 
-    public TestController(AppDbContext dbContext, ILogger<TestController> logger)
-    {
-        _dbContext = dbContext;
-        _logger = logger;
-    }
-
-    [HttpGet("get_tests")]
-    [SuppressMessage("ReSharper.DPA", "DPA0011: High execution time of MVC action")]
+    /// <summary>
+    /// Must be used when Teacher trying to see all available tests 
+    /// </summary>
+    /// <returns>list of <see cref="Test"/></returns>
+    [HttpGet("get_tests"), AuthorizeLevel(AccessLevel.Exists)]
     public async Task<IActionResult> GetTests()
     {
-        var tests = await _dbContext.Tests!.Include(x => x.Tasks).ToListAsync();
+        if (!HttpContext.Items.TryGetValue("User", out var user))
+        {
+            return BadRequest("Unauthorized");
+        }
+
+        var userId = (Guid)user!;
+        
+        var tests = await dbContext.Tests
+            .Where(t =>
+                t.Settings.TestUsers!.Any(u => u.Id == userId) ||  
+                t.Settings.TestGroups!.Any(g => g.Students!.Any(u => u.Id == userId)) ||
+                t.CreatorId == userId)  
+            .ToListAsync();
         return Ok(tests);
     }
 
-    [HttpGet("get_test/{id:guid}")]
-    public async Task<IActionResult> GetTest(Guid id)
+    /// <summary>
+    /// Calls when user try to load specific test
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns><see cref="Test"/>></returns>
+    [HttpGet("get_test_for_solving/{id:guid}"), AllowAnonymous]
+    public async Task<IActionResult> GetTestForSolving(Guid id)
     {
         Test? test;
         try
         {
-            test = await _dbContext.Tests.Where(x => x.Id == id)
-                .Include(x => x.Tasks)
-                .ThenInclude(x => x.VariableAnswers)
-                .FirstOrDefaultAsync();
+            test = await dbContext.Tests.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(x => x.Id == id);
+            if (test == null)
+                return NotFound(id);
+
             foreach (var task in test.Tasks)
             {
-                if (task.IsStringTask())
+                task.Settings.SqlQueryCheck = "";
+                task.Settings.SqlQueryInstall = "";
+                if (task.IsLongStringTask() || task.IsShortStringTask())
                 {
-                    task.VariableAnswers[0].StringAnswer = "";
-                    task.VariableAnswers[0].Truthful = false;
+                    foreach (var varAns in task.VariableAnswers!)
+                    {
+                        varAns.StringAnswer = "";
+                    }
                 }
                 else
                 {
@@ -67,186 +82,96 @@ public class TestController : Controller
 
         return Ok(test);
     }
+    [HttpGet("get_original_test/{id:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
+    public async Task<IActionResult?> GetOriginalTest(Guid id)
+    {
+        var test = await dbContext.Tests
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.Settings)
+            .FirstOrDefaultAsync(x => x.Id == id);
+        return Ok(test);
+    }
 
-
-    [HttpGet("get_test_result/{test_answer_id:guid}")]
-    public async Task<IActionResult> GetTestResult(Guid test_answer_id)
+    [HttpGet("get_list_students_test_answers/{testId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
+    public async Task<IActionResult> GetListStudentsTestAnswers(Guid testId)
     {
         try
         {
-            var answeredTest = await _dbContext.TestAnswers.Where(x => x.Id == test_answer_id)
-                .Include(x => x.AnsweredTest)
-                .ThenInclude(x => x.Tasks)
-                .ThenInclude(x => x.VariableAnswers)
-                .Include(x => x.TaskAnswers)
-                .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
-                .FirstOrDefaultAsync();
-
-            if (answeredTest is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(answeredTest);
-        }
-        catch
-        {
-            _logger.Log(LogLevel.Error, $"Fail to get score for test_answer with id {test_answer_id}");
-            return NotFound();
-        }
-    }
-
-    private async Task<double> CalculateScore(TestAnswer answeredTest)
-    {
-        var taskWeight = 100 / answeredTest.TaskAnswers.Count;
-
-        var score = 0;
-
-        foreach (var task in answeredTest.TaskAnswers)
-        {
-            var correctTask = await _dbContext.Tasks.Where(x => x.Id == task.AnsweredTaskId)
-                .AsNoTracking()
-                .Include(x => x.VariableAnswers)
-                .FirstOrDefaultAsync();
-            if (correctTask!.IsStringTask())
-            {
-                if (task.StringAnswer == correctTask.VariableAnswers.FirstOrDefault().StringAnswer)
-                {
-                    score += taskWeight;
-                }
-            }
-            else
-            {
-                var allMarkedVariablesMatch = task.MarkedVariables
-                    .All(markedVar => correctTask.VariableAnswers
-                        .Any(varAnswer => varAnswer.Id == markedVar.Id && varAnswer.Truthful == true));
-
-                if (allMarkedVariablesMatch)
-                {
-                    score += taskWeight;
-                }
-            }
-        }
-
-        _logger.LogInformation("Calculated score inside CalculateScore: {Score}", score);
-        return score;
-    }
-
-
-    [HttpGet("get_list_students_testanswers/{test_id:guid}")]
-    public async Task<IActionResult> GetListStudentsTestAnswers(Guid test_id)
-    {
-        try
-        {
-            var listTestAnswers = await _dbContext.TestAnswers.Where(x => x.AnsweredTestId == test_id)
+            var listTestAnswers = await dbContext.TestAnswers!.Where(x => x.AnsweredTestId == testId)
                 .Include(x => x.Student)
                 .ToListAsync();
-            foreach (var test in listTestAnswers)
-            {
-            }
-
             return Ok(listTestAnswers);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Exception while getting list of students for test with id {test_id}");
+            _logger.LogError(e, $"Exception while getting list of students for test with id {testId}");
             return BadRequest();
         }
     }
 
-    [HttpGet("get_test_answer_id_by_id/{test_answer_id:guid}")]
-    public async Task<IActionResult> GetTestAnswerId(Guid test_answer_id)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="solvedTest"></param>
+    /// <returns> TestAnswer id as <see cref="Guid"/></returns>
+    [HttpPost("submit_test"), AllowAnonymous]
+    public async Task<ActionResult<Guid>> SubmitTest([FromBody]TestDTO solvedTest)
     {
-        var answeredTest = await _dbContext.TestAnswers.Where(x => x.Id == test_answer_id)
-            .Include(x => x.TaskAnswers)
-            .ThenInclude(x => x.MarkedVariables).OrderByDescending(entity => entity.Id)
-            .FirstOrDefaultAsync();
-
-        if (answeredTest is null)
+        if (solvedTest?.Tasks == null)
         {
-            return NotFound();
+            _logger.LogError($"Test or tasks are null while executing SubmitTest");
+            return BadRequest("Object is null");
         }
-
-        return Ok(answeredTest);
-    }
-
-    [HttpPost("create_test")]
-    public async Task<IActionResult> CreateTest(Test? test)
-    {
-        if (test is null)
-        {
-            _logger.LogInformation(
-                $"test is null while executing CreateTest from user");
-            return BadRequest();
-        }
-
         try
         {
-            await _dbContext.Tests!.AddAsync(test);
-            await _dbContext.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Exception while saving new test from user");
-            return BadRequest(test);
-        }
 
-        return Ok();
-    }
-
-
-    [HttpPost("submit_test")]
-    public async Task<IActionResult> SubmitTest(Test? solvedTest)
-    {
-        Test? test;
-        var testAnswer = new TestAnswer();
-
-        if (solvedTest?.Tasks is null)
-        {
-            _logger.LogError(
-                $"test or tasks are null while executing SubmitTest");
-            return BadRequest();
-        }
-
-        try
-        {
-            testAnswer.AnsweredTestId = solvedTest.Id;
-
-            testAnswer.PassingDate = DateTime.Now;
-            if (solvedTest.StudentId != Guid.Empty && solvedTest.StudentId != null)
-            {
-                testAnswer.StudentId = solvedTest.StudentId;
-                testAnswer.Student =
-                    await _dbContext.Users.Where(x => x.Id == solvedTest.StudentId).FirstOrDefaultAsync();
-            }
-            else
+            var testAnswer = new TestAnswer();
+            testAnswer.ClientConnectionLog = AuthExtensions.GetConnectionLog(HttpContext);
+            
+            dbContext.Add(testAnswer);
+            await dbContext.SaveChangesAsync();
+            
+            if (!string.IsNullOrEmpty(solvedTest.FantomName))
             {
                 testAnswer.FantomName = solvedTest.FantomName;
             }
-
-            foreach (var task in solvedTest.Tasks!)
+            else
             {
-                if (task is not null)
-                    _dbContext.Attach(task);
-
-                var taskToSave = new TaskAnswer(solvedTest.CreatorId, task);
-
-                testAnswer.TaskAnswers!.Add(taskToSave);
+                testAnswer.StudentId = (Guid)HttpContext.Items["User"]!;
             }
-
-            var score = await CalculateScore(testAnswer);
-            _logger.LogInformation("Calculated score: {Score}", score);
-
-            testAnswer.Score = score;
-
-            await _dbContext.TestAnswers!.AddAsync(testAnswer);
-            await _dbContext.SaveChangesAsync();
-
+            testAnswer.PassingDate = DateTime.Now; // fill pass date
+            testAnswer.AnsweredTestId = solvedTest.Id; // fill testId
+            
+            // fill list of tasksAnswers 
+            foreach (var task in solvedTest.Tasks)
+            {
+                var taskAnswer = new TaskAnswer(testAnswer.StudentId, task);
+                var originalTask = await dbContext
+                    .Tasks
+                    .Include(x => x.VariableAnswers)
+                    .AsNoTrackingWithIdentityResolution()
+                    .FirstOrDefaultAsync(x => x.Id == task.Id);
+                
+                if (originalTask == null)
+                {
+                    logger.LogInformation($"OriginalTask for {taskAnswer.StudentId}:{solvedTest.FantomName} is null");
+                    continue;
+                }
+                dbContext.Entry(originalTask).State = EntityState.Unchanged;
+                
+                taskAnswer.TestAnswer = testAnswer;
+                taskAnswer.AnsweredTask = originalTask;
+                testAnswer.TaskAnswers!.Add(taskAnswer);
+                
+            }
+            
+            _testWarrior.RegisterTestAnswer(testAnswer);
+            
             return Ok(testAnswer.Id);
         }
         catch (Exception e)
         {
-            _logger.LogInformation(e, $"Exception while saving new test from user");
+            _logger.LogInformation(e, $"Exception while saving new testAnswer from user");
             return BadRequest(solvedTest);
         }
     }

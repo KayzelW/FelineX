@@ -1,11 +1,14 @@
 ﻿@page "/auth"
 
+@using Blazored.Toast.Services
 @using Microsoft.Extensions.Logging
+@using Shared.Interfaces
 @using WebAssembly.Services
 
-@inject NavigationManager nav
-@inject AuthService _authService
+@inject NavigationManager _navigationManager
+@inject IUserContextService _userContext
 @inject ILogger<Auth> _logger
+@inject IToastService _toastService
 
 <div class="row d-flex justify-content-center h-100">
     <div class="col col-md-4 mb-4 mb-md-0 justify-content-center align-items-center">
@@ -13,13 +16,13 @@
             <div class="row g-0">
                 <div class="card-body p-5 text-center">
                     <h2 style="color: #0F066D; font-style: oblique">Вход</h2>
-                    <p class="text-50 mb-5" style="color: #0F066D;: #0F066D; font-style: italic">Пожалуйста, введите свой логин и пароль!</p>
+                    <p class="text-50 mb-5" style="color: #0F066D;: #0F066D; font-style: italic">Введите свой логин и пароль!</p>
 
                     <div class="container-md"></div>
                     <h4 class="form-label col-md-3" for="typeEmailX" style="color: #0F066D; font-style: oblique; font-size: large ">Логин</h4>
                     <input type="email" id="typeEmailX" @bind="@Login" class="form-control form-control-lg" aria-describedby="inputGroup-sizing-sm" placeholder=""
                            style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;" @onkeydown="KeyboardEventHandler">
-                    
+
                     <div class="row d-flex justify-content-center align-items-center" style="min-height: 40px"></div>
                     <h4 class="form-label  col-md-3" for="typeEmailX" style="color: #0F066D; font-style: oblique; font-size: large">Пароль</h4>
                     <input type="password" id="typePasswordX" @bind="@Password" class="form-control form-control-lg" aria-describedby="inputGroup-sizing-sm" placeholder=""
@@ -72,14 +75,19 @@
     private async Task User_auth()
     {
         if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
+        {
+            _toastService.ShowError("Логин и пароль не могут быть пустыми");
             return;
+        }
 
-        var token = await _authService.GetJwtToken(Login, Password);
-        if (token is null)
+        await _userContext.AuthorizeAsync(Login, Password);
+        if (!_userContext.IsAuthorized)
+        {
+            _toastService.ShowError("Ошибка авторизации. Проверьте логин и пароль.");
             return;
-
-        await _authService.SetJwtToken(token);
-        nav.NavigateTo("/profile");
+        }
+        _toastService.ShowSuccess("Успешная авторизация");
+        _navigationManager.NavigateTo("/profile");
     }
 
 }

@@ -1,9 +1,18 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding-bottom: 25px;
+    
+    justify-content: center;
+    align-items: center;
+    background-color: #DDEBFF;
+    color: #00003A;
+    user-select: none;
+    
 }
 
-a, .btn-link {
-    color: #006bb7;
+
+a {
+    color: #00003A;
 }
 .btn {
     border-radius: .5rem;
@@ -12,16 +21,27 @@ a, .btn-link {
     --bs-btn-color: #00003A;
     height: 40px;
     box-shadow: none;
+    max-height: 40px;
+    -webkit-text-fill-color: #00003A;
+    
+    
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+.nav-link{
+    font-size: large;
+}
+.body{
+    font-size: 21px;
+    justify-content: center;
+    text-decoration-color: #00003A;
+    
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.table{
+    /*--bs-table-bg: #DDEBFF; */
+    border-radius: .5rem; 
+    border: 0px;
+    -webkit-text-fill-color: #00003A
 }
 
 .content {
@@ -58,7 +78,10 @@ h1:focus {
     border-color: #929292;
 }
 
-
+input:-webkit-autofill {
+    background-color: #e0f7fa !important; /* Цвет фона */ 
+    transition: background-color 5000s ease-in-out 0s; /* Отключение плавного изменения цвета */
+}
 
 
 
@@ -135,10 +158,110 @@ h1:focus {
     box-shadow: none;
 }
 
+.correct-answer:checked {
+    background-color: #146c43;
+    border-color: #0a3622;
+}
+
 .correct-answer {
-    background-color: lightgreen;
+    background-color: #CCFFCC;
+    border-color: #146c43;
 }
 
 .incorrect-answer {
-    background-color: lightcoral;
+    background-color: #FFCCCC;
+    border-color: #ff5733;
+}
+
+.incorrect-answer:checked {
+    background-color: #ff5733;
+    border-color: #6a1a21;
+}
+
+
+.blocked {
+    pointer-events: none;
+    
+}
+
+
+
+/* Основные стили для контейнера поиска */
+.search-container {
+    display: flex;
+    align-items: center;
+    width: 300px; /* Ширина строки поиска */
+    
+    border: 2px solid #ddd; /* Граница контейнера */
+    border-radius: 25px; /* Скругленные углы */
+    overflow: hidden; /* Скрытие содержимого за границами */
+}
+
+/* Стили для поля ввода */
+.search-container input[type="text"] {
+    flex-grow: 1; /* Поле ввода занимает все доступное пространство */
+    padding: 10px;
+    border: none; /* Удаление стандартной границы */
+    outline: none; /* Удаление стандартной обводки */
+    font-size: 16px; /* Размер шрифта */
+}
+
+/* Стили для кнопки поиска */
+.search-container button {
+    background: #ddd; /* Цвет фона кнопки */
+    border: none; /* Удаление границы */
+    padding: 10px;
+    cursor: pointer; /* Курсор указателя при наведении */
+    transition: background 0.3s ease; /* Плавный переход для фона */
+}
+
+/* Стили для кнопки при наведении */
+.search-container button:hover {
+    background: #ccc; /* Цвет фона кнопки при наведении */
+}
+
+.table-modal{
+    margin: 0 auto; /* Центрирование контейнера */
+}
+
+.container-center{
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+
+.container-end{
+    display: flex;
+    justify-content: end;
+    align-items: end;
+}
+
+
+.nav-item{
+    display: inline-block;
+}
+.nav {
+    max-height: 45px;
+    white-space: nowrap;
+    overflow-x: auto;
+    display: inline-block;
+    -ms-overflow-style: none;  /* Скрыть скроллбар в IE и Edge */
+    scrollbar-width: none;  /* Скрыть скроллбар в Firefox */
+}
+
+.nav::-webkit-scrollbar {
+    display: none; /* Скрыть скроллбар в WebKit-браузерах (Chrome, Safari, Opera) */
+}
+
+.table-a{
+    white-space: nowrap;
+    overflow-x: auto;
+    display: inline-block;
+    -ms-overflow-style: none;  /* Скрыть скроллбар в IE и Edge */
+    scrollbar-width: none;  /* Скрыть скроллбар в Firefox */
+}
+
+col-a{
+    display: inline-block;
 }

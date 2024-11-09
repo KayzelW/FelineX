@@ -1,0 +1,49 @@
+﻿@inject IJSRuntime JSRuntime
+@inject ILogger<AceEditor> _logger
+<div id="@EditorId" style="height: 400px; width: 100%;"></div>
+
+@code {
+    private IJSObjectReference? _module;
+    [Parameter]
+    public string EditorId { get; set; } = "editor";
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    private DotNetObjectReference<AceEditor>? dotNetObjectReference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetObjectReference = DotNetObjectReference.Create(this);
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/AceEditor.razor.js");
+            await _module.InvokeVoidAsync("AceEditor.initialize", dotNetObjectReference, EditorId);
+            _logger.LogInformation("AceEditor inited");
+            
+            await _module.InvokeVoidAsync("AceEditor.setText", EditorId, Value);
+        }
+    }
+
+    [JSInvokable]
+    public async Task UpdateValue(string newValue)
+    {
+        _logger.LogInformation("Called update value for AceEditor");
+        if (Value != newValue)
+        {
+            Value = newValue;
+            await ValueChanged.InvokeAsync(newValue);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module != null)
+        {
+            await _module.DisposeAsync();
+        }
+        dotNetObjectReference?.Dispose();
+    }
+}

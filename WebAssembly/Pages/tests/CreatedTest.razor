@@ -1,11 +1,9 @@
 ﻿@page "/Created_test"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
-
-@using Shared.DB.Classes.Test.Task
-@using Shared.DB.Classes.User
 @using Shared.Extensions
-@using MyTest = Shared.DB.Classes.Test.Test;
-@using MyTask = Shared.DB.Classes.Test.Task.Task;
+@using Shared.Types
+@using MyTest = Shared.DB.Test.Test;
+@using MyTask = Shared.DB.Test.Task.Task;
 
 @inject ApiService _apiService
 
@@ -155,7 +153,7 @@
 
     private async void Save()
     {
-        await _apiService.PostTest(_test);
+        // await _apiService.PostTest(_test);
         Console.WriteLine(_test.TestName);
     }
 

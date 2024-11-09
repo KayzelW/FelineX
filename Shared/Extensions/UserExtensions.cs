@@ -1,8 +1,8 @@
 ﻿using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
-using Shared.DB.Classes.User;
 using Shared.Models;
+using Shared.Types;
 
 namespace Shared.Extensions;
 
@@ -21,5 +21,22 @@ public static partial class UserExtensions
         return builder.ToString();
     }
 
-    public static bool HasAccess(this uint access, AccessLevel level) => (access & (uint)level) != 0;
+    public static bool HasAccess(AccessLevel required, AccessLevel userAccess)
+    {
+        if (userAccess == null)
+            return false;
+
+        return required == (uint)AccessLevel.Exists
+               || (userAccess & required) == required;
+    }
+
+    public static bool HasAccess(uint required, AccessLevel userAccess)
+    {
+        if (userAccess == null)
+            return false;
+
+        return required == (uint)AccessLevel.Exists
+               || ((uint)userAccess & required) == required;
+        
+    }
 }

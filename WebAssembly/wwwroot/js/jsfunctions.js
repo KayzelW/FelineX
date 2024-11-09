@@ -9,7 +9,8 @@ window.cookieHelper = {
     setCookie: function (name, value, options = {}) {
         options = {
             path: '/',
-            // add other defaults if necessary
+            sameSite: 'strict',
+            secure: true,
             ...options
         };
 
@@ -34,3 +35,7 @@ window.cookieHelper = {
         this.setCookie(name, '', { 'max-age': -1 });
     }
 }
+
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault(); // Блокирует контекстное меню
+});

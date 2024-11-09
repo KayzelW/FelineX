@@ -22,4 +22,8 @@ RUN dotnet publish "./APIServer.csproj" -c $BUILD_CONFIGURATION -o /app/publish 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+#COPY /home/app/.microsoft/usersecrets /root/.microsoft/usersecrets
+#VOLUME ~/.microsoft/usersecrets:/root/.microsoft/usersecrets apiserver
+
 ENTRYPOINT ["dotnet", "APIServer.dll"]

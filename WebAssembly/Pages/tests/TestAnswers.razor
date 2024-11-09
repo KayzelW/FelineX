@@ -3,8 +3,8 @@
 
 @using System.Globalization
 @using Microsoft.Extensions.Logging
-@using Shared.DB.Classes.User
-@using Shared.DB.Classes.Test.Task.TaskAnswer
+@using Shared.DB.Test.Answers
+@using Shared.Types
 
 @inject ApiService _ApiService
 @inject ILogger<TestAnswers> _logger
@@ -32,7 +32,8 @@
         <h1>Никто пока не прошёл этот тест</h1>
     }
     else
-    { @foreach (var test in _testAnswers)
+    {
+        @foreach (var test in _testAnswers)
         {
             <tr>
                 <td>

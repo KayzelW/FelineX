@@ -1,17 +1,20 @@
 ﻿@page "/create_test"
 @attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
 
-@using Shared.DB.Classes.Test.Task
-@using Shared.DB.Classes.User
+@using System.Text.Json
+@using System.Text.RegularExpressions
 @using Shared.Extensions
-@using MyTest = Shared.DB.Classes.Test.Test;
-@using MyTask = Shared.DB.Classes.Test.Task.Task;
+@using MyTest = Shared.DB.Test.Test;
+@using MyTask = Shared.DB.Test.Task.Task;
 @using Shared.DB.Interfaces
+@using Shared.Types
+@using Task = System.Threading.Tasks.Task
 
 @inject ApiService _apiService
 @inject NavigationManager _navigationManager
-@inject LocalStorageService _localStorageService
 @inject ILogger<CreatedTest> _logger
+@inject SearchService<User> _userSearchService
+@inject SearchService<UserGroup> _groupSearchService
 
 <h3 class="text-center">Новый тест</h3>
 
@@ -19,6 +22,21 @@
     <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название" aria-describedby="basic-addon1" @bind="test.TestName" style="background-color: #EFF4FF; box-shadow: none; ">
 </div>
 
+<div style="display: flex; gap: 20px; padding-top: 2%">
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 1;">
+        <label>Добавить студентов</label>
+        <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => { isModalVisibleStudent = true; }">
+            +
+        </button>
+    </div>
+
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 3">
+        <label>Добавить классы</label>
+        <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => { isModalVisibleGroup = true; }">
+            +
+        </button>
+    </div>
+</div>
 
 <div class="container mt-5">
     @foreach (var task in test.Tasks!)
@@ -68,10 +86,9 @@
 
                             @foreach (var varAnswer in task.VariableAnswers!)
                             {
-                                <div class="form-check" style="min-height: 50px">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" checked="@varAnswer.Truthful" @onchange="@(e => UpdateOneAnswer(task, varAnswer))" aria-label="Правдивый" style="box-shadow: none;">
+                                <div class="form-check d-flex align-items-center" style="min-height: 50px">
+                                    <input class="form-check-input" type="radio" checked="@varAnswer.Truthful" @onchange="@(e => UpdateOneAnswer(task, varAnswer))" aria-label="Правдивый" style="box-shadow: none;">
                                     <input type="text" class="form-control" aria-label="Введите вопрос" aria-describedby="inputGroup-sizing-sm" @bind="varAnswer.StringAnswer" placeholder="Введите" style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
-
                                 </div>
                             }
 
@@ -85,8 +102,9 @@
                             </div>
                             @foreach (var varAnswer in task.VariableAnswers!)
                             {
+                                varAnswer.Truthful = true;
                                 <div class="form-check" style="min-height: 50px">
-                                    <input type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@task.VariableAnswers![0].StringAnswer"
+                                    <input type="text" class="form-control" aria-describedby="inputGroup-sizing-sm" placeholder="Введите ответ " @bind="@varAnswer.StringAnswer"
                                            style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;">
                                 </div>
                             }
@@ -101,13 +119,53 @@
 
                             </div>
                             break;
+                        case InteractionType.SqlQueryTask:
+                            <div class="dropdown">
+                                <a class="btn" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="  box-shadow: none;" data-toggle="dropdown">
+                                    <p>СУБД: @task.DatabaseType.ToString()</p>
+                                </a>
+                                <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
+                                    <li>
+                                        <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.SqLite; }">@DBMS.SqLite.DBMSTypeToString()</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.MySQL; }">@DBMS.MySQL.DBMSTypeToString()</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" @onclick="() => { task.DatabaseType = DBMS.PostgreSQL; }">@DBMS.PostgreSQL.DBMSTypeToString()</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <h5 style="padding-top: 25px"> Скрипт базы данных</h5>
+                            <div class="form-floating" style="padding-top: 5px">
+                                @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите скрипт базы данных " @bind="@task.Settings.SqlQueryInstall" *@
+                                @*     style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 150px; box-shadow: none;">  *@
+                                @*         CREATE TABLE if not exists Blogs ( *@
+                                @*             BlogId INTEGER PRIMARY KEY, *@
+                                @*             Url TEXT *@
+                                @*         ); *@
+                                @* *@
+                                @*         INSERT INTO Blogs (Url) VALUES ('https://example.com'); *@
+                                @*         INSERT INTO Blogs (Url) VALUES ('https://another.com'); *@
+                                @* </textarea> *@
+                                <AceEditor EditorId="ForSqlQueryInstall" @bind-Value="@task.Settings.SqlQueryInstall"></AceEditor>
+                            </div>
+
+                            <div class="form-floating" style="padding-top: 5px">
+                                <h5 style="padding-top: 25px"> Эталонный запрос</h5>
+                                <div class="form-floating1" style="padding-top: 5px">
+                                    @* <textarea class="form-control"  id="floatingTextarea2" placeholder="Введите правильный результат " @bind="@task.Settings.SqlQueryCheck" *@
+                                    @* style="background-color: #EFF4FF;  border-color: #BDD3FF; height: 100px; box-shadow: none;">select * from blogs</textarea> *@
+                                    <AceEditor EditorId="ForSqlQueryCheck" @bind-Value="@task.Settings.SqlQueryCheck"></AceEditor>
+                                </div>
+                            </div>
+                            break;
                     }
                 </div>
-                <div class="d-flex justify-content-end" style="min-height: 20px">
-                </div>
-                <div class="d-flex justify-content-end" style="min-height: 60px">
-                    <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button" @onclick="(() => { Delete(task); })">
-                        <img src="del.png" alt="Фото" style="width: 24px; height: 24px;">
+
+                <div class="d-flex justify-content-end" style="min-height: 60px; padding-top: 25px; padding-bottom: 10px">
+                    <button class="btn " style="box-shadow: none;" type="button" @onclick="(() => { Delete(task); })">
+                        <img src="images/del.png" alt="Фото" style="width: 24px; height: 24px;">
                     </button>
                 </div>
             </div>
@@ -116,9 +174,8 @@
 
 
     <div class="d-flex justify-content-end">
-
         <div class="dropdown">
-            <a class="btn btn-secondary dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; --bs-dropdown-border-color: #EFF4FF;  box-shadow: none;" data-toggle="dropdown">
+            <a class="btn" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; --bs-dropdown-border-color: #00003A;  box-shadow: none;" data-toggle="dropdown">
                 +
             </a>
             <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
@@ -141,32 +198,241 @@
         </div>
     </div>
 
-    <div class="d-grid gap-2 d-md-flex justify-content-md-start" style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
-        <button class="btn btn-outline-primary" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button" @onclick="Save">
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
+        <button class="btn" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;" type="button" @onclick="Save">
             Сохранить
         </button>
     </div>
 </div>
 
+@if (isModalVisibleStudent)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
+            <!-- Установлены ширина и max-width -->
+            <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
+                <div class="modal-header">
+                    <h3 class="modal-title">Студенты этого теста</h3>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="() => { isModalVisibleStudent = false; }"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div style="display: flex; gap: 20px;">
+                        <!-- Используем Flexbox -->
+                        <div style="flex: 1;">
+                            <!-- Первая таблица с заголовком -->
+                            <h4>Добавленные студенты</h4>
+                            <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                </tr>
+                                </thead>
+                                @foreach (var student in test.Settings.TestUsers)
+                                {
+                                    <tr>
+                                        <th scope="row">@student.NormalizedUserName</th>
+                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => { test.Settings.TestUsers.Remove(student); InvokeAsync(StateHasChanged); }">
+                                                <i class="bi bi-dash-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить студента"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+
+                        <div style="flex: 1;">
+                            <!-- Вторая таблица с заголовком -->
+                            <h4>Добавить нового студента</h4>
+                            <div class="search-container">
+                                <input type="text" placeholder="Поиск..." @oninput="@OnSearchUserInput">
+                                <button type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+
+                            </div>
+                            <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                                </tr>
+                                </thead>
+                                @if (userSuggestions.Count > 0)
+                                {
+                                    @foreach (var user in userSuggestions)
+                                    {
+                                        <tr>
+                                            <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
+                                            <th scope="row">@user.NormalizedUserName</th>
+                                            <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                                <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                        @onclick="() => { test.Settings.TestUsers.Add(user); InvokeAsync(StateHasChanged); }">
+                                                    <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Удалить студента"></i>
+                                                </button>
+                                            </th>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@if (isModalVisibleGroup)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
+            <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
+                <div class="modal-header">
+                    <h3 class="modal-title">Группы этого теста</h3>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="() => { isModalVisibleGroup = false; }"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex: 1;">
+                            <h4>Добавленные группы</h4>
+                            <table class="table table-borderless table-responsive" size="auto">
+                                <thead>
+                                <tr>
+                                    <th scope="col">ФИО</th>
+                                </tr>
+                                </thead>
+                                @foreach (var group in test.Settings.TestGroups)
+                                {
+                                    <tr>
+                                        <th scope="row">@(test.Settings.TestGroups.IndexOf(group) + 1)</th>
+                                        <th scope="row">@group.GroupName</th>
+                                        <th scope="col">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => { test.Settings.TestGroups.Remove(group); InvokeAsync(StateHasChanged); }">
+                                                <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+
+                        <div style="flex: 1;">
+                            <h4>Добавить новую группу</h4>
+                            <div class="search-container">
+                                <input type="text" placeholder="Поиск..." @oninput="OnSearchGroupInput">
+                                <button type="submit">
+                                    <i class="bi bi-search"></i>
+                                </button>
+
+                            </div>
+                            <table class="table table-borderless table-responsive" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                                <thead>
+                                <tr>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                                </tr>
+                                </thead>
+                                @foreach (var group in groupSuggestions)
+                                {
+                                    <tr>
+                                        <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
+                                        <th scope="row">@group.GroupName</th>
+                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => { test.Settings.TestGroups.Add(group); InvokeAsync(StateHasChanged); }">
+                                                <i class="bi bi-plus-square-dotted" style="color: #00003A; box-shadow: none;" title="Добавить группу"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 
 @code {
+    MyTest test = new();
+    private bool isModalVisibleStudent;
+    private bool isModalVisibleGroup;
 
-    MyTest test = new MyTest();
+    private List<User>? userSuggestions = [];
+    private List<UserGroup>? groupSuggestions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _userSearchService.SuggestionsUpdated += UpdateUserSuggestions;
+        _groupSearchService.SuggestionsUpdated += UpdateGroupSuggestions;
+    }
+
+    private void UpdateUserSuggestions(object newSuggestions)
+    {
+        userSuggestions = (List<User>)newSuggestions;
+        _logger.LogCritical($"userSuggestions.Count is {userSuggestions.Count} ");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void UpdateGroupSuggestions(object newSuggestions)
+    {
+        groupSuggestions = (List<UserGroup>)newSuggestions;
+        _logger.LogCritical($"groupSuggestions.Count is {groupSuggestions.Count} ");
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnSearchUserInput(ChangeEventArgs e)
+    {
+        _userSearchService.OnSearchInput(e.Value.ToString());
+    }
+
+    private void OnSearchGroupInput(ChangeEventArgs e)
+    {
+        _groupSearchService.OnSearchInput(e.Value.ToString());
+    }
+
+    public void Dispose()
+    {
+        _userSearchService.SuggestionsUpdated -= UpdateUserSuggestions;
+        _groupSearchService.SuggestionsUpdated -= UpdateGroupSuggestions;
+    }
 
     private void Plus(InteractionType interactionType)
     {
-        var t = new MyTask(null, interactionType);
-        if (t.InteractionType is InteractionType.LongStringTask or InteractionType.ShortStringTask)
+        try
         {
-            var v = new VariableAnswer
+            var t = new MyTask(null, interactionType);
+            if (t.InteractionType is InteractionType.LongStringTask or InteractionType.SqlQueryTask)
             {
-                Truthful = true
-            };
-            t.VariableAnswers!.Add(v);
-        }
+                var v = new VariableAnswer
+                {
+                    Truthful = true
+                };
+                t.VariableAnswers!.Add(v);
+            }
 
-        test.Tasks!.Add(t);
-        InvokeAsync(StateHasChanged);
+            test.Tasks!.Add(t);
+
+            _logger.LogInformation($"Added task with type {t.InteractionType}");
+            var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+            _logger.LogInformation(json);
+            // InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error adding task {e}");
+        }
     }
 
     static void UpdateOneAnswer(ITask task, VariableAnswer selectedAnswer)
@@ -179,8 +445,9 @@
 
     private async void Save()
     {
-        var userId = await _localStorageService.GetUserIdAsync();
-        test.CreatorId = userId;
+        var json = JsonSerializer.Serialize(test, new JsonSerializerOptions { WriteIndented = true });
+        _logger.LogInformation(json);
+
         await _apiService.PostTest(test);
         _navigationManager.NavigateTo("/my_tests");
     }
@@ -190,5 +457,6 @@
         test.Tasks?.Remove(task);
         InvokeAsync(StateHasChanged);
     }
+
 
 }
