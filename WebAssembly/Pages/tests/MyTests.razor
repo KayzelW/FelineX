@@ -8,17 +8,17 @@
 @inject ApiService _ApiService
 @inject NavigationManager _navigationManager
 @inject ILogger<MyTests> _logger
-
 <div class="container-center">
-    <button class="btn" style=" box-shadow: none;" type="button" @onclick="NavigateToCreateTest">Создать новый тест</button>
+    <button class="btn btn-baza" style="box-shadow: none" type="button" @onclick="NavigateToCreateTest">Создать новый тест</button>
 </div>
+
 
 <div class="text-success" style="border-color:  #00003A; height: 1px">
     <hr>
 </div>
-
-<div>
-    <h2 class="text-left">Тесты</h2>
+2
+<div style="padding: 25px">
+    <h2 class="text-center">Тесты</h2>
     <h1> </h1>
 </div>
 
@@ -28,50 +28,57 @@
 }
 else
 {
-    <table class="table table-borderless table-responsive table-a" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
-        <thead>
-        <tr>
-            <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">#</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A">Название</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A">Дата создания</th>
-            <th scope="col" style=" -webkit-text-fill-color: #00003A">Кол-во заданий</th>
-            <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
-        </tr>
-        </thead>
-        <tbody>
+    
+    <div class="container-center">
+    <div class="card mb-3 cloud" style="border-radius: 30px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.2); background-color: #FFFFFF; border: 3px solid #5A2A91; padding: 25px;">
+        <table class="table table-borderless justify-content-center scroll" size="auto">
+            <thead>
+                <tr>
+                    <th scope="col" style="padding: 10px">#</th>
+                    <th scope="col" style="padding: 10px">Название</th>
+                    <th scope="col" style="padding: 10px">Дата создания</th>
+                    <th scope="col" style="padding: 10px">Кол-во заданий</th>
+                    <th scope="col" style="padding: 10px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var test in Tests)
+                {
+                <tr>
+                    <th scope="row">@(Tests.IndexOf(test)+1)</th>
+                    <td>
+                        <p>
+                            <a class="link-opacity-100-hover" @onclick="() => NavigateToTest(test.Id.ToString())">@test.TestName</a>
+                        </p>
+                    </td>
+                    <td>@test.CreationTime.ToString()</td>
+                    <td>@test.Tasks?.Count</td>
+                    <td>
+                        <button type="button" class="btn-icon" @onclick="() => ShowQrCode(test.Id)">
+                            <i class="bi bi-qr-code" title="QR-код"></i>
+                        </button>
+                        <button type="button" class="btn-icon" @onclick="() => NavigateToTestCorrect(test.Id.ToString())">
+                            <i class="bi bi-pencil" title="Изменить"></i>
+                        </button>
+                        <button type="button" class="btn-icon" @onclick="() => DeleteTest(test.Id)">
+                            <i class="bi bi-trash3" title="Удалить"></i>
+                        </button>
+                        <button type="button" class="btn-icon" @onclick="() => NavigateToTestAnswers(test.Id.ToString())">
+                            <i class="bi bi-bar-chart-line" title="Решения"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
-        @foreach (var test in Tests)
-        {
-            <tr>
-                <th scope="row">@test.Id</th>
-                <td>
-                    <p>
-                        <a class="link-opacity-100-hover" @onclick="() => NavigateToTest(test.Id.ToString())">@test.TestName</a>
-                    </p>
-                </td>
-                <td>@test.CreationTime.ToString()</td>
-                <td>@test.Tasks?.Count</td>
-                <td>
-                    <div class="btn-group" role="group" aria-label="Basic example" style="box-shadow: none;">
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => ShowQrCode(test.Id)">
-                            <i class="bi bi-qr-code" style="color: #00003A; box-shadow: none;" title="QR-код"></i>
-                        </button>
-                        <button type="button" class="btn btn-secondary m-1" style="background-color: transparent; border: 0px; box-shadow: none;"  @onclick="() => NavigateToTestCorrect(test.Id.ToString())">
-                            <i class="bi bi-pencil" style="color: #00003A; box-shadow: none;" title="Изменить"></i>
-                        </button>
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => DeleteTest(test.Id)">
-                            <i class="bi bi-trash3" style="color: #00003A; box-shadow: none;" title="Удалить"></i>
-                        </button>
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => NavigateToTestAnswers(test.Id.ToString())">
-                            <i class="bi bi-bar-chart-line" style="color: #00003A; box-shadow: none;" title="Решения"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+
+    
+        
+    
+    }
 
 @if (isQrModalVisible)
 {

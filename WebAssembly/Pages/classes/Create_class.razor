@@ -7,75 +7,135 @@
 @inject ApiService _apiService
 @inject ILogger<Create_class> _logger
 
-<h3 class="text-center">Новый класс</h3>
- <link rel="stylesheet" href="./css/class.css">
-<div class="input-group input-group-lg" style="max-width: max-content; padding-bottom: 25px">
-    <input type="text" class="form-control" placeholder="Введите название"  aria-describedby="basic-addon1" style="box-shadow: none; max-height: 30px; " @bind="Group.GroupName">
-</div>
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="width: 80%; max-width: 1000px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); padding: 20px; background-color: #DFDFFD; border-radius: 8px;">
 
-
-
-<div style="display: flex; gap: 20px;"> <!-- Используем Flexbox -->
-    <div style="flex: 1;"> <!-- Первая таблица с заголовком -->
-        <h3>Добавить нового студента</h3>
-        <div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px; margin-bottom: 20px;">
-            <input type="text" class="form-control" placeholder="Введите имя"  aria-describedby="basic-addon1" style=" box-shadow: none; max-height: 30px;">
-            <button class="btn" type="button" style="max-height: 30px; box-shadow: none; font-size: medium; padding: 5px">+</button>
+        <h4 class="text-start">Название класса:</h4>
+        <link rel="stylesheet" href="./css/class.css">
+        <div class="input-group input-group-lg" style="max-width: 100%; padding-bottom: 25px">
+            <input type="text" class="form-control" placeholder="Введите название класса" aria-describedby="basic-addon1" style="box-shadow: none; max-height: 40px; background-color: #E4E4F0; border-color: #BFBFBF;" @bind="Group.GroupName">
         </div>
-        <table class="table" size="auto" >
-            <thead>
-                <tr>
-                    <th scope="col" >ФИО</th>
-                </tr>
-            </thead>
-            @foreach (var student in Students!)
-            {
-                <tr>
-                    <th scope="row">@student.NormalizedUserName</th>
-                    <th scope="col">
-                        <button type="button" class="btn" style="border: 0px; box-shadow: none;" @onclick="() => AddStudent(student)">
-                            <i class="bi bi-plus-square-dotted" title="Добавить студента"></i>
-                        </button>
-                    </th>
-                </tr>
-            }
-        </table>
-    </div>
 
-    <div style="flex: 1;"> <!-- Вторая таблица с заголовком -->
-        <h3>Студенты этого класса</h3>
-        <table class="table" size="auto" >
-            <thead>
-                <tr>
-                    <th scope="col" >№</th>
-                    <th scope="col" >ФИО</th>
-                    <th scope="col" ></th>
-                </tr>
-            </thead>
-            @foreach (var student in Group.Students!)
-            {
-                <tr>
-                    <th scope="row">@(Group.Students.IndexOf(student) + 1)</th>
-                    <th scope="row">@student.NormalizedUserName</th>
-                    <th scope="col" >
-                        <button type="button" class="btn " style="border: 0px; box-shadow: none;" @onclick="() => DeleteStudent(student)">
-                            <i class="bi bi-dash-square-dotted"  title="Удалить студента"></i>
-                        </button>
-                    </th>
-                </tr>
-            }
-        </table>
+        <!-- Кнопка добавления по центру -->
+        <div style="display: flex; justify-content: center; padding-bottom: 20px; background-color: #DFDFFD;">
+            <button class="btn btn-primary custom-button" style="box-shadow: none;" type="button" @onclick="() => { isModalVisible = true; }">
+                Добавить студентов
+            </button>
+        </div>
+
+        <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+            <div style="width: 100%; max-width: 800px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); padding: 20px; background-color: #D7D7FD; border-radius: 8px; text-align: center;">
+                <h3 style="text-align: center;">Студенты этого класса</h3>
+                <table class="table" style="width: 100%; text-align: left; margin: 0 auto; border-collapse: collapse;">
+                    <thead>
+                    <tr style="border-bottom: none;">
+                        <th scope="col">№</th>
+                        <th scope="col">ФИО</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var student in Group.Students!)
+                    {
+                        <tr style="border-bottom: none;">
+                            <th scope="row">@(Group.Students.IndexOf(student) + 1)</th>
+                            <td>@student.NormalizedUserName</td>
+                            <td>
+                                <button type="button" class="btn btn-danger custom-button" style="border: 0px; box-shadow: none; font-size: 1.5rem;" @onclick="() => DeleteStudent(student)">
+                                    <i class="bi bi-dash-square-dotted" title="Удалить студента"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (isModalVisible)
+        {
+            <div class="modal show d-block align-content-center" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5); ">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="background-color: #DDEBFF; border-color: #00003A;">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Добавление новых студентов</h5>
+                            <button type="button" class="btn-close" aria-label="Close" @onclick="() => { isModalVisible = false; }"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="flex: 1;">
+                                <h3>Добавить нового студента</h3>
+                                <div class="input-group input-group-lg" style="max-width: 100%; margin-bottom: 20px;">
+                                    <input type="text" class="form-control" placeholder="Введите имя" aria-describedby="basic-addon1" style="box-shadow: none; max-height: 40px; background-color: #E4E4F0; border-color: #BFBFBF;">
+                                    <button class="btn btn-primary custom-button" type="button" style="box-shadow: none; margin-left: 10px; font-size: 1.5rem;">+</button>
+                                </div>
+                                <table class="table" style="border-collapse: collapse;">
+                                    <thead>
+                                    <tr style="border-bottom: none;">
+                                        <th scope="col">ФИО</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var student in Students!)
+                                    {
+                                        <tr style="border-bottom: none;">
+                                            <td>@student.NormalizedUserName</td>
+                                            <td>
+                                                <button type="button" class="btn btn-success custom-button" style="border: 0px; box-shadow: none; font-size: 1.5rem;" @onclick="() => AddStudent(student)">
+                                                    <i class="bi bi-plus-square-dotted" title="Добавить студента"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Кнопка сохранить справа -->
+        <div style="display: flex; justify-content: flex-end; padding-top: 50px; background-color: #DFDFFD;">
+            <button class="btn btn-success custom-button" type="button" style="box-shadow: none;" @onclick="SaveGroup">
+                Сохранить
+            </button>
+        </div>
     </div>
 </div>
 
-<div  style="padding-top: 50px">
-    <button class="btn" type="button" style="box-shadow: none" @onclick="SaveGroup">
-        Сохранить
-    </button>
-</div>
+<style>
+    .table th, .table td {
+        border: none !important;
+    }
+    
+    .form-control {
+        background-color: #E4E4F0 !important; /* Цвет инпутов чуть светлее фона */
+        border-color: #BFBFBF !important;
+    }
+    
+    .custom-button {
+        transition: background-color 0.3s ease;
+        font-size: 1.25rem; /* Увеличенный размер текста для кнопок */
+    }
+    
+    .btn-primary:hover {
+        background-color: #80aaff !important;
+    }
+    
+    .btn-success:hover {
+        background-color: #99e699 !important;
+    }
+    
+    .btn-danger:hover {
+        background-color: #ff9999 !important;
+    }
+</style>
 
 @code {
-    private List<User>? Students { get; set; } = [];
+    private bool isModalVisible = false;
+    private List<User>? Students { get; set; } = new List<User>();
     private UserGroup? Group { get; set; } = new()
     {
         Students = new List<User>()
@@ -83,9 +143,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
         await base.OnInitializedAsync();
         Students = await _apiService.GetStudents();
+        Group.GroupName = "Новый класс";
     }
 
     private void AddStudent(User user)

@@ -9,31 +9,33 @@
 @inject IUserContextService _userContext
 @inject ILogger<Auth> _logger
 @inject IToastService _toastService
+@inject IJSRuntime JSRuntime
 
-<div class="row d-flex justify-content-center h-100">
-    <div class="col col-md-4 mb-4 mb-md-0 justify-content-center align-items-center">
-        <div class="card mb-3 justify-content-center" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF; min-width: 500px;">
+<div  id="containercenter1" style="height: 70%; width: @sizeWidth">
+
+        <div class="card mb-3" style="border-radius: .5rem; border-color: #672C94; background-color: #EFF4FF">
+            
             <div class="row g-0">
                 <div class="card-body p-5 text-center">
                     <h2 style="color: #0F066D; font-style: oblique">Вход</h2>
-                    <p class="text-50 mb-5" style="color: #0F066D;: #0F066D; font-style: italic">Введите свой логин и пароль!</p>
+                    <p class="text-50 mb-5" style="color: #0F066D; font-style: italic">Введите свой логин и пароль!</p>
 
                     <div class="container-md"></div>
-                    <h4 class="form-label col-md-3" for="typeEmailX" style="color: #0F066D; font-style: oblique; font-size: large ">Логин</h4>
-                    <input type="email" id="typeEmailX" @bind="@Login" class="form-control form-control-lg" aria-describedby="inputGroup-sizing-sm" placeholder=""
+                    <h4 class="form-label col-md-3" for="typeEmailX" style="color: #0F066D; font-style: oblique; font-size: large">Логин</h4>
+                    <input type="email" id="typeEmailX" @bind="@Login" class="form-control form-control-lg" aria-describedby="inputGroup-sizing-sm" 
                            style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;" @onkeydown="KeyboardEventHandler">
 
                     <div class="row d-flex justify-content-center align-items-center" style="min-height: 40px"></div>
-                    <h4 class="form-label  col-md-3" for="typeEmailX" style="color: #0F066D; font-style: oblique; font-size: large">Пароль</h4>
-                    <input type="password" id="typePasswordX" @bind="@Password" class="form-control form-control-lg" aria-describedby="inputGroup-sizing-sm" placeholder=""
+                    <h4 class="form-label col-md-3" for="typePasswordX" style="color: #0F066D; font-style: oblique; font-size: large">Пароль</h4>
+                    <input type="password" id="typePasswordX" @bind="@Password" class="form-control form-control-lg" aria-describedby="inputGroup-sizing-sm"
                            style="background-color: #EFF4FF; border-color: #EFF4FF; border-bottom-color: #BDD3FF; box-shadow: none;" @onkeydown="KeyboardEventHandler">
-
 
                     <p class="small mb-5 pb-lg-2">
                         <a class="text-black-50">Забыли пароль?</a>
                     </p>
 
-                    <button id="authBtn" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit" style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; box-shadow: none" @onclick="@User_auth">Войти</button>
+                    <button id="authBtn" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit" 
+                            style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; box-shadow: none" @onclick="@User_auth">Войти</button>
 
                     <div class="d-flex justify-content-center text-center mt-4 pt-1">
                         <a class="text-white">
@@ -47,26 +49,22 @@
                         </a>
                     </div>
 
-
                     <div>
                         <p class="mb-0">
-                            У вас нет аккаунта?<a class="text-50 fw-bold" style="color: #0F066D;: #0F066D; font-style: italic">Зарегистрироваться</a>
+                            У вас нет аккаунта?<a class="text-50 fw-bold" style="color: #0F066D; font-style: italic">Зарегистрироваться</a>
                         </p>
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
-</div>
-
-
 @code {
     string Login { get; set; } = "";
     string Password { get; set; } = "";
+    string sizeWidth;
+    string sizeHeight;
 
-    private async void KeyboardEventHandler(KeyboardEventArgs args)
+    private async Task KeyboardEventHandler(KeyboardEventArgs args)
     {
         if (args.Key == "Enter")
             await User_auth();
@@ -90,4 +88,17 @@
         _navigationManager.NavigateTo("/profile");
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var WinSize = new List<float>();
+            // Вызов JavaScript для получения ширины элемента
+            sizeWidth = $"{(await JSRuntime.InvokeAsync<double>("getWinSize"))*0.5}px";
+            sizeHeight = $"{(await JSRuntime.InvokeAsync<double>("getElementWidthById", "containercenter1"))*1.5}px";
+            StateHasChanged();  // Обновление компонента после изменения ширины
+        }
+    }
+    
+    
 }

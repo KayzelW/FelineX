@@ -18,13 +18,20 @@ a {
     border-radius: .5rem;
     border-color: #00003A;
     background-color: #EFF4FF;
-    --bs-btn-color: #00003A;
     height: 40px;
     box-shadow: none;
     max-height: 40px;
     -webkit-text-fill-color: #00003A;
-    
-    
+}
+
+.btn-baza {
+    border-radius: .5rem;
+    border-color: #00003A;
+    background-color: #EFF4FF;
+    height: 40px;
+    box-shadow: none;
+    max-height: 40px;
+    -webkit-text-fill-color: #00003A;
 }
 
 .nav-link{
@@ -39,9 +46,10 @@ a {
 
 .table{
     /*--bs-table-bg: #DDEBFF; */
-    border-radius: .5rem; 
     border: 0px;
-    -webkit-text-fill-color: #00003A
+    -webkit-text-fill-color: #00003A;
+    font-size: 21px;
+    
 }
 
 .content {
@@ -54,7 +62,7 @@ h1:focus {
 
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
-}
+} 
 
 .invalid {
     outline: 1px solid #e50000;
@@ -230,6 +238,11 @@ input:-webkit-autofill {
     align-items: center;
 }
 
+.container-center-str{
+    display: flex;
+    justify-content: center;
+}
+
 
 .container-end{
     display: flex;
@@ -254,7 +267,7 @@ input:-webkit-autofill {
     display: none; /* Скрыть скроллбар в WebKit-браузерах (Chrome, Safari, Opera) */
 }
 
-.table-a{
+.scroll{
     white-space: nowrap;
     overflow-x: auto;
     display: inline-block;
@@ -262,6 +275,30 @@ input:-webkit-autofill {
     scrollbar-width: none;  /* Скрыть скроллбар в Firefox */
 }
 
-col-a{
+.scroll-col{
     display: inline-block;
+}
+
+
+.btn-icon{
+    background: none;
+    border: 0px;
+    box-shadow: none;
+    --bs-btn-color: #00003A;
+    height: 40px;
+    max-height: 40px;
+    -webkit-text-fill-color: #00003A;
+}
+
+.cloud {
+    border-radius: 30px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 0, 0, 0.3);
+    background-color: #FFFFFF;
+    border: 3px solid #5A2A91;
+}
+
+
+/* To ensure the cells align nicely within the "row" styling */
+.table-row td, .table-row th {
+    padding: 10px;
 }

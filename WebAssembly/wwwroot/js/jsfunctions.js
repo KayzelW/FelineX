@@ -37,6 +37,21 @@ window.cookieHelper = {
     
 }
 
-document.addEventListener('contextmenu', function(event) {
-    event.preventDefault(); // Блокирует контекстное меню
-});
+//document.addEventListener('contextmenu', function(event) {
+//    event.preventDefault(); // Блокирует контекстное меню
+//});
+
+function getElementWidthById(id) {
+    const element = document.getElementById(id);
+    return element ? element.offsetHeight : 0;
+}
+
+function getElementHeidthById(id) {
+    const element = document.getElementById(id);
+    
+    return element ? element.offsetHeight : 0;
+}
+
+function getWinSize(){
+    return [window.innerWidth,window.innerHeight];
+}
