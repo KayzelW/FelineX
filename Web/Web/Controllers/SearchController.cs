@@ -7,7 +7,7 @@ using Web.Data;
 
 namespace Web.Controllers;
 
-[ApiController, Route("[controller]"), Authorize(Roles = "Teacher,Admin")]
+[ApiController, Route("api/[controller]"), Authorize(Roles = "Teacher,Admin")]
 public class SearchController : Controller
 {
     private readonly AppDbContext _dbContext;

@@ -39,6 +39,12 @@
     <Compile Update="Services\TestWarrior.DBWorker.cs">
       <DependentUpon>TestWarrior.cs</DependentUpon>
     </Compile>
+    <Compile Update="Controllers\TestController.Manage.cs">
+      <DependentUpon>TestController.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Controllers\TestController.Results.cs">
+      <DependentUpon>TestController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

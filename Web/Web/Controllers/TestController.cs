@@ -13,7 +13,7 @@ using TestDTO = Web.Controllers.Models.TestDTO;
 
 namespace Web.Controllers;
 
-[ApiController, Route("[controller]"), Authorize]
+[ApiController, Route("api/[controller]"), Authorize]
 public partial class TestController(
     AppDbContext dbContext,
     ILogger<TestController> logger,
