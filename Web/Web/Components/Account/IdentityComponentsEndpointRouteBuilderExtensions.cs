@@ -37,10 +37,11 @@ namespace Web.Components.Account
                 HttpContext context,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
                 [FromForm(Name = "login")] string login,
-                [FromForm(Name = "password")] string password
+                [FromForm(Name = "password")] string password,
+                [FromForm(Name = "remember")] bool remember=true
             ) =>
             {
-                var result = await signInManager.PasswordSignInAsync(login, password, false, lockoutOnFailure: false);
+                var result = await signInManager.PasswordSignInAsync(login, password, remember, lockoutOnFailure: false);
 
                 if (!result.Succeeded)
                 {
