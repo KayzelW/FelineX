@@ -33,7 +33,10 @@ public sealed partial class TestWarrior : ITestWarriorQueue
         {
             // var fields = configuration.GetSection("Settings:TestDatabaseUrls");
 
-            AvailableDBMS.Add(DBMS.SqLite, "DataSource=:memory:");
+            if (!AvailableDBMS.TryAdd(DBMS.SqLite, "DataSource=:memory:"))
+            {
+                logger.LogWarning("Не смог добавить SqLite в список доступных баз данных.");
+            }
 
             // if (!string.IsNullOrEmpty(fields["mysql"]))
             // {
