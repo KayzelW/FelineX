@@ -25,9 +25,7 @@ namespace Web.Components.Account
             #region Mobile
 
             accountGroup.MapPost("/MobileLogin", async (
-                [FromServices] HttpContent httpContent,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
-                [FromServices] UserManager<ApplicationUser> userManager,
                 [FromForm] string login,
                 [FromForm] string password
             ) =>
@@ -58,7 +56,6 @@ namespace Web.Components.Account
             });
 
             accountGroup.MapPost("/MobileReg", async (
-                [FromServices] HttpContent httpContent,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
                 [FromServices] UserManager<ApplicationUser> userManager,
                 [FromForm] string login,

@@ -12,7 +12,6 @@ public sealed partial class TestWarrior : ITestWarriorQueue
 {
     private readonly AppDbContext _dbContext;
     private readonly ILogger<TestWarrior> _logger;
-    private readonly IConfiguration _configuration;
 
     public static Dictionary<DBMS, string> AvailableDBMS = [];
 
@@ -22,7 +21,6 @@ public sealed partial class TestWarrior : ITestWarriorQueue
     public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, CheckQueueService checkQueueService)
     {
         _logger = logger;
-        _configuration = configuration;
 
         _testAnswers = checkQueueService.TestAnswers;
         _sqlTasks = checkQueueService.SqlTasks;
@@ -33,19 +31,19 @@ public sealed partial class TestWarrior : ITestWarriorQueue
 
         try
         {
-            var fields = this._configuration.GetSection("Settings:TestDatabaseUrls");
+            // var fields = configuration.GetSection("Settings:TestDatabaseUrls");
 
             AvailableDBMS.Add(DBMS.SqLite, "DataSource=:memory:");
 
-            if (!string.IsNullOrEmpty(fields["mysql"]))
-            {
-                AvailableDBMS.Add(DBMS.MySQL, fields["mysql"]!);
-            }
-
-            if (!string.IsNullOrEmpty(fields["postgres"]))
-            {
-                AvailableDBMS.Add(DBMS.PostgreSQL, fields["postgres"]!);
-            }
+            // if (!string.IsNullOrEmpty(fields["mysql"]))
+            // {
+            //     AvailableDBMS.Add(DBMS.MySQL, fields["mysql"]!);
+            // }
+            //
+            // if (!string.IsNullOrEmpty(fields["postgres"]))
+            // {
+            //     AvailableDBMS.Add(DBMS.PostgreSQL, fields["postgres"]!);
+            // }
         }
         catch (Exception ex)
         {
