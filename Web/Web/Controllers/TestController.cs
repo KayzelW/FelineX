@@ -21,7 +21,7 @@ public partial class TestController(
     : Controller
 {
     private readonly ILogger _logger = logger;
-    private readonly ITestWarriorQueue _testWarrior = testWarrior;
+    // private readonly ITestWarriorQueue _testWarrior = testWarrior;
 
     /// <summary>
     /// Must be used when Teacher trying to see all available tests 

@@ -13,12 +13,12 @@ public sealed partial class TestWarrior : ITestWarriorQueue
     private readonly AppDbContext _dbContext;
     private readonly ILogger<TestWarrior> _logger;
 
-    public static Dictionary<DBMS, string> AvailableDBMS = [];
+    public static Dictionary<DBMS, string>? AvailableDBMS;
 
     private readonly ConcurrentQueue<TestAnswer> _testAnswers;
     private readonly ConcurrentQueue<TaskAnswer> _sqlTasks;
 
-    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, CheckQueueService checkQueueService)
+    public TestWarrior(ILogger<TestWarrior> logger, CheckQueueService checkQueueService)
     {
         _logger = logger;
 
@@ -27,10 +27,16 @@ public sealed partial class TestWarrior : ITestWarriorQueue
 
         logger.LogInformation("TestWarrior instance created.");
 
+        if (AvailableDBMS != null)
+        {
+            return;
+        }
+
         #region DatabaseModelsInit
 
         try
         {
+            AvailableDBMS = new Dictionary<DBMS, string>();
             // var fields = configuration.GetSection("Settings:TestDatabaseUrls");
 
             if (!AvailableDBMS.TryAdd(DBMS.SqLite, "DataSource=:memory:"))
