@@ -60,8 +60,7 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 
 builder.Services.AddHostedService<DbWorker>();
 builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
-builder.Services.AddScoped<TestWarrior>();
-builder.Services.AddSingleton<CheckQueueService>();
+builder.Services.AddSingleton<TestWarrior>();
 builder.Services.AddSwaggerGen();
 // builder.Services.AddHostedService<TestWarrior>();
 

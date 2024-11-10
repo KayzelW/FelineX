@@ -18,12 +18,12 @@ public sealed partial class TestWarrior : ITestWarriorQueue
     private readonly ConcurrentQueue<TestAnswer> _testAnswers;
     private readonly ConcurrentQueue<TaskAnswer> _sqlTasks;
 
-    public TestWarrior(ILogger<TestWarrior> logger, CheckQueueService checkQueueService)
+    public TestWarrior(ILogger<TestWarrior> logger)
     {
         _logger = logger;
 
-        _testAnswers = checkQueueService.TestAnswers;
-        _sqlTasks = checkQueueService.SqlTasks;
+        _testAnswers = new ConcurrentQueue<TestAnswer>();
+        _sqlTasks = new ConcurrentQueue<TaskAnswer>();
 
         logger.LogInformation("TestWarrior instance created.");
 
