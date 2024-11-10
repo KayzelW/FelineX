@@ -25,7 +25,13 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("Admin", policy => policy.RequireAuthenticatedUser().RequireRole("Admin"));
+    opt.AddPolicy("Teacher", policy => policy.RequireAuthenticatedUser().RequireRole("Teacher", "Admin"));
+    opt.AddPolicy("Student", policy => policy.RequireAuthenticatedUser().RequireRole("Student", "Teacher", "Admin"));
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -81,6 +87,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.MapHangfireDashboardWithAuthorizationPolicy("Admin", "/hangfire"); //.RequireAuthorization("Admin");
 
 app.MapControllers();
 
@@ -93,7 +100,6 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
-app.MapHangfireDashboard();
 
 #endregion
 

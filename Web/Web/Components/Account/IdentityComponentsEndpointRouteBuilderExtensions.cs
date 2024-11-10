@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -24,10 +26,18 @@ namespace Web.Components.Account
 
             #region Mobile
 
+            accountGroup.MapGet("/MobileClaims", async (
+                HttpContext context
+            ) =>
+            {
+                return (IResult)TypedResults.Ok(context.User.Claims);
+            }).RequireAuthorization();
+
             accountGroup.MapPost("/MobileLogin", async (
+                HttpContext context,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
-                [FromForm] string login,
-                [FromForm] string password
+                [FromForm(Name = "login")] string login,
+                [FromForm(Name = "password")] string password
             ) =>
             {
                 var result = await signInManager.PasswordSignInAsync(login, password, false, lockoutOnFailure: false);
@@ -53,9 +63,10 @@ namespace Web.Components.Account
                 }
 
                 return (IResult)TypedResults.Ok();
-            });
+            }).DisableAntiforgery();
 
             accountGroup.MapPost("/MobileReg", async (
+                HttpContext context,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
                 [FromServices] UserManager<ApplicationUser> userManager,
                 [FromForm] string login,
@@ -88,7 +99,7 @@ namespace Web.Components.Account
                 await signInManager.SignInAsync(user, isPersistent: false);
 
                 return (IResult)TypedResults.Ok();
-            });
+            }).RequireAuthorization("Teacher");
 
             #endregion
 
