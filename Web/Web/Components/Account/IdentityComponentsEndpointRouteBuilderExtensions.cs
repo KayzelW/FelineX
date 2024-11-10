@@ -26,6 +26,7 @@ namespace Web.Components.Account
 
             #region Mobile
 
+
             accountGroup.MapGet("/MobileClaims", async (
                 HttpContext context
             ) =>
@@ -38,7 +39,7 @@ namespace Web.Components.Account
                 [FromServices] SignInManager<ApplicationUser> signInManager,
                 [FromForm(Name = "login")] string login,
                 [FromForm(Name = "password")] string password,
-                [FromForm(Name = "remember")] bool remember=true
+                [FromForm(Name = "remember")] bool remember = true
             ) =>
             {
                 var result = await signInManager.PasswordSignInAsync(login, password, remember, lockoutOnFailure: false);

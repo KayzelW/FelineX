@@ -1,3 +1,4 @@
+using Android.Content;
 using Android.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,19 +30,24 @@ public class MainActivity : Activity
 
         // Set our view from the "main" layout resource
         SetContentView(Resource.Layout.activity_main);
-
-        _authBtn = FindViewById<Button>(Resource.Id.LoginForm_AuthBtn);
-        _loginEditText = FindViewById<EditText>(Resource.Id.LoginForm_LoginEdit);
-        _passwordEditText = FindViewById<EditText>(Resource.Id.LoginForm_PasswordEdit);
-
-
-        _authBtn.Click += AuthBtnOnClick;
+        CheckAuth();
+        
     }
 
-    private async void AuthBtnOnClick(object? sender, EventArgs e)
+    private async void CheckAuth()
     {
         var api = ServiceProvider.GetRequiredService<ApiService>();
-
-        await api.AuthAsync(_loginEditText.Text, _passwordEditText.Text);
+        Intent? intent = null;
+        if (!await api.CheckAuth())
+        {
+            intent = new Intent(this, typeof(LoginActivity));
+            StartActivity(intent);
+            return;
+            
+        } 
+        intent = new Intent(this, typeof(HomeActivity));
+        StartActivity(intent);
     }
+
+
 }

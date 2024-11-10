@@ -85,4 +85,15 @@ internal class ApiService
 
         return true;
     }
+
+    internal async Task<bool> CheckAuth()
+    {
+        var response = await _httpClient.GetAsync("/Account/MobileClaims");
+        if (!response.IsSuccessStatusCode)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
