@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:background="#DDEBFF"
+              android:padding="16dp">
+
+    <!-- Заголовок -->
+    <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Мы любим котиков, но и не против тaнцующих енотов"
+            android:textSize="20sp"
+            android:gravity="center"
+        android:textColor="#0F066D"
+            android:paddingBottom="16dp"/>
+
+    <!-- Изображение анимации танцующего енота -->
+    <ImageView
+            android:id="@+id/imageViewSticker"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
+            android:src="@drawable/preloader"
+            android:contentDescription="Danser enot"
+            android:layout_gravity="center"/>
+
+    <!-- Текст "We're working" -->
+    <TextView
+            android:id="@+id/textViewWorking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="We're working"
+            android:textSize="18sp"
+            android:gravity="center"
+        android:textColor="#0F066D"
+            android:layout_marginTop="16dp"/>
+    <Button
+            android:id="@+id/myButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+            android:backgroundTint="#672C94"
+            android:layout_marginTop="24dp"
+            android:text="Go to Second Activity"
+            />
+</LinearLayout>
