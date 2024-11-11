@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Shared.Interfaces;
-using Web.Data.Test.Task;
+using Shared.Data.Test.Task;
 
-namespace Web.Data.Test;
+namespace Shared.Data.Test;
 
 public class TestSettings : IInnerIdentity
 {

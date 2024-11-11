@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Shared.Data;
 using Web.Components.Account.Pages;
 using Web.Components.Account.Pages.Manage;
-using Web.Data;
 
 namespace Web.Components.Account
 {

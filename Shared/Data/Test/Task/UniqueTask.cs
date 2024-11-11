@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using Shared.Interfaces;
 using Shared.Types;
 
-namespace Web.Data.Test.Task;
+namespace Shared.Data.Test.Task;
 
 public sealed class UniqueTask : IInnerIdentity
 {

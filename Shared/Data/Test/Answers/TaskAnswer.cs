@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using Shared.Data.Test.Task;
 using Shared.Interfaces;
-using Web.Data.Test.Task;
+using Shared.Data.Test.Task;
 
-namespace Web.Data.Test.Answers;
+namespace Shared.Data.Test.Answers;
 
 public class TaskAnswer : IInnerIdentity
 {

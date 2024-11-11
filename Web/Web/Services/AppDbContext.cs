@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Web.Data.Test;
-using Web.Data.Test.Answers;
-using Web.Data.Test.Task;
+using Shared.Data;
+using Shared.Data.Test;
+using Shared.Data.Test.Answers;
+using Shared.Data.Test.Task;
 
-namespace Web.Data;
+namespace Web.Services;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options)
     : IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)

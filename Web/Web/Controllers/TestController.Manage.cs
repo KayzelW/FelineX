@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.Attributes;
-using Shared.Types;
-using Web.Data.Test;
-using Web.Data.Test.Task;
+using Shared.Data.Test;
+using Shared.Data.Test.Task;
 using Web.Extensions;
 
 namespace Web.Controllers;

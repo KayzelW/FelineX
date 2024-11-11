@@ -1,8 +1,7 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Web.Data;
-
+using Shared.Data;
 namespace Web.Services;
 
 public class DbWorker(IServiceProvider serviceProvider, ILogger<DbWorker> logger, IRecurringJobManager jobManager)

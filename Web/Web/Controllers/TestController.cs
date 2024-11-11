@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.Attributes;
-using Shared.Models;
-using Shared.Types;
-using Web.Data;
-using Web.Data.Test;
-using Web.Data.Test.Answers;
+using Shared.Data.Test;
+using Shared.Data.Test.Answers;
 using Web.Extensions;
+using Web.Services;
 using Web.Services.Interfaces;
 using TestDTO = Web.Controllers.Models.TestDTO;
 

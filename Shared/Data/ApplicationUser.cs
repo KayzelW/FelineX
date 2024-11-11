@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Shared.Interfaces;
 using Shared.Types;
 
-namespace Web.Data;
+namespace Shared.Data;
 
 // Add profile data for application users by adding properties to the ApplicationUser class
 public sealed class ApplicationUser : IdentityUser

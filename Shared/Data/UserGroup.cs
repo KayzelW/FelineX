@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Shared.Interfaces;
 
-namespace Web.Data;
+namespace Shared.Data;
 
 public class UserGroup : IInnerIdentity
 {

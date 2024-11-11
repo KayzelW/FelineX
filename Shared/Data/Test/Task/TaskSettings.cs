@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Shared.Interfaces;
 
-namespace Web.Data.Test.Task;
+namespace Shared.Data.Test.Task;
 
 public class TaskSettings : IInnerIdentity
 {

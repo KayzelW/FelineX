@@ -27,9 +27,9 @@ internal class LoginActivity : Activity
 
         _apiService = MainActivity.ServiceProvider.GetRequiredService<ApiService>();
 
-        _authBtn = FindViewById<Button>(Resource.Id.LoginForm_AuthBtn);
-        _loginEditText = FindViewById<EditText>(Resource.Id.LoginForm_LoginEdit);
-        _passwordEditText = FindViewById<EditText>(Resource.Id.LoginForm_PasswordEdit);
+        _authBtn = FindViewById<Button>(Resource.Id.buttonLogin);
+        _loginEditText = FindViewById<EditText>(Resource.Id.editTextLogin);
+        _passwordEditText = FindViewById<EditText>(Resource.Id.editTextPassword);
 
         _authBtn.Click += AuthBtnOnClick;
     }
