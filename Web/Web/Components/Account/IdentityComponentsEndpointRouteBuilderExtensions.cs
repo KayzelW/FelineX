@@ -26,7 +26,6 @@ namespace Web.Components.Account
 
             #region Mobile
 
-
             accountGroup.MapGet("/MobileClaims", async (
                 HttpContext context
             ) =>
@@ -42,7 +41,8 @@ namespace Web.Components.Account
                 [FromForm(Name = "remember")] bool remember = true
             ) =>
             {
-                var result = await signInManager.PasswordSignInAsync(login, password, remember, lockoutOnFailure: false);
+                var result = await signInManager
+                    .PasswordSignInAsync(login, password, remember, lockoutOnFailure: false);
 
                 if (!result.Succeeded)
                 {
@@ -66,6 +66,14 @@ namespace Web.Components.Account
 
                 return (IResult)TypedResults.Ok();
             }).DisableAntiforgery();
+
+            accountGroup.MapPost("/MobileLogout", async (
+                ClaimsPrincipal user,
+                SignInManager<ApplicationUser> signInManager) =>
+            {
+                await signInManager.SignOutAsync();
+                return TypedResults.Ok();
+            }).RequireAuthorization();
 
             accountGroup.MapPost("/MobileReg", async (
                 HttpContext context,
