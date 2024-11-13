@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
 using System.Runtime.Serialization.Formatters.Soap;
 using Android.Content;
 using Android.Content.Res;
@@ -9,6 +10,7 @@ internal class ApiService
 {
     private readonly HttpClient _httpClient;
     private readonly CookieContainer _cookieContainer = new();
+    public IEnumerable<ClaimRecord>? Claims { get; private set; }
 
     public ApiService()
     {
@@ -83,7 +85,7 @@ internal class ApiService
         SaveCookies();
         Toast.MakeText(Application.Context, $"Logged in as {login}", ToastLength.Long)?.Show();
 
-        return true;
+        return await CheckAuth();
     }
 
     internal async Task<bool> CheckAuth()
@@ -94,6 +96,14 @@ internal class ApiService
             return false;
         }
 
+        Claims = await response.Content.ReadFromJsonAsync<IEnumerable<ClaimRecord>>();
+
         return true;
     }
+}
+
+internal class ClaimRecord
+{
+    public string Type { get; set; }
+    public string Value { get; set; }
 }
