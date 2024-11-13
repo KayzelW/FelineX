@@ -30,8 +30,18 @@ namespace Web.Components.Account
                 HttpContext context
             ) =>
             {
-                return (IResult)TypedResults.Ok(context.User.Claims);
-            }).RequireAuthorization();
+                if (context.User.Identity?.IsAuthenticated == false)
+                {
+                    return TypedResults.Unauthorized();
+                }
+                var claims = context.User.Claims.Select(c => new
+                {
+                    Type = c.Type,
+                    Value = c.Value
+                });
+
+                return (IResult)TypedResults.Ok(claims);
+            });
 
             accountGroup.MapPost("/MobileLogin", async (
                 HttpContext context,
