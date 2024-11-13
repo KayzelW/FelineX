@@ -34,12 +34,10 @@ namespace Web.Components.Account
                 {
                     return TypedResults.Unauthorized();
                 }
-                var claims = context.User.Claims.Select(c => new
-                {
-                    Type = c.Type,
-                    Value = c.Value
-                });
 
+                var claims = context.User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+                
+                // _logger.LogInformation($"Claims found: {claims.Count}: {string.Join(" ", claims)}");
                 return (IResult)TypedResults.Ok(claims);
             });
 

@@ -62,6 +62,11 @@ builder.Services.AddHostedService<DbWorker>();
 builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
 builder.Services.AddSingleton<TestWarrior>();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLogging();
+// builder.Services.AddHttpLogging(opt =>
+// {
+//     opt.
+// });
 // builder.Services.AddHostedService<TestWarrior>();
 
 #endregion
@@ -87,6 +92,7 @@ else
 
 app.UseHttpsRedirection();
 app.MapHangfireDashboardWithAuthorizationPolicy("Admin", "/hangfire"); //.RequireAuthorization("Admin");
+// app.UseHttpLogging();
 
 app.MapControllers();
 
