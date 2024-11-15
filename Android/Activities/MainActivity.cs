@@ -1,8 +1,9 @@
+using Android.Activities.Auth;
 using Android.Content;
 using Android.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Android;
+namespace Android.Activities;
 
 [Activity(Label = "@string/app_name", MainLauncher = true)]
 public class MainActivity : Activity
@@ -23,6 +24,7 @@ public class MainActivity : Activity
 
         builder.AddSingleton<ApiService>();
         ServiceProvider = builder.BuildServiceProvider();
+        Toast.MakeText(ApplicationContext, "ServiceProvider created", ToastLength.Short)!.Show();
 
         ServiceProvider.GetRequiredService<ApiService>().LoadCookies();
 
@@ -31,7 +33,6 @@ public class MainActivity : Activity
         // Set our view from the "main" layout resource
         SetContentView(Resource.Layout.activity_main);
         CheckAuth();
-        
     }
 
     private async void CheckAuth()
@@ -41,13 +42,12 @@ public class MainActivity : Activity
         if (!await api.CheckAuth())
         {
             intent = new Intent(this, typeof(LoginActivity));
-            StartActivity(intent);
-            return;
-            
-        } 
-        intent = new Intent(this, typeof(HomeActivity));
+        }
+        else
+        {
+            intent = new Intent(this, typeof(HomeActivity));
+        }
+
         StartActivity(intent);
     }
-
-
 }

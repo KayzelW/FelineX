@@ -1,4 +1,4 @@
-﻿namespace Android;
+﻿namespace Android.Activities.Auth;
 
 public class ProfileActivity
 {

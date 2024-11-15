@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationId>com.FelineX</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
+    <UseMauiEssentials>true</UseMauiEssentials>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
   </PropertyGroup>
   <ItemGroup>

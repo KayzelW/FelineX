@@ -1,16 +1,10 @@
-﻿using Android.App;
-using Android.OS;
-using Android.Views;
-using Android.Widget;
-using System.Threading.Tasks;
+﻿using Android.Content;
 using Android.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Android.Content;
 
+namespace Android.Activities.Auth;
 
-namespace Android;
-
-[Activity(Label = "LoginActivity")]
+[Activity]
 internal class LoginActivity : Activity
 {
     private ApiService _apiService { get; set; }
@@ -44,11 +38,10 @@ internal class LoginActivity : Activity
     private async void AuthBtnOnClick(object? sender, EventArgs e)
     {
         var auth = await _apiService.AuthAsync(_loginEditText.Text, _passwordEditText.Text);
-        if (auth) 
+        if (auth)
         {
             var intent = new Intent(this, typeof(HomeActivity));
             StartActivity(intent);
         }
-        
     }
 }
