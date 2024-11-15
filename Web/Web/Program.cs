@@ -3,9 +3,9 @@ using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Shared.Data;
 using Web.Components;
 using Web.Components.Account;
-using Web.Data;
 using Web.Services;
 using Web.Services.Interfaces;
 using _Imports = Web.Client._Imports;
@@ -25,7 +25,13 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("Admin", policy => policy.RequireAuthenticatedUser().RequireRole("Admin"));
+    opt.AddPolicy("Teacher", policy => policy.RequireAuthenticatedUser().RequireRole("Teacher", "Admin"));
+    opt.AddPolicy("Student", policy => policy.RequireAuthenticatedUser().RequireRole("Student", "Teacher", "Admin"));
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -54,9 +60,13 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 
 builder.Services.AddHostedService<DbWorker>();
 builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
-builder.Services.AddScoped<TestWarrior>();
-builder.Services.AddSingleton<CheckQueueService>();
+builder.Services.AddSingleton<TestWarrior>();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLogging();
+// builder.Services.AddHttpLogging(opt =>
+// {
+//     opt.
+// });
 // builder.Services.AddHostedService<TestWarrior>();
 
 #endregion
@@ -81,6 +91,8 @@ else
 }
 
 app.UseHttpsRedirection();
+app.MapHangfireDashboardWithAuthorizationPolicy("Admin", "/hangfire"); //.RequireAuthorization("Admin");
+// app.UseHttpLogging();
 
 app.MapControllers();
 
@@ -93,7 +105,6 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
-app.MapHangfireDashboard();
 
 #endregion
 

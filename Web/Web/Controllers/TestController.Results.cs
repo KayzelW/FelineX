@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.Attributes;
 using Shared.Types;
 using Web.Extensions;
 
@@ -28,7 +27,7 @@ public partial class TestController
         return NotFound("Test not checked yet");
     }
 
-    [HttpGet("get_test_result/{testAnswerId:guid}"), AuthorizeLevel(AccessLevel.Teacher)]
+    [HttpGet("get_test_result/{testAnswerId:guid}")]
     public async Task<IActionResult> GetTestResult(Guid testAnswerId)
     {
         try

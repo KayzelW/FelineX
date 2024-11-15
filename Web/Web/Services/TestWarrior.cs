@@ -1,8 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.EntityFrameworkCore;
+using Shared.Data.Test.Answers;
 using Shared.Types;
-using Web.Data;
-using Web.Data.Test.Answers;
 using Web.Services.Interfaces;
 using Task = System.Threading.Tasks.Task;
 
@@ -12,40 +11,47 @@ public sealed partial class TestWarrior : ITestWarriorQueue
 {
     private readonly AppDbContext _dbContext;
     private readonly ILogger<TestWarrior> _logger;
-    private readonly IConfiguration _configuration;
 
-    public static Dictionary<DBMS, string> AvailableDBMS = [];
+    public static Dictionary<DBMS, string>? AvailableDBMS;
 
     private readonly ConcurrentQueue<TestAnswer> _testAnswers;
     private readonly ConcurrentQueue<TaskAnswer> _sqlTasks;
 
-    public TestWarrior(ILogger<TestWarrior> logger, IConfiguration configuration, CheckQueueService checkQueueService)
+    public TestWarrior(ILogger<TestWarrior> logger)
     {
         _logger = logger;
-        _configuration = configuration;
 
-        _testAnswers = checkQueueService.TestAnswers;
-        _sqlTasks = checkQueueService.SqlTasks;
+        _testAnswers = new ConcurrentQueue<TestAnswer>();
+        _sqlTasks = new ConcurrentQueue<TaskAnswer>();
 
         logger.LogInformation("TestWarrior instance created.");
+
+        if (AvailableDBMS != null)
+        {
+            return;
+        }
 
         #region DatabaseModelsInit
 
         try
         {
-            var fields = this._configuration.GetSection("Settings:TestDatabaseUrls");
+            AvailableDBMS = new Dictionary<DBMS, string>();
+            // var fields = configuration.GetSection("Settings:TestDatabaseUrls");
 
-            AvailableDBMS.Add(DBMS.SqLite, "DataSource=:memory:");
-
-            if (!string.IsNullOrEmpty(fields["mysql"]))
+            if (!AvailableDBMS.TryAdd(DBMS.SqLite, "DataSource=:memory:"))
             {
-                AvailableDBMS.Add(DBMS.MySQL, fields["mysql"]!);
+                logger.LogWarning("Не смог добавить SqLite в список доступных баз данных.");
             }
 
-            if (!string.IsNullOrEmpty(fields["postgres"]))
-            {
-                AvailableDBMS.Add(DBMS.PostgreSQL, fields["postgres"]!);
-            }
+            // if (!string.IsNullOrEmpty(fields["mysql"]))
+            // {
+            //     AvailableDBMS.Add(DBMS.MySQL, fields["mysql"]!);
+            // }
+            //
+            // if (!string.IsNullOrEmpty(fields["postgres"]))
+            // {
+            //     AvailableDBMS.Add(DBMS.PostgreSQL, fields["postgres"]!);
+            // }
         }
         catch (Exception ex)
         {

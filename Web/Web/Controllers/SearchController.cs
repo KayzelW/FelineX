@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.Attributes;
-using Shared.Types;
-using Web.Data;
+using Web.Services;
+
 
 namespace Web.Controllers;
 

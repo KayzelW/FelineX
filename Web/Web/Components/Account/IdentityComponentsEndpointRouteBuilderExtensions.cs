@@ -1,15 +1,17 @@
 using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Shared.Data;
 using Web.Components.Account.Pages;
 using Web.Components.Account.Pages.Manage;
-using Web.Data;
 
 namespace Web.Components.Account
 {
@@ -24,15 +26,31 @@ namespace Web.Components.Account
 
             #region Mobile
 
-            accountGroup.MapPost("/MobileLogin", async (
-                [FromServices] HttpContent httpContent,
-                [FromServices] SignInManager<ApplicationUser> signInManager,
-                [FromServices] UserManager<ApplicationUser> userManager,
-                [FromForm] string login,
-                [FromForm] string password
+            accountGroup.MapGet("/MobileClaims", async (
+                HttpContext context
             ) =>
             {
-                var result = await signInManager.PasswordSignInAsync(login, password, false, lockoutOnFailure: false);
+                if (context.User.Identity?.IsAuthenticated == false)
+                {
+                    return TypedResults.Unauthorized();
+                }
+
+                var claims = context.User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+                
+                // _logger.LogInformation($"Claims found: {claims.Count}: {string.Join(" ", claims)}");
+                return (IResult)TypedResults.Ok(claims);
+            });
+
+            accountGroup.MapPost("/MobileLogin", async (
+                HttpContext context,
+                [FromServices] SignInManager<ApplicationUser> signInManager,
+                [FromForm(Name = "login")] string login,
+                [FromForm(Name = "password")] string password,
+                [FromForm(Name = "remember")] bool remember = true
+            ) =>
+            {
+                var result = await signInManager
+                    .PasswordSignInAsync(login, password, remember, lockoutOnFailure: false);
 
                 if (!result.Succeeded)
                 {
@@ -55,10 +73,18 @@ namespace Web.Components.Account
                 }
 
                 return (IResult)TypedResults.Ok();
-            });
+            }).DisableAntiforgery();
+
+            accountGroup.MapPost("/MobileLogout", async (
+                ClaimsPrincipal user,
+                SignInManager<ApplicationUser> signInManager) =>
+            {
+                await signInManager.SignOutAsync();
+                return TypedResults.Ok();
+            }).RequireAuthorization();
 
             accountGroup.MapPost("/MobileReg", async (
-                [FromServices] HttpContent httpContent,
+                HttpContext context,
                 [FromServices] SignInManager<ApplicationUser> signInManager,
                 [FromServices] UserManager<ApplicationUser> userManager,
                 [FromForm] string login,
@@ -91,7 +117,7 @@ namespace Web.Components.Account
                 await signInManager.SignInAsync(user, isPersistent: false);
 
                 return (IResult)TypedResults.Ok();
-            });
+            }).RequireAuthorization("Teacher");
 
             #endregion
 

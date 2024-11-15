@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using Web.Data;
+using Web.Services;
 
 #nullable disable
 
@@ -159,6 +159,322 @@ namespace Web.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Shared.Data.ApplicationRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Shared.Data.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Answers.TaskAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AnsweredTaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCheckEnded")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFailedCheck")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSuccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Result")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("StringAnswer")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TestAnswerId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnsweredTaskId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("TestAnswerId");
+
+                    b.ToTable("TaskAnswers");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Answers.TestAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AnsweredTestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientConnectionLog")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FantomName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("PassingDate")
+                        .HasColumnType("timestamp(6)");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnsweredTestId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("TestAnswers");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Task.TaskSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SqlQueryCheck")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SqlQueryInstall")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaskSettings");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Task.ThemeTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Theme")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ThemeTasks");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Task.UniqueTask", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<List<string>>("DataRows")
+                        .HasColumnType("text[]");
+
+                    b.Property<int?>("DatabaseType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("InteractionType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Question")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Task.VariableAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("StringAnswer")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("Truthful")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("UniqueTaskId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UniqueTaskId");
+
+                    b.ToTable("VariableAnswers");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.TestSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TestSettings");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.UniqueTest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CreationTime")
+                        .HasColumnType("timestamp(6)");
+
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SettingsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TestName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("SettingsId");
+
+                    b.ToTable("Tests");
+                });
+
+            modelBuilder.Entity("Shared.Data.UserGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("GroupCreatorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupCreatorId");
+
+                    b.ToTable("Groups");
+                });
+
             modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
                 {
                     b.Property<Guid>("MarkedVariablesId")
@@ -234,331 +550,15 @@ namespace Web.Migrations
                     b.ToTable("UniqueTaskUniqueTest");
                 });
 
-            modelBuilder.Entity("Web.Data.ApplicationRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Web.Data.ApplicationUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Answers.TaskAnswer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AnsweredTaskId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsCheckEnded")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsFailedCheck")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSuccess")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Result")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("StringAnswer")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TestAnswerId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnsweredTaskId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TestAnswerId");
-
-                    b.ToTable("TaskAnswers");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Answers.TestAnswer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AnsweredTestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ClientConnectionLog")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FantomName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("PassingDate")
-                        .HasColumnType("timestamp(6)");
-
-                    b.Property<double>("Score")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("StudentId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnsweredTestId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("TestAnswers");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Task.TaskSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SqlQueryCheck")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SqlQueryInstall")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TaskSettings");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Task.ThemeTask", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Theme")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ThemeTasks");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Task.UniqueTask", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<List<string>>("DataRows")
-                        .HasColumnType("text[]");
-
-                    b.Property<int?>("DatabaseType")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("InteractionType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Question")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.ToTable("Tasks");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Task.VariableAnswer", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("StringAnswer")
-                        .HasColumnType("text");
-
-                    b.Property<bool?>("Truthful")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("UniqueTaskId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UniqueTaskId");
-
-                    b.ToTable("VariableAnswers");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.TestSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TestSettings");
-                });
-
-            modelBuilder.Entity("Web.Data.Test.UniqueTest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreationTime")
-                        .HasColumnType("timestamp(6)");
-
-                    b.Property<string>("CreatorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("SettingsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("TestName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("SettingsId");
-
-                    b.ToTable("Tests");
-                });
-
-            modelBuilder.Entity("Web.Data.UserGroup", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("GroupCreatorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupCreatorId");
-
-                    b.ToTable("Groups");
-                });
-
             modelBuilder.Entity("ApplicationUserTestSettings", b =>
                 {
-                    b.HasOne("Web.Data.Test.TestSettings", null)
+                    b.HasOne("Shared.Data.Test.TestSettings", null)
                         .WithMany()
                         .HasForeignKey("TestSettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web.Data.ApplicationUser", null)
+                    b.HasOne("Shared.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("TestUsersId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -567,13 +567,13 @@ namespace Web.Migrations
 
             modelBuilder.Entity("ApplicationUserUserGroup", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", null)
+                    b.HasOne("Shared.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("StudentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web.Data.UserGroup", null)
+                    b.HasOne("Shared.Data.UserGroup", null)
                         .WithMany()
                         .HasForeignKey("UserGroupsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -582,7 +582,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationRole", null)
+                    b.HasOne("Shared.Data.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -591,7 +591,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", null)
+                    b.HasOne("Shared.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -600,7 +600,7 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", null)
+                    b.HasOne("Shared.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -609,13 +609,13 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationRole", null)
+                    b.HasOne("Shared.Data.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web.Data.ApplicationUser", null)
+                    b.HasOne("Shared.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -624,102 +624,27 @@ namespace Web.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", null)
+                    b.HasOne("Shared.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
+            modelBuilder.Entity("Shared.Data.Test.Answers.TaskAnswer", b =>
                 {
-                    b.HasOne("Web.Data.Test.Task.VariableAnswer", null)
-                        .WithMany()
-                        .HasForeignKey("MarkedVariablesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web.Data.Test.Answers.TaskAnswer", null)
-                        .WithMany()
-                        .HasForeignKey("TaskAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TestSettingsThemeTask", b =>
-                {
-                    b.HasOne("Web.Data.Test.Task.ThemeTask", null)
-                        .WithMany()
-                        .HasForeignKey("TasksThemesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web.Data.Test.TestSettings", null)
-                        .WithMany()
-                        .HasForeignKey("TestSettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TestSettingsUserGroup", b =>
-                {
-                    b.HasOne("Web.Data.UserGroup", null)
-                        .WithMany()
-                        .HasForeignKey("TestGroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web.Data.Test.TestSettings", null)
-                        .WithMany()
-                        .HasForeignKey("TestSettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ThemeTaskUniqueTask", b =>
-                {
-                    b.HasOne("Web.Data.Test.Task.ThemeTask", null)
-                        .WithMany()
-                        .HasForeignKey("ThematicsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web.Data.Test.Task.UniqueTask", null)
-                        .WithMany()
-                        .HasForeignKey("ThemeTask")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("UniqueTaskUniqueTest", b =>
-                {
-                    b.HasOne("Web.Data.Test.Task.UniqueTask", null)
-                        .WithMany()
-                        .HasForeignKey("TasksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Web.Data.Test.UniqueTest", null)
-                        .WithMany()
-                        .HasForeignKey("TestsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Web.Data.Test.Answers.TaskAnswer", b =>
-                {
-                    b.HasOne("Web.Data.Test.Task.UniqueTask", "AnsweredTask")
+                    b.HasOne("Shared.Data.Test.Task.UniqueTask", "AnsweredTask")
                         .WithMany()
                         .HasForeignKey("AnsweredTaskId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Web.Data.ApplicationUser", "Student")
+                    b.HasOne("Shared.Data.ApplicationUser", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web.Data.Test.Answers.TestAnswer", "TestAnswer")
+                    b.HasOne("Shared.Data.Test.Answers.TestAnswer", "TestAnswer")
                         .WithMany("TaskAnswers")
                         .HasForeignKey("TestAnswerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -732,14 +657,14 @@ namespace Web.Migrations
                     b.Navigation("TestAnswer");
                 });
 
-            modelBuilder.Entity("Web.Data.Test.Answers.TestAnswer", b =>
+            modelBuilder.Entity("Shared.Data.Test.Answers.TestAnswer", b =>
                 {
-                    b.HasOne("Web.Data.Test.UniqueTest", "AnsweredTest")
+                    b.HasOne("Shared.Data.Test.UniqueTest", "AnsweredTest")
                         .WithMany()
                         .HasForeignKey("AnsweredTestId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Web.Data.ApplicationUser", "Student")
+                    b.HasOne("Shared.Data.ApplicationUser", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -750,20 +675,20 @@ namespace Web.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("Web.Data.Test.Task.TaskSettings", b =>
+            modelBuilder.Entity("Shared.Data.Test.Task.TaskSettings", b =>
                 {
-                    b.HasOne("Web.Data.Test.Task.UniqueTask", "AssignedTask")
+                    b.HasOne("Shared.Data.Test.Task.UniqueTask", "AssignedTask")
                         .WithOne("Settings")
-                        .HasForeignKey("Web.Data.Test.Task.TaskSettings", "Id")
+                        .HasForeignKey("Shared.Data.Test.Task.TaskSettings", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AssignedTask");
                 });
 
-            modelBuilder.Entity("Web.Data.Test.Task.UniqueTask", b =>
+            modelBuilder.Entity("Shared.Data.Test.Task.UniqueTask", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", "Creator")
+                    b.HasOne("Shared.Data.ApplicationUser", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -772,23 +697,23 @@ namespace Web.Migrations
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("Web.Data.Test.Task.VariableAnswer", b =>
+            modelBuilder.Entity("Shared.Data.Test.Task.VariableAnswer", b =>
                 {
-                    b.HasOne("Web.Data.Test.Task.UniqueTask", null)
+                    b.HasOne("Shared.Data.Test.Task.UniqueTask", null)
                         .WithMany("VariableAnswers")
                         .HasForeignKey("UniqueTaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Web.Data.Test.UniqueTest", b =>
+            modelBuilder.Entity("Shared.Data.Test.UniqueTest", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", "Creator")
+                    b.HasOne("Shared.Data.ApplicationUser", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Web.Data.Test.TestSettings", "Settings")
+                    b.HasOne("Shared.Data.Test.TestSettings", "Settings")
                         .WithMany()
                         .HasForeignKey("SettingsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -799,9 +724,9 @@ namespace Web.Migrations
                     b.Navigation("Settings");
                 });
 
-            modelBuilder.Entity("Web.Data.UserGroup", b =>
+            modelBuilder.Entity("Shared.Data.UserGroup", b =>
                 {
-                    b.HasOne("Web.Data.ApplicationUser", "GroupCreator")
+                    b.HasOne("Shared.Data.ApplicationUser", "GroupCreator")
                         .WithMany()
                         .HasForeignKey("GroupCreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -810,12 +735,87 @@ namespace Web.Migrations
                     b.Navigation("GroupCreator");
                 });
 
-            modelBuilder.Entity("Web.Data.Test.Answers.TestAnswer", b =>
+            modelBuilder.Entity("TaskAnswerVariableAnswer", b =>
+                {
+                    b.HasOne("Shared.Data.Test.Task.VariableAnswer", null)
+                        .WithMany()
+                        .HasForeignKey("MarkedVariablesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Data.Test.Answers.TaskAnswer", null)
+                        .WithMany()
+                        .HasForeignKey("TaskAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TestSettingsThemeTask", b =>
+                {
+                    b.HasOne("Shared.Data.Test.Task.ThemeTask", null)
+                        .WithMany()
+                        .HasForeignKey("TasksThemesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Data.Test.TestSettings", null)
+                        .WithMany()
+                        .HasForeignKey("TestSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TestSettingsUserGroup", b =>
+                {
+                    b.HasOne("Shared.Data.UserGroup", null)
+                        .WithMany()
+                        .HasForeignKey("TestGroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Data.Test.TestSettings", null)
+                        .WithMany()
+                        .HasForeignKey("TestSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ThemeTaskUniqueTask", b =>
+                {
+                    b.HasOne("Shared.Data.Test.Task.ThemeTask", null)
+                        .WithMany()
+                        .HasForeignKey("ThematicsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Data.Test.Task.UniqueTask", null)
+                        .WithMany()
+                        .HasForeignKey("ThemeTask")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UniqueTaskUniqueTest", b =>
+                {
+                    b.HasOne("Shared.Data.Test.Task.UniqueTask", null)
+                        .WithMany()
+                        .HasForeignKey("TasksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Data.Test.UniqueTest", null)
+                        .WithMany()
+                        .HasForeignKey("TestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.Answers.TestAnswer", b =>
                 {
                     b.Navigation("TaskAnswers");
                 });
 
-            modelBuilder.Entity("Web.Data.Test.Task.UniqueTask", b =>
+            modelBuilder.Entity("Shared.Data.Test.Task.UniqueTask", b =>
                 {
                     b.Navigation("Settings")
                         .IsRequired();

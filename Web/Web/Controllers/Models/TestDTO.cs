@@ -1,4 +1,4 @@
-﻿using Web.Data.Test;
+﻿using Shared.Data.Test;
 
 namespace Web.Controllers.Models;
 
