@@ -57,8 +57,6 @@
                      Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
-    <Image x:Key="ImageProfile" Source="profile.png"/>
-
     <FontImageSource x:Key="IconProfile"
              Glyph="{x:Static f:FluentUI.person_accounts_20_regular}"
              FontFamily="{x:Static f:FluentUI.FontFamily}"
