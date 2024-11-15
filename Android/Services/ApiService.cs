@@ -64,10 +64,12 @@ internal class ApiService
             retrievedCookies = (CookieCollection)formatter.Deserialize(s);
 
         _cookieContainer.Add(retrievedCookies);
-        Toast.MakeText(Application.Context, $"Загружено {retrievedCookies.Count} Cookie", ToastLength.Long)!.Show();
+        Toast.MakeText(Application.Context, $"Загружено {retrievedCookies.Count} Cookie", ToastLength.Long)?.Show();
     }
 
     #endregion
+
+    #region Auth
 
     internal async Task<bool> AuthAsync(string login, string password)
     {
@@ -97,9 +99,49 @@ internal class ApiService
         }
 
         Claims = await response.Content.ReadFromJsonAsync<IEnumerable<ClaimRecord>>();
+        SaveCookies();
 
         return true;
     }
+
+    internal async Task<bool> LogoutAsync()
+    {
+        var response = await _httpClient.GetAsync("/Account/MobileLogout");
+        foreach (Cookie cookie in _cookieContainer.GetAllCookies())
+        {
+            cookie.Expired = true;
+        }
+
+        Toast.MakeText(Application.Context, $"Кол-во кукисов после логаута {_cookieContainer.GetAllCookies().Count}",
+            ToastLength.Long)?.Show();
+        SaveCookies();
+        if (!response.IsSuccessStatusCode)
+        {
+            return false;
+        }
+
+        Claims = null;
+        return true;
+    }
+
+    #endregion
+
+    #region Tests
+
+    internal async Task<bool> GetTestsAsync()
+    {
+        var response = await _httpClient.GetAsync("/Test/api/Test/get_tests");
+        if (!response.IsSuccessStatusCode)
+        {
+            return false;
+        }
+
+        var text = await response.Content.ReadAsStringAsync();
+        Toast.MakeText(Application.Context, text, ToastLength.Long)?.Show();
+        return true;
+    }
+
+    #endregion
 }
 
 internal class ClaimRecord

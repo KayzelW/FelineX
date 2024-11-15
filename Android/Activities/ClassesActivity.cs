@@ -1,6 +1,11 @@
 ﻿namespace Android.Activities;
 
-public class ClassesActivity
+[Activity]
+public class ClassesActivity : Activity
 {
-    
+    protected override void OnCreate(Bundle? savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
+        StartActivity(typeof(HomeActivity));
+    }
 }

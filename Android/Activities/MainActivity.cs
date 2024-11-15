@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Android.Activities;
 
-[Activity(Label = "@string/app_name", MainLauncher = true)]
+[Activity(Label = "@string/app_name", MainLauncher = true, NoHistory = true)]
 public class MainActivity : Activity
 {
     internal static IServiceProvider ServiceProvider { get; private set; }
@@ -24,7 +24,7 @@ public class MainActivity : Activity
 
         builder.AddSingleton<ApiService>();
         ServiceProvider = builder.BuildServiceProvider();
-        Toast.MakeText(ApplicationContext, "ServiceProvider created", ToastLength.Short)!.Show();
+        Toast.MakeText(ApplicationContext, "ServiceProvider created", ToastLength.Short)?.Show();
 
         ServiceProvider.GetRequiredService<ApiService>().LoadCookies();
 

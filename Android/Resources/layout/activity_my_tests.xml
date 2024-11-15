@@ -36,8 +36,7 @@
             android:text="FelineX"
             android:textColor="#FFFFFF"
             android:textSize="12sp"
-            android:layout_marginLeft="10dp"
-            android:onClick="onHomeClicked"/>
+            android:layout_marginLeft="10dp"/>
 
         <!-- Кнопка для перехода на "Мои тесты" -->
         <Button
@@ -46,8 +45,7 @@
             android:layout_height="wrap_content"
             android:text="Мои тесты"
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:onClick="onTestsClicked"/>
+            android:textSize="12sp"/>
 
         <!-- Кнопка для перехода на "Классы" -->
         <Button
@@ -56,8 +54,7 @@
             android:layout_height="wrap_content"
             android:text="Классы"
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:onClick="onClassClicked"/>
+            android:textSize="12sp"/>
 
         <!-- Кнопка для перехода на "Профиль" -->
         <Button
@@ -67,8 +64,7 @@
             android:src="@drawable/icon1"
             android:text="Профиль"
             android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:onClick="onProfileClicked"/>
+            android:textSize="12sp"/>
     </LinearLayout>
 
 
@@ -78,7 +74,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Создать новый тест"
-        android:onClick="onCreateTestClicked"
         android:textColor="#FFFFFF"
         android:backgroundTint="#672C94"
         android:layout_marginTop="24dp"
@@ -156,8 +151,7 @@
             android:id="@+id/btn_close_qr_modal"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon1"
-            android:onClick="onCloseQrModalClicked"/>
+            android:src="@drawable/icon1"/>
     </LinearLayout>
 
     <!-- Модальное окно для отображения QR-кода -->
@@ -186,7 +180,6 @@
                     android:text="Закрыть"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="onCloseQrModalClicked"
                     android:textColor="#FFFFFF"/>
             </LinearLayout>
 

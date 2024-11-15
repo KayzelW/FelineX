@@ -1,10 +1,12 @@
 ﻿using Android.Content;
+using Android.Content.Res;
 using Android.Services;
+using Android.Window;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Android.Activities.Auth;
 
-[Activity]
+[Activity(NoHistory = true)]
 internal class LoginActivity : Activity
 {
     private ApiService _apiService { get; set; }
@@ -26,6 +28,12 @@ internal class LoginActivity : Activity
         _passwordEditText = FindViewById<EditText>(Resource.Id.editTextPassword);
 
         _authBtn.Click += AuthBtnOnClick;
+        ActionBar?.Hide();
+    }
+
+    public override void OnBackPressed()
+    {
+        Toast.MakeText(this, "Отсюда нельзя вернуться", ToastLength.Short)?.Show();
     }
 
     private void NavigateToSignUp()
@@ -43,5 +51,10 @@ internal class LoginActivity : Activity
             var intent = new Intent(this, typeof(HomeActivity));
             StartActivity(intent);
         }
+    }
+
+    private bool IsUserAuthorized()
+    {
+        return _apiService.Claims != null;
     }
 }

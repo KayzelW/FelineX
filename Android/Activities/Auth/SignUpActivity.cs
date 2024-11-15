@@ -1,6 +1,11 @@
 ﻿namespace Android.Activities.Auth;
 
-public class SignUpActivity
+[Activity]
+public class SignUpActivity : Activity
 {
-    
+    protected override void OnCreate(Bundle? savedInstanceState)
+    {
+        base.OnCreate(savedInstanceState);
+        StartActivity(typeof(HomeActivity));
+    }
 }

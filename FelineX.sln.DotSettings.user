@@ -22,6 +22,7 @@
 &lt;/AssemblyExplorer&gt;</s:String>
 	
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=7f87c278_002D4ee8_002D42cb_002Da008_002D906de6bb655f_0023APIServer/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=b35972db_002D7cd5_002D4979_002D97a0_002D91ca7958ba63_0023Android/@EntryIndexedValue">True</s:Boolean>
 	
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=e55e2c7d_002D67b1_002D4675_002Db718_002D7e646fc074fc_0023WebAssembly/@EntryIndexedValue">True</s:Boolean>
 	</wpf:ResourceDictionary>

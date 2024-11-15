@@ -46,4 +46,14 @@
             android:layout_marginTop="24dp"
             android:text="Go to Second Activity"
             />
+
+    <Button
+            android:id="@+id/Home_LogoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#672C94"
+            android:layout_marginTop="24dp"
+            android:text="Logout"
+    />
 </LinearLayout>
