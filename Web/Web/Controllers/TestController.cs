@@ -23,7 +23,7 @@ public partial class TestController(
     /// Must be used when Teacher trying to see all available tests 
     /// </summary>
     /// <returns>list of <see cref="Test"/></returns>
-    [HttpGet("get_tests")]
+    [HttpGet("get_tests"), Authorize(Policy = "Teacher")]
     public async Task<ActionResult<IEnumerable<UniqueTest>>> GetTests()
     {
         var userId = this.GetUserId().ToString();

@@ -19,7 +19,7 @@ public class SearchController : Controller
     }
 
     [HttpGet("search_users")]
-    public async Task<IActionResult> SearchUsers(string query)
+    public async Task<IActionResult> SearchUsers([FromQuery]string query)
     {
         if (string.IsNullOrWhiteSpace(query))
         {
