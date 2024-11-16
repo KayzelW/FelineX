@@ -6,6 +6,7 @@ using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared.Data.Test;
 
 namespace DesktopMAUIApp.Services;
 
@@ -111,6 +112,7 @@ public class ApiService
         var response = await _httpClient.GetAsync("/Account/MobileClaims");
         if (!response.IsSuccessStatusCode)
         {
+            await Shell.Current.GoToAsync("login");
             return false;
         }
 
@@ -152,17 +154,30 @@ public class ApiService
 
     #region Tests
 
-    public async Task<bool> GetTestsAsync()
+    public async Task<List<UniqueTest>?> GetTestsAsync()
     {
-        var response = await _httpClient.GetAsync("/Test/api/Test/get_tests");
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            return false;
-        }
+            if (!await CheckAuth())
+            {
+                return null;
+            }
+            var response = await _httpClient.GetAsync("/api/Test/get_tests");
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            var tests = await response.Content.ReadFromJsonAsync<List<UniqueTest>>();
+            Toast.Make("Тесты получены", ToastDuration.Long)?.Show();
+            return tests;
 
-        var text = await response.Content.ReadAsStringAsync();
-        Toast.Make(text, ToastDuration.Long)?.Show();
-        return true;
+        }
+        catch (HttpRequestException e)
+        {
+            Logger.LogError(e.ToString());
+            throw;
+        }
+        
     }
 
     #endregion

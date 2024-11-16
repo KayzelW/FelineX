@@ -52,6 +52,7 @@ public static class MauiProgram
 
         builder.Services.AddTransientWithShellRoute<LoginPage, LoginPageModel>("login");
         builder.Services.AddTransientWithShellRoute<ProfilePage, ProfilePageModel>("profile");
+        builder.Services.AddTransientWithShellRoute<MyTests, MyTestsPageModel>("my_tests");
 
         return builder.Build();
     }
