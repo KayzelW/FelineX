@@ -36,6 +36,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
 });
 
 builder.Services.AddHangfire(configuration => configuration
@@ -51,10 +52,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
-    .AddIdentity<ApplicationUser, ApplicationRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = false;
-    })
+    .AddIdentity<ApplicationUser, ApplicationRole>(options => { options.SignIn.RequireConfirmedAccount = false; })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();

@@ -14,8 +14,12 @@ public class ApiService
     private readonly HttpClient _httpClient;
     private readonly CookieContainer _cookieContainer = new();
     public Dictionary<string, string>? Claims { get; private set; }
+    public bool IsAuthroized => Claims?.Count > 0;
+    public string? GetRole => Claims?[ClaimTypes.Role];
+    public string? GetId => Claims?[ClaimTypes.NameIdentifier];
+    public string? GetName => Claims?[ClaimTypes.Name];
 
-    public ILogger<ApiService> Logger { get; }
+    private ILogger<ApiService> Logger { get; }
 
     public ApiService(ILogger<ApiService> logger)
     {
@@ -80,10 +84,9 @@ public class ApiService
     {
         try
         {
-
             var form = new FormUrlEncodedContent([
                 new KeyValuePair<string, string>("login", login),
-            new KeyValuePair<string, string>("password", password)
+                new KeyValuePair<string, string>("password", password)
             ]);
             var response = await _httpClient.PostAsync("/Account/MobileLogin", form);
             if (!response.IsSuccessStatusCode)
@@ -120,14 +123,14 @@ public class ApiService
 
         SaveCookies();
         Logger.LogInformation($"Logged in as {Claims![ClaimTypes.Name]}:{Claims[ClaimTypes.Role]}");
-       
+
 
         return true;
     }
 
     public async Task<bool> LogoutAsync()
     {
-        var response = await _httpClient.GetAsync("/Account/MobileLogout");
+        var response = await _httpClient.PostAsync("/Account/MobileLogout", null);
         if (!response.IsSuccessStatusCode)
         {
             return false;

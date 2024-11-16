@@ -47,6 +47,8 @@ public static class MauiProgram
 
 
         builder.Services.AddSingleton<ApiService>();
+        builder.Services.AddSingleton<ProfilePageModel>();
+        builder.Services.AddSingleton<AppShellViewModel>();
 
         builder.Services.AddTransientWithShellRoute<LoginPage, LoginPageModel>("login");
         builder.Services.AddTransientWithShellRoute<ProfilePage, ProfilePageModel>("profile");
