@@ -112,7 +112,6 @@ public class ApiService
         var response = await _httpClient.GetAsync("/Account/MobileClaims");
         if (!response.IsSuccessStatusCode)
         {
-            await Shell.Current.GoToAsync("login");
             return false;
         }
 
@@ -158,10 +157,6 @@ public class ApiService
     {
         try
         {
-            if (!await CheckAuth())
-            {
-                return null;
-            }
             var response = await _httpClient.GetAsync("/api/Test/get_tests");
             if (!response.IsSuccessStatusCode)
             {
@@ -170,12 +165,11 @@ public class ApiService
             var tests = await response.Content.ReadFromJsonAsync<List<UniqueTest>>();
             Toast.Make("Тесты получены", ToastDuration.Long)?.Show();
             return tests;
-
         }
-        catch (HttpRequestException e)
+        catch (Exception e)
         {
             Logger.LogError(e.ToString());
-            throw;
+            return null;
         }
         
     }
