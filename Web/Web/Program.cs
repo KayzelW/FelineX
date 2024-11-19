@@ -63,18 +63,22 @@ builder.Services
 
 builder.Services.ConfigureApplicationCookie(opt =>
 {
-    opt.Events.OnRedirectToAccessDenied = async context =>
     {
-        if (context.Request.Path.HasValue
-            && context.Request.Path.Value.Contains("/api/"))
-        {
-            context.Response.StatusCode = 403;
-            await context.Response.CompleteAsync();
-            return;
-        }
+        opt.Events.OnRedirectToAccessDenied = OnRedirectToAccessDenied;
 
-        context.Response.Redirect("/Account/AccessDenied");
-    };
+        async Task OnRedirectToAccessDenied(RedirectContext<CookieAuthenticationOptions> context)
+        {
+            if (context.Request.Path.HasValue
+                && context.Request.Path.Value.Contains("/api/"))
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.CompleteAsync();
+                return;
+            }
+
+            context.Response.Redirect("/Account/AccessDenied");
+        }
+    }
 });
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
