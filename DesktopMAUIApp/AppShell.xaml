@@ -12,8 +12,11 @@
     FlyoutBehavior="Flyout"
     Title="DesktopMAUIApp">
 
+    
     <Shell.Resources>
+        
         <ResourceDictionary>
+               
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </Shell.Resources>
