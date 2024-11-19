@@ -8,7 +8,7 @@ namespace DesktopMAUIApp.PageModels;
 public partial class MyTestsPageModel : ObservableObject
 {
     private ApiService apiService;
-    [ObservableProperty] private List<UniqueTest>? _tests = [];
+    [ObservableProperty] private List<UniqueTest> _tests = [];
 
     public MyTestsPageModel(ApiService apiService)
     {
@@ -18,18 +18,17 @@ public partial class MyTestsPageModel : ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
-        //Tests = await apiService.GetTestsAsync();
-        
+        Tests = await apiService.GetTestsAsync() ?? [];
     }
     
-    // [RelayCommand]
-    // private Task NavigateToItem(UniqueTest test)
-        // => Shell.Current.GoToAsync($"item?id={item.ID}");
+    [RelayCommand]
+    private Task NavigateToItem(UniqueTest test)
+        => Shell.Current.GoToAsync($"test?id={test.Id}");
 
-    // [RelayCommand]
-    // private async Task AddItem()
-    // {
-    //     await Shell.Current.GoToAsync("item");
-    // }
+    [RelayCommand]
+    private async Task AddItem()
+    {
+        // await Shell.Current.GoToAsync("main");
+    }
     
 }

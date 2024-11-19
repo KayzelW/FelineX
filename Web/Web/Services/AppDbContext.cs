@@ -82,7 +82,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.Entity<UniqueTask>()
             .Navigation(x => x.VariableAnswers)
             .AutoInclude();
-
         #endregion
 
         #region TestConfigure

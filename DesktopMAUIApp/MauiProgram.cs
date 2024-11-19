@@ -28,21 +28,10 @@ public static class MauiProgram
 #endif
 
         #region default
-
-        builder.Services.AddSingleton<ProjectRepository>();
-        builder.Services.AddSingleton<TaskRepository>();
-        builder.Services.AddSingleton<CategoryRepository>();
-        builder.Services.AddSingleton<TagRepository>();
-        builder.Services.AddSingleton<SeedDataService>();
-        builder.Services.AddSingleton<ModalErrorHandler>();
+        
         builder.Services.AddSingleton<MainPageModel>();
-        builder.Services.AddSingleton<ProjectListPageModel>();
-        builder.Services.AddSingleton<ManageMetaPageModel>();
 
-
-        builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
-        builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
-
+        
         #endregion
 
 
@@ -53,6 +42,7 @@ public static class MauiProgram
         builder.Services.AddTransientWithShellRoute<LoginPage, LoginPageModel>("login");
         builder.Services.AddTransientWithShellRoute<ProfilePage, ProfilePageModel>("profile");
         builder.Services.AddTransientWithShellRoute<MyTests, MyTestsPageModel>("my_tests");
+        builder.Services.AddTransientWithShellRoute<Test, TestPageViewModel>("test");
 
         return builder.Build();
     }

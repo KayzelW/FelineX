@@ -30,22 +30,22 @@ public partial class AppShellViewModel : ObservableObject
     partial void OnIsLoggedInChanged(bool value)
     {
         _logger.LogInformation($"IsLoggedInChanged: {value}");
-        if (OperatingSystem.IsWindows())
+        if (!OperatingSystem.IsWindows())
         {
-            Toast.Make($"IsLoggedInChanged: {value}", ToastDuration.Long).Show();
+            Toast.Make($"IsLoggedInChanged: {value}").Show();
         }
-
         if (value)
         {
             profilePageModel.Login();
-            Shell.Current.GoToAsync("profile");
-            return;
+            Shell.Current.GoToAsync("//my_tests");
         }
-
-        profilePageModel.Logout();
-        Shell.Current.GoToAsync("login");
+        else
+        {
+            profilePageModel.Logout();
+            Shell.Current.GoToAsync("//login");
+        }
+        
     }
-
 
     [RelayCommand]
     private async Task Logout()
@@ -58,3 +58,4 @@ public partial class AppShellViewModel : ObservableObject
         }
     }
 }
+

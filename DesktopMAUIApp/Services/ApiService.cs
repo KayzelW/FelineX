@@ -124,8 +124,7 @@ public class ApiService
 
         SaveCookies();
         Logger.LogInformation($"Logged in as {Claims![ClaimTypes.Name]}:{Claims[ClaimTypes.Role]}");
-
-
+        
         return true;
     }
 
@@ -171,6 +170,28 @@ public class ApiService
             Logger.LogError(e.ToString());
             return null;
         }
+        
+    }
+
+    public async Task<UniqueTest> GetTest(Guid testId)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/Test/get_test_for_solving/{testId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            var test = await response.Content.ReadFromJsonAsync<UniqueTest>();
+            Toast.Make($"Тест {test.TestName} загружен", ToastDuration.Long)?.Show();
+            return test;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e.ToString());
+            return null;
+        }
+        
         
     }
 

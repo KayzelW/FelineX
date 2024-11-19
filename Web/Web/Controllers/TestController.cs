@@ -34,6 +34,7 @@ public partial class TestController(
                 t.Settings.TestGroups!.Any(g => g.Students!.Any(u => u.Id == userId)) ||
                 t.CreatorId == userId)
             .ToListAsync();
+
         return Ok(tests);
     }
 

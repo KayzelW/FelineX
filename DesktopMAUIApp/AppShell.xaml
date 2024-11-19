@@ -12,56 +12,40 @@
     FlyoutBehavior="Flyout"
     Title="DesktopMAUIApp">
 
-    
     <Shell.Resources>
-        
         <ResourceDictionary>
-               
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </Shell.Resources>
 
     <ShellContent
-        Title="Home"
+        Title="Главная"
         Icon="{StaticResource IconClean}"
         ContentTemplate="{DataTemplate pages:MainPage}"
         Route="main" />
-
+    
     <ShellContent
-        Title="MyTests"
-        Icon="{StaticResource IconDashboard}"
-        ContentTemplate="{DataTemplate pages:MyTests}"
-        Route="my_tests"
-        IsVisible="{Binding IsLoggedIn}" />
-
-    <ShellContent
-        Title="Login"
+        Title="Войти"
         Icon="{StaticResource IconLogin}"
         ContentTemplate="{DataTemplate pages:LoginPage}"
         Route="login"
-        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}" />
-
+    />
+    
     <ShellContent
-        Title="Profile"
+        Title="Мои тесты"
+        Icon="{StaticResource IconDashboard}"
+        ContentTemplate="{DataTemplate pages:MyTests}"
+        Route="my_tests"
+         />
+    
+    <ShellContent
+        Title="Профиль"
         Icon="{StaticResource IconProfile}"
         ContentTemplate="{DataTemplate pages:ProfilePage}"
         Route="profile"
-        IsVisible="{Binding IsLoggedIn}" />
-    <ShellContent
-        Title="Test"
-        Icon="{StaticResource IconProfile}"
-        ContentTemplate="{DataTemplate pages:Test}"
-        Route="Test"
-        IsVisible="{Binding IsLoggedIn}" />
-
-    <ShellContent
-        Title="Result"
-        Icon="{StaticResource IconProfile}"
-        ContentTemplate="{DataTemplate pages:TestResult}"
-        Route="result"
-        IsVisible="{Binding IsLoggedIn}" />
-
-
+         />
+    <ShellContent ContentTemplate="{DataTemplate pages:Test}" Route="Test" />
+    
     <Shell.FlyoutFooter>
         <StackLayout Grid.Row="1" Spacing="15">
             <Grid Padding="15">
@@ -85,7 +69,7 @@
                     </sf:SfSegmentedControl.ItemsSource>
                 </sf:SfSegmentedControl>
 
-                <Button Command="{Binding LogoutCommand}" Grid.Column="1" 
+                <Button Command="{Binding LogoutCommand}" Grid.Column="1"
                         IsVisible="{Binding IsLoggedIn}"
                         ImageSource="{StaticResource IconLogout}" Text="Выйти" />
 
