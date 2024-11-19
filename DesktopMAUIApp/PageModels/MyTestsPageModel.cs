@@ -18,7 +18,8 @@ public partial class MyTestsPageModel : ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
-        Tests = await apiService.GetTestsAsync();
+        //Tests = await apiService.GetTestsAsync();
+        
     }
     
     // [RelayCommand]

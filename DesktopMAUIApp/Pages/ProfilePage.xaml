@@ -4,9 +4,11 @@
              xmlns:pageModels="clr-namespace:DesktopMAUIApp.PageModels"
              x:DataType="pageModels:ProfilePageModel"
              x:Class="DesktopMAUIApp.Pages.ProfilePage"
-             Title="ProfilePage">
+             Title="Профиль"
+             
+             >
     <VerticalStackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <Grid>
+        <Grid >
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />

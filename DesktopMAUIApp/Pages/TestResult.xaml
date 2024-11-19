@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DesktopMAUIApp.Pages.TestResult"
+             Title="TestResult">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20" HorizontalOptions="Center">
+            <!-- Если результаты ещё не загружены -->
+            <ContentView IsVisible="{Binding IsLoading}">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                  
+                    <Label Text="Тест проверяется"
+                           FontSize="20"
+                           TextColor="{DynamicResource PrimaryDarkText}" 
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Подождите маленько, потом обновите"
+                           FontSize="14"
+                           TextColor="{DynamicResource SecondaryDarkText}"
+                           HorizontalTextAlignment="Center"
+                           Padding="0,10,0,0" />
+                    <Label Text="Так сказали разрабы"
+                           FontSize="10"
+                           TextColor="{DynamicResource SecondaryDarkText}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </ContentView>
+
+            <!-- Если результаты загружены -->
+            <ContentView IsVisible="{Binding IsLoaded}">
+                <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                    <Label Text="Ваши результаты:"
+                           FontSize="20"
+                           TextColor="{DynamicResource PrimaryDarkText}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="{Binding TestAnswerScore, StringFormat='{0}%'}"
+                           FontSize="20"
+                           TextColor="{DynamicResource PrimaryDarkText}"
+                           HorizontalTextAlignment="Center" />
+                    <Image Source="{Binding CatScoreImage}"
+                           HeightRequest="100"
+                           WidthRequest="100" 
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </ContentView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

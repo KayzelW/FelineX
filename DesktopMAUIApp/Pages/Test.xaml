@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DesktopMAUIApp.Pages.Controls"
+            xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+            xmlns:models="clr-namespace:Shared.Data.Test;assembly=Shared"
+             x:Class="DesktopMAUIApp.Pages.Test"
+             Title="Test">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="30">
+       
+
+            <!-- Заголовок теста -->
+            <Label Text="{Binding TestName}"
+                   Style="{StaticResource HeadingLabel}" 
+                   HorizontalTextAlignment="Center" />
+            
+            <!-- Блок ввода имени -->
+<VerticalStackLayout Spacing="10">
+    <Label Text="Введите ваше имя:"
+           Style="{StaticResource BodyLabel}" />
+    <Entry Placeholder="Имя"
+           Text="{Binding UserName}"
+           Style="{StaticResource EntryStyle}" />
+</VerticalStackLayout>
+
+            <!-- Список заданий -->
+            <CollectionView ItemsSource="{Binding Tasks}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Margin="0,0,0,10">
+                            <!-- Один элемент с отступами -->
+                            <Frame Style="{StaticResource TaskFrameStyle}" Margin="20,10,20,10">
+                                <VerticalStackLayout Spacing="10">
+                                    <!-- Тип задания -->
+                                    <Label Text="{Binding InteractionType}" 
+                               Style="{StaticResource SubHeadingLabel}" />
+
+                                    <!-- Вопрос -->
+                                    <Label Text="{Binding Question}" 
+                               Style="{StaticResource BodyLabel}" />
+
+                                    <!-- Контент задания -->
+                                    <ContentView>
+                                        <ContentView.Triggers>
+                                            <DataTrigger TargetType="ContentView" 
+                                             Binding="{Binding InteractionType}" 
+                                             Value="LongStringTask">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <Editor Text="{Binding VariableAnswers[0].StringAnswer}" 
+                                                    Style="{StaticResource EditorStyle}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="ContentView" 
+                                             Binding="{Binding InteractionType}" 
+                                             Value="ShortStringTask">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <Entry Text="{Binding VariableAnswers[0].StringAnswer}" 
+                                                   Style="{StaticResource EntryStyle}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="ContentView" 
+                                             Binding="{Binding InteractionType}" 
+                                             Value="ManyVariantsTask">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <VerticalStackLayout Spacing="10">
+                                                            <HorizontalStackLayout Spacing="10">
+                                                                <CheckBox IsChecked="{Binding Truthful}" 
+                                                              BackgroundColor="{AppThemeBinding Light=#E6E6FA, Dark=#4B0082}" />
+                                                                <Label Text="{Binding StringAnswer}" 
+                                                           Style="{StaticResource BodyLabel}" />
+                                                            </HorizontalStackLayout>
+                                                        </VerticalStackLayout>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="ContentView" 
+                                             Binding="{Binding InteractionType}" 
+                                             Value="OneVariantTask">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <VerticalStackLayout Spacing="10">
+                                                            <RadioButton Content="{Binding StringAnswer}" 
+                                                             IsChecked="{Binding Truthful}" />
+                                                        </VerticalStackLayout>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="ContentView" 
+                                             Binding="{Binding InteractionType}" 
+                                             Value="SqlQueryTask">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <Editor Text="{Binding VariableAnswers[0].StringAnswer}" 
+                                                    Style="{StaticResource EditorStyle}" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </ContentView.Triggers>
+                                    </ContentView>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+            <!-- Кнопка Сохранить -->
+            <Button Text="Сохранить"
+                    Command="{Binding SaveAndSubmitCommand}"
+                    IsEnabled="{Binding IsNotSended}"
+                    Style="{StaticResource SaveButtonStyle}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

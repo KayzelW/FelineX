@@ -28,21 +28,35 @@
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MyTests}"
         Route="my_tests"
-        IsVisible="{Binding IsLoggedIn}" />
+        IsVisible="True" />
 
     <ShellContent
         Title="Login"
         Icon="{StaticResource IconLogin}"
         ContentTemplate="{DataTemplate pages:LoginPage}"
         Route="login"
-        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}" />
+        IsVisible="True" />
 
     <ShellContent
         Title="Profile"
         Icon="{StaticResource IconProfile}"
         ContentTemplate="{DataTemplate pages:ProfilePage}"
         Route="profile"
-        IsVisible="{Binding IsLoggedIn}"/>
+        IsVisible="True"/>
+    <ShellContent
+     Title="Test"
+     Icon="{StaticResource IconProfile}"
+     ContentTemplate="{DataTemplate pages:Test}"
+     Route="Test"
+     IsVisible="True"/>
+
+    <ShellContent
+ Title="Result"
+ Icon="{StaticResource IconProfile}"
+ ContentTemplate="{DataTemplate pages:TestResult}"
+ Route="result"
+ IsVisible="True"/>
+
 
 
     <Shell.FlyoutFooter>
@@ -52,7 +66,10 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                    
                 <sf:SfSegmentedControl Grid.Column="0" x:Name="ThemeSegmentedControl"
                            VerticalOptions="Center" HorizontalOptions="Center"
                            SelectionChanged="SfSegmentedControl_SelectionChanged"
@@ -65,7 +82,8 @@
                     </sf:SfSegmentedControl.ItemsSource>
                 </sf:SfSegmentedControl>
 
-                <Button Command="{Binding LogoutCommand}" Grid.Column="1" IsVisible="{Binding IsLoggedIn}" ImageSource="{StaticResource IconLogout}" Text="Logout"/>
+                <Button Command="{Binding LogoutCommand}" Grid.Column="1" IsVisible="True" ImageSource="{StaticResource IconLogout}" Text="Выйти"/>
+
             </Grid>
         </StackLayout>
 
