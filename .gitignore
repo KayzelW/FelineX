@@ -8,3 +8,4 @@ APIServer/appsettings.Development.json
 WebAssembly/wwwroot/appsettings.json
 /.idea
 Publish/MAUI/keys.txt
+/Publish
