@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <Shell
     x:Class="DesktopMAUIApp.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -28,52 +29,51 @@
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MyTests}"
         Route="my_tests"
-        IsVisible="True" />
+        IsVisible="{Binding IsLoggedIn}" />
 
     <ShellContent
         Title="Login"
         Icon="{StaticResource IconLogin}"
         ContentTemplate="{DataTemplate pages:LoginPage}"
         Route="login"
-        IsVisible="True" />
+        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}" />
 
     <ShellContent
         Title="Profile"
         Icon="{StaticResource IconProfile}"
         ContentTemplate="{DataTemplate pages:ProfilePage}"
         Route="profile"
-        IsVisible="True"/>
+        IsVisible="{Binding IsLoggedIn}" />
     <ShellContent
-     Title="Test"
-     Icon="{StaticResource IconProfile}"
-     ContentTemplate="{DataTemplate pages:Test}"
-     Route="Test"
-     IsVisible="True"/>
+        Title="Test"
+        Icon="{StaticResource IconProfile}"
+        ContentTemplate="{DataTemplate pages:Test}"
+        Route="Test"
+        IsVisible="{Binding IsLoggedIn}" />
 
     <ShellContent
- Title="Result"
- Icon="{StaticResource IconProfile}"
- ContentTemplate="{DataTemplate pages:TestResult}"
- Route="result"
- IsVisible="True"/>
-
+        Title="Result"
+        Icon="{StaticResource IconProfile}"
+        ContentTemplate="{DataTemplate pages:TestResult}"
+        Route="result"
+        IsVisible="{Binding IsLoggedIn}" />
 
 
     <Shell.FlyoutFooter>
         <StackLayout Grid.Row="1" Spacing="15">
             <Grid Padding="15">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                    
+
                 <sf:SfSegmentedControl Grid.Column="0" x:Name="ThemeSegmentedControl"
-                           VerticalOptions="Center" HorizontalOptions="Center"
-                           SelectionChanged="SfSegmentedControl_SelectionChanged"
-                           SegmentWidth="40" SegmentHeight="40">
+                                       VerticalOptions="Center" HorizontalOptions="Center"
+                                       SelectionChanged="SfSegmentedControl_SelectionChanged"
+                                       SegmentWidth="40" SegmentHeight="40">
                     <sf:SfSegmentedControl.ItemsSource>
                         <x:Array Type="{x:Type sf:SfSegmentItem}">
                             <sf:SfSegmentItem ImageSource="{StaticResource IconLight}" />
@@ -82,7 +82,9 @@
                     </sf:SfSegmentedControl.ItemsSource>
                 </sf:SfSegmentedControl>
 
-                <Button Command="{Binding LogoutCommand}" Grid.Column="1" IsVisible="True" ImageSource="{StaticResource IconLogout}" Text="Выйти"/>
+                <Button Command="{Binding LogoutCommand}" Grid.Column="1" 
+                        IsVisible="{Binding IsLoggedIn}"
+                        ImageSource="{StaticResource IconLogout}" Text="Выйти" />
 
             </Grid>
         </StackLayout>
