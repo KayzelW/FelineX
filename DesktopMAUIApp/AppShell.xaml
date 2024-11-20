@@ -29,6 +29,7 @@
         Icon="{StaticResource IconLogin}"
         ContentTemplate="{DataTemplate pages:LoginPage}"
         Route="login"
+        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}"
     />
     
     <ShellContent
@@ -36,6 +37,7 @@
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MyTests}"
         Route="my_tests"
+        IsVisible="{Binding IsLoggedIn}"
          />
     
     <ShellContent
@@ -43,8 +45,13 @@
         Icon="{StaticResource IconProfile}"
         ContentTemplate="{DataTemplate pages:ProfilePage}"
         Route="profile"
+        IsVisible="{Binding IsLoggedIn}"
          />
-    <ShellContent ContentTemplate="{DataTemplate pages:Test}" Route="Test" />
+    <ShellContent 
+        ContentTemplate="{DataTemplate pages:Test}" 
+        Route="Test" 
+        IsVisible="{Binding IsLoggedIn}"
+        />
     
     <Shell.FlyoutFooter>
         <StackLayout Grid.Row="1" Spacing="15">

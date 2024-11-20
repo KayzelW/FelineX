@@ -7,5 +7,5 @@ public static class Constants
     public static string DatabasePath =>
         $"Data Source={Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename)}";
 
-    public static string API_URL = "https://192.168.0.10:8081";
+    public static string API_URL = "https://95.84.209.46:8081";
 }
