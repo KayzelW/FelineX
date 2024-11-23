@@ -1,61 +1,88 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <Shell
     x:Class="DesktopMAUIApp.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:pages="clr-namespace:DesktopMAUIApp.Pages"
-    Shell.FlyoutBehavior="Flyout"
+    xmlns:viewModels="clr-namespace:DesktopMAUIApp.PageModels"
+    x:DataType="viewModels:AppShellViewModel"
+    FlyoutBehavior="Flyout"
     Title="DesktopMAUIApp">
 
+    <Shell.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </Shell.Resources>
+
     <ShellContent
-        Title="Dashboard"
-        Icon="{StaticResource IconDashboard}"
+        Title="Главная"
+        Icon="{StaticResource IconClean}"
         ContentTemplate="{DataTemplate pages:MainPage}"
         Route="main" />
-
+    
     <ShellContent
-        Title="Projects"
-        Icon="{StaticResource IconProjects}"
-        ContentTemplate="{DataTemplate pages:ProjectListPage}"
-        Route="projects" />
-
-    <ShellContent
-        Title="Manage Meta"
-        Icon="{StaticResource IconMeta}"
-        ContentTemplate="{DataTemplate pages:ManageMetaPage}"
-        Route="manage" />
-
-    <ShellContent
-        Title="Profile"
-        Icon="{StaticResource IconProfile}"
-        ContentTemplate="{DataTemplate pages:ProfilePage}"
-        Route="profile" 
-        IsVisible="False"
-        />
-
-    <ShellContent
-        x:Uid="LoginUid"
-        Title="Login"
+        Title="Войти"
         Icon="{StaticResource IconLogin}"
         ContentTemplate="{DataTemplate pages:LoginPage}"
-        Route="login" 
-        IsVisible="True"
+        Route="login"
+        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}"
+    />
+    
+    <ShellContent
+        Title="Мои тесты"
+        Icon="{StaticResource IconDashboard}"
+        ContentTemplate="{DataTemplate pages:MyTests}"
+        Route="my_tests"
+        IsVisible="{Binding IsLoggedIn}"
+         />
+    
+    <ShellContent
+        Title="Профиль"
+        Icon="{StaticResource IconProfile}"
+        ContentTemplate="{DataTemplate pages:ProfilePage}"
+        Route="profile"
+        IsVisible="{Binding IsLoggedIn}"
+         />
+    <ShellContent 
+        ContentTemplate="{DataTemplate pages:Test}" 
+        Route="Test" 
+        IsVisible="{Binding IsLoggedIn}"
         />
-
+    
     <Shell.FlyoutFooter>
-        <Grid Padding="15">
-            <sf:SfSegmentedControl x:Name="ThemeSegmentedControl" 
-                VerticalOptions="Center" HorizontalOptions="Center" SelectionChanged="SfSegmentedControl_SelectionChanged"
-                SegmentWidth="40" SegmentHeight="40">
-                <sf:SfSegmentedControl.ItemsSource>
-                    <x:Array Type="{x:Type sf:SfSegmentItem}">
-                        <sf:SfSegmentItem ImageSource="{StaticResource IconLight}"/>
-                        <sf:SfSegmentItem ImageSource="{StaticResource IconDark}"/>
-                    </x:Array>
-                </sf:SfSegmentedControl.ItemsSource>
-            </sf:SfSegmentedControl>
-        </Grid>
+        <StackLayout Grid.Row="1" Spacing="15">
+            <Grid Padding="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <sf:SfSegmentedControl Grid.Column="0" x:Name="ThemeSegmentedControl"
+                                       VerticalOptions="Center" HorizontalOptions="Center"
+                                       SelectionChanged="SfSegmentedControl_SelectionChanged"
+                                       SegmentWidth="40" SegmentHeight="40">
+                    <sf:SfSegmentedControl.ItemsSource>
+                        <x:Array Type="{x:Type sf:SfSegmentItem}">
+                            <sf:SfSegmentItem ImageSource="{StaticResource IconLight}" />
+                            <sf:SfSegmentItem ImageSource="{StaticResource IconDark}" />
+                        </x:Array>
+                    </sf:SfSegmentedControl.ItemsSource>
+                </sf:SfSegmentedControl>
+
+                <Button Command="{Binding LogoutCommand}" Grid.Column="1"
+                        IsVisible="{Binding IsLoggedIn}"
+                        ImageSource="{StaticResource IconLogout}" Text="Выйти" />
+
+            </Grid>
+        </StackLayout>
+
     </Shell.FlyoutFooter>
 
 </Shell>

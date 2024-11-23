@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DesktopMAUIApp.Pages.Controls"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:models="clr-namespace:Shared.Data.Test;assembly=Shared"
+             xmlns:pageModels="clr-namespace:DesktopMAUIApp.PageModels"
+             x:Class="DesktopMAUIApp.Pages.MyTests"
+             x:DataType="pageModels:MyTestsPageModel">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <Grid>
+        <VerticalStackLayout 
+            BindableLayout.ItemsSource="{Binding Tests}" 
+            Margin="{StaticResource LayoutPadding}" 
+            Spacing="{StaticResource LayoutSpacing}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="models:UniqueTest">
+                    <Border>
+                        <VerticalStackLayout Padding="10">
+                            <Label Text="{Binding Id}" FontSize="24" />
+                            <Label Text="{Binding TestName}" />
+                            <Label Text="{Binding CreationTime}" />
+                        </VerticalStackLayout>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavigateToItemCommand, 
+                            Source={RelativeSource AncestorType={x:Type pageModels:MyTestsPageModel}}, 
+                            x:DataType=pageModels:MyTestsPageModel}" CommandParameter="{Binding .}"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+
+        <controls:AddButton Command="{Binding AddItemCommand}" />
+    </Grid>
+</ContentPage>

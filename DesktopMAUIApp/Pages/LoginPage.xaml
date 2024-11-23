@@ -4,18 +4,53 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:DesktopMAUIApp.PageModels"
              x:DataType="pageModels:LoginPageModel"
-             x:Class="DesktopMAUIApp.Pages.LoginPage">
-    <VerticalStackLayout>
-        <Grid Margin="10" MaximumHeightRequest="200" MaximumWidthRequest="400">
+             x:Class="DesktopMAUIApp.Pages.LoginPage"
+             BackgroundColor="{DynamicResource LightBackground}">
+    <ContentPage.Resources>
+        <Style TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="{DynamicResource LightSecondaryBackground}" />
+            <Setter Property="TextColor" Value="{DynamicResource DarkOnLightBackground}" />
+            <Setter Property="PlaceholderColor" Value="{DynamicResource PrimaryDarkText}" />
+            <Setter Property="Margin" Value="10,5" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{DynamicResource Primary}" />
+            <Setter Property="TextColor" Value="{DynamicResource White}" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="HeightRequest" Value="45" />
+            <Setter Property="Margin" Value="10,10,10,0" />
+        </Style>
+    </ContentPage.Resources>
+
+    <VerticalStackLayout Padding="0" Spacing="30" VerticalOptions="CenterAndExpand">
+        <Image Source="icon1.png" MaximumHeightRequest="100"></Image>
+        <!-- Заголовок -->
+        <Label Text="Вход"
+               FontSize="24"
+               HorizontalTextAlignment="Center"
+               TextColor="{DynamicResource PrimaryDarkText}"
+               />
+
+        <!-- Поля ввода -->
+        <Grid MaximumHeightRequest="200" WidthRequest="200" HorizontalOptions="Center">
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Entry Grid.Row="0" Text="{Binding Username}" Placeholder="Логин" Margin="5"/>
-            <Entry Grid.Row="1" Text="{Binding Password}" Placeholder="Пароль" Margin="5" IsPassword="True"/>
-            <Button Grid.Row="2" Text="Авторизоваться" Command="{Binding LoginCommand}" Margin="5"/>
+            <Entry Grid.Row="0" Text="{Binding Username}" Placeholder="Логин" Background="#DDE8FF"/>
+            <Entry Grid.Row="1" Text="{Binding Password}" Placeholder="Пароль" IsPassword="True" Background="#DDE8FF" />
+
+            <!-- Кнопка -->
+            <Button Grid.Row="2"  HeightRequest="40" WidthRequest="140" Text="Авторизоваться" Command="{Binding LoginCommand}" />
         </Grid>
+
+        <!-- Дополнительная информация -->
+        <Label Text="Пожалуйста, введите свои данные для входа."
+               FontSize="14"
+               HorizontalTextAlignment="Center"
+               TextColor="{DynamicResource DarkOnLightBackground}" />
     </VerticalStackLayout>
 </ContentPage>

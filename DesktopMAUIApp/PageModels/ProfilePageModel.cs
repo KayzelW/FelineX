@@ -20,25 +20,19 @@ public partial class ProfilePageModel : ObservableObject
     {
         ApiService = apiService;
 
-        _profileName = ApiService.Claims![ClaimTypes.Name];
-        _roleName = ApiService.Claims![ClaimTypes.Role];
-
-        Shell.Current.IsVisible = true;
+        ProfileName = ApiService.GetName ?? "notAuthorized";
+        RoleName = ApiService.GetRole ?? "notAuthorizedRole";
+    }
+    
+    public void Login()
+    {
+        ProfileName = ApiService.GetName ?? "notAuthorized";
+        RoleName = ApiService.GetRole ?? "notAuthorizedRole";
     }
 
-
-    [RelayCommand]
-    private async Task Logout()
+    public void Logout()
     {
-        var result = await ApiService.LogoutAsync();
-
-        if (result)
-        {
-            ProfileName = string.Empty;
-            RoleName = string.Empty;
-            
-            Shell.Current.IsVisible = false;
-            await Shell.Current.GoToAsync("login");
-        }
+        ProfileName = "notAuthorized";
+        RoleName = "notAuthorizedRole";
     }
 }

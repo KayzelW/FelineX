@@ -6,32 +6,37 @@ namespace DesktopMAUIApp.PageModels;
 
 public partial class LoginPageModel : ObservableObject
 {
-    public ApiService ApiService { get; }
-    public ILogger<LoginPageModel> Logger { get; }
+    private readonly ApiService _apiService;
+    private readonly ILogger<LoginPageModel> _logger;
+    private readonly AppShellViewModel _appShellViewModel;
 
     [ObservableProperty] private string _username;
     [ObservableProperty] private string _password;
 
-    public LoginPageModel(ApiService apiService, ILogger<LoginPageModel> logger)
+    public LoginPageModel(ApiService apiService, ILogger<LoginPageModel> logger, AppShellViewModel appShellViewModel)
     {
-        ApiService = apiService;
-        Logger = logger;
-        Shell.Current.IsVisible = true;
+        _apiService = apiService;
+        _logger = logger;
+        _appShellViewModel = appShellViewModel;
+
+        Username = "";
+        Password = "";
     }
 
     [RelayCommand]
     private async Task Login()
     {
-        if(string.IsNullOrWhiteSpace(_username) || string.IsNullOrWhiteSpace(_password))
+        if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(Password))
         {
-            Logger.LogInformation("Username или Password пусты");
+            _logger.LogInformation("Username или Password пусты");
         }
 
-        var result = await ApiService.LoginAsync(_username, _password);
+        var result = await _apiService.LoginAsync(Username, Password);
         if (result)
         {
-            Shell.Current.IsVisible = false;
-            await Shell.Current.GoToAsync("profile");
+            _appShellViewModel.IsLoggedIn = true;
+            Username = "";
+            Password = "";
         }
     }
 }

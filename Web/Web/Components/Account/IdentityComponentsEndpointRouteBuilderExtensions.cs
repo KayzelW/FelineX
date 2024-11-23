@@ -34,7 +34,7 @@ namespace Web.Components.Account
                 {
                     return TypedResults.Unauthorized();
                 }
-
+                
                 var claims = context.User.Claims.ToDictionary(x => x.Type, x => x.Value);
 
                 // _logger.LogInformation($"Claims found: {claims.Count}: {string.Join(" ", claims)}");

@@ -15,8 +15,9 @@ public class VariableAnswer : IInnerIdentity
     {
     }
 
-    public VariableAnswer(string varAnswer) : this()
+    public VariableAnswer(string varAnswer, bool truthful) : this()
     {
-        this.StringAnswer = varAnswer;
+        StringAnswer = varAnswer;
+        Truthful = truthful;
     }
 }

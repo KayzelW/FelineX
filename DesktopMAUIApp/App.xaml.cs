@@ -9,6 +9,7 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        var appShellViewModel = activationState!.Context.Services.GetRequiredService<AppShellViewModel>();
+        return new Window(new AppShell(appShellViewModel));
     }
 }

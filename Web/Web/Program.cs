@@ -1,7 +1,10 @@
 using Hangfire;
 using Hangfire.MemoryStorage;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 using Web.Components;
@@ -36,6 +39,8 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+
+    // options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
 });
 
 builder.Services.AddHangfire(configuration => configuration
@@ -51,13 +56,30 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
-    .AddIdentity<ApplicationUser, ApplicationRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = false;
-    })
+    .AddIdentity<ApplicationUser, ApplicationRole>(options => { options.SignIn.RequireConfirmedAccount = false; })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(opt =>
+{
+    {
+        opt.Events.OnRedirectToAccessDenied = OnRedirectToAccessDenied;
+
+        async Task OnRedirectToAccessDenied(RedirectContext<CookieAuthenticationOptions> context)
+        {
+            if (context.Request.Path.HasValue
+                && context.Request.Path.Value.Contains("/api/"))
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.CompleteAsync();
+                return;
+            }
+
+            context.Response.Redirect("/Account/AccessDenied");
+        }
+    }
+});
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -81,7 +103,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
+    // app.UseWebAssemblyDebugging();
     app.UseMigrationsEndPoint();
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -95,14 +117,15 @@ else
 
 app.UseHttpsRedirection();
 app.MapHangfireDashboardWithAuthorizationPolicy("Admin", "/hangfire"); //.RequireAuthorization("Admin");
-// app.UseHttpLogging();
 
 app.MapControllers();
+
+// app.UseHttpLogging();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapStaticAssets();
+// app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(_Imports).Assembly);

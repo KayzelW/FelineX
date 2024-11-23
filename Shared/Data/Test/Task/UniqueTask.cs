@@ -64,7 +64,7 @@ public sealed class UniqueTask : IInnerIdentity
     {
         foreach (var answer in answers)
         {
-            VariableAnswers!.Add(new VariableAnswer(answer));
+            VariableAnswers!.Add(new VariableAnswer(answer, true));
         }
     }
 
@@ -98,8 +98,6 @@ public sealed class UniqueTask : IInnerIdentity
             {
                 VariableAnswers!.Add(new VariableAnswer());
             }
-
-            return;
         }
     }
 }
