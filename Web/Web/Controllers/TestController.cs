@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Data.Test;
 using Shared.Data.Test.Answers;
+using Shared.Models;
 using Web.Extensions;
 using Web.Services;
 using Web.Services.Interfaces;
-using TestDTO = Web.Controllers.Models.TestDTO;
+
 
 namespace Web.Controllers;
 

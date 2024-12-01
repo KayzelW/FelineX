@@ -23,36 +23,36 @@
         Icon="{StaticResource IconClean}"
         ContentTemplate="{DataTemplate pages:MainPage}"
         Route="main" />
-    
+
     <ShellContent
         Title="Войти"
         Icon="{StaticResource IconLogin}"
         ContentTemplate="{DataTemplate pages:LoginPage}"
         Route="login"
-        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}"
-    />
-    
+        IsVisible="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolConverter}}" />
+
     <ShellContent
         Title="Мои тесты"
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MyTests}"
         Route="my_tests"
-        IsVisible="{Binding IsLoggedIn}"
-         />
-    
+        IsVisible="{Binding IsLoggedIn}" />
+
     <ShellContent
         Title="Профиль"
         Icon="{StaticResource IconProfile}"
         ContentTemplate="{DataTemplate pages:ProfilePage}"
         Route="profile"
-        IsVisible="{Binding IsLoggedIn}"
-         />
-    <ShellContent 
-        ContentTemplate="{DataTemplate pages:Test}" 
-        Route="Test" 
-        IsVisible="{Binding IsLoggedIn}"
-        />
-    
+        IsVisible="{Binding IsLoggedIn}" />
+    <ShellContent
+        ContentTemplate="{DataTemplate pages:Test}"
+        Route="test"
+        IsVisible="{Binding IsLoggedIn}" />
+    <ShellContent
+        ContentTemplate="{DataTemplate pages:TestResult}"
+        Route="test_result"
+        IsVisible="False" />
+
     <Shell.FlyoutFooter>
         <StackLayout Grid.Row="1" Spacing="15">
             <Grid Padding="15">

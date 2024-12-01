@@ -7,6 +7,7 @@ using CommunityToolkit.Maui.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared.Data.Test;
+using Shared.Models;
 
 namespace DesktopMAUIApp.Services;
 
@@ -173,27 +174,52 @@ public class ApiService
         
     }
 
-    public async Task<UniqueTest> GetTest(Guid testId)
+    public async Task<TestDTO?> GetTest(Guid testId, bool AsOriginal = false)
     {
-        try
+        TestDTO? test = null;
+        if (AsOriginal)
         {
-            var response = await _httpClient.GetAsync($"/api/Test/get_test_for_solving/{testId}");
-            if (!response.IsSuccessStatusCode)
+            var responseMessage = await _httpClient.GetAsync($"/api/Test/get_original_test/{testId}");
+            if (responseMessage.IsSuccessStatusCode)
             {
-                return null;
+                test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
             }
-            var test = await response.Content.ReadFromJsonAsync<UniqueTest>();
-            Toast.Make($"Тест {test.TestName} загружен", ToastDuration.Long)?.Show();
-            return test;
         }
-        catch (Exception e)
+        else
         {
-            Logger.LogError(e.ToString());
-            return null;
+            var responseMessage = await _httpClient.GetAsync($"/api/Test/get_test_for_solving/{testId}");
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                test = await responseMessage.Content.ReadFromJsonAsync<TestDTO>();
+            }
         }
+
+        return test;
         
         
     }
+    
+    public async Task<Guid> SubmitTest(TestDTO? test)
+    {
+        var responseMessage = await _httpClient.PostAsJsonAsync("/api/Test/submit_test", test);
+        if (!responseMessage.IsSuccessStatusCode)
+        {
+            return Guid.Empty;
+        }
+        return await responseMessage.Content.ReadFromJsonAsync<Guid>();
+    }
 
+    public async Task<double?> GetTestScore(Guid testAnswerId)
+    {
+        var responseMessage = await _httpClient.GetAsync($"/api/Test/get_test_score/{testAnswerId}");
+        double? testAnswerScore = null;
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            testAnswerScore = await responseMessage.Content.ReadFromJsonAsync<double>();
+        }
+        return testAnswerScore;
+        
+    }
+    
     #endregion
 }

@@ -15,8 +15,6 @@ public partial class MyTests : ContentPage
     {
         InitializeComponent();
         BindingContext = model;
-
-       
     }
 
 

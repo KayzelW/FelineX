@@ -1,6 +1,6 @@
 ﻿using Shared.Data.Test;
 
-namespace Web.Controllers.Models;
+namespace Shared.Models;
 
 public class TestDTO : UniqueTest
 {

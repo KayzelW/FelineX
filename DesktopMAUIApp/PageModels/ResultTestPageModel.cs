@@ -6,58 +6,31 @@ using Shared.Data.Test;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Shared.Data.Test.Answers;
 
 namespace DesktopMAUIApp.PageModels;
 
+[QueryProperty(nameof(TestAnswerId), "testAnswerId")]
 public partial class TestResultPageModel : ObservableObject
 {
-    private ApiService apiService;
+    [ObservableProperty] private string _testAnswerId;
     private readonly ApiService _apiService;
     private readonly ILogger<TestResultPageModel> _logger;
 
-    /*
-    public TestResultPageModel(ApiService apiService)
-    {
-        this.apiService = apiService;
-        _logger = App.GetLogger<TestResultPageModel>();
+    [ObservableProperty] private double? _testAnswerScore;
+    
+    [ObservableProperty] private string _catScoreImage;
 
-        IsLoading = true;
-        IsLoaded = false;
-    }*/
+    [ObservableProperty] private bool _isLoading;
 
-    private double? _testAnswerScore;
-    public double? TestAnswerScore
-    {
-        get => _testAnswerScore;
-        set => SetProperty(ref _testAnswerScore, value);
-    }
+    [ObservableProperty] private bool _isLoaded;
 
-    private string _catScoreImage;
-    public string CatScoreImage
-    {
-        get => _catScoreImage;
-        set => SetProperty(ref _catScoreImage, value);
-    }
-
-    private bool _isLoading;
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => SetProperty(ref _isLoading, value);
-    }
-
-    private bool _isLoaded;
-    public bool IsLoaded
-    {
-        get => _isLoaded;
-        set => SetProperty(ref _isLoaded, value);
-    }
-
-    public async Task InitializeAsync(string answeredTestId)
+    [RelayCommand]
+    private async Task Appearing()
     {
         try
         {
-            TestAnswerScore = 70; //await _apiService.GetTestScore(Guid.Parse(answeredTestId));
+            TestAnswerScore = await _apiService.GetTestScore(Guid.Parse(TestAnswerId));
             if (TestAnswerScore.HasValue)
             {
                 var catScore = (int)Math.Floor(TestAnswerScore.Value / 10);
@@ -68,8 +41,10 @@ public partial class TestResultPageModel : ObservableObject
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Exception while getting test results with id {answeredTestId}: {ex}");
+            _logger.LogError($"Exception while getting test results with id {TestAnswerId}: {ex}");
             IsLoading = false;
         }
     }
+
+   
 }
