@@ -1,0 +1,91 @@
+﻿@page "/test_answers/{TestId}"
+@attribute [Authorize(Policy = "Teacher")]
+
+@using System.Globalization
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Logging
+@using Shared.Data.Test.Answers
+
+
+
+<div>
+    <h2 class="text-left">Решения:</h2>
+    <h1></h1>
+</div>
+
+<table class="table table-borderless table-responsive" size="auto"
+       style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
+    <thead>
+    <tr>
+        <th scope="col" style="-webkit-text-fill-color: #00003A">#</th>
+        <th scope="col" style="-webkit-text-fill-color: #00003A">Имя студента</th>
+        <th scope="col" style=" -webkit-text-fill-color: #00003A">Баллы</th>
+        <th scope="col" style="-webkit-text-fill-color: #00003A">Дата прохождения</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    @if (_testAnswers == null)
+    {
+        <h1>Никто пока не прошёл этот тест</h1>
+    }
+    else
+    {
+        @foreach (var test in _testAnswers)
+        {
+            <tr>
+                <td>
+                    <p>
+                        <a class="link-opacity-100-hover"
+                           @onclick="() => NavigateToResults(test.Id.ToString())">@test.Id</a>
+                    </p>
+                </td>
+                @if (test.Student is null)
+                {
+                    <th scope="row">@test.FantomName</th>
+                }
+                else
+                {
+                    <th scope="row">@test.Student.NormalizedUserName</th>
+                }
+                <td>@test.Score</td>
+                <td>@test.PassingDate.ToString(CultureInfo.CurrentCulture)</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+
+
+    [Inject] private ILogger<TestAnswers> _logger { get; set; }
+    [Inject] private NavigationManager _navigationManager { get; set; }
+    [Inject] private HttpClient HttpClient { get; set; }
+
+    [Parameter] public string TestId { get; set; }
+    private List<TestAnswer> _testAnswers = [];
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            _testAnswers = await HttpClient.GetFromJsonAsync<List<TestAnswer>>($"api/Test/get_list_students_test_answers/{TestId}");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, $"Exception were occured while loading from 'get_list_students_test_answers/' with Id: {TestId}");
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void NavigateToResults(string testAnswerId)
+    {
+        _navigationManager.NavigateTo($"result_test_students/{testAnswerId}");
+    }
+
+}

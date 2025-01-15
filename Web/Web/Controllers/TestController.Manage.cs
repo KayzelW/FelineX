@@ -45,15 +45,15 @@ public partial class TestController
 
         try
         {
-            foreach (var settingsTestGroup in test.Settings.TestGroups)
-            {
-                dbContext.Entry(settingsTestGroup).State = EntityState.Unchanged;
-            }
-
-            foreach (var settingsTestUser in test.Settings.TestUsers)
-            {
-                dbContext.Entry(settingsTestUser).State = EntityState.Unchanged;
-            }
+            // foreach (var settingsTestGroup in test.Settings.TestGroups)
+            // {
+            //     dbContext.Entry(settingsTestGroup).State = EntityState.Unchanged;
+            // }
+            //
+            // foreach (var settingsTestUser in test.Settings.TestUsers)
+            // {
+            //     dbContext.Entry(settingsTestUser).State = EntityState.Unchanged;
+            // }
 
             var userId = this.GetUserId();
             test.CreatorId = userId.Value.ToString();
@@ -94,7 +94,7 @@ public partial class TestController
             var existingTest = dbContext.Tests.FirstOrDefault(t => t.Id == incomingTest.Id);
             if (existingTest != null)
             {
-                UpdateTestUsers(existingTest.Settings, incomingTest.Settings);
+                // UpdateTestUsers(existingTest.Settings, incomingTest.Settings);
                 UpdateTasks(existingTest.Tasks!, incomingTest.Tasks!);
 
                 existingTest.TestName = incomingTest.TestName;

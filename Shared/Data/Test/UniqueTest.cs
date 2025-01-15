@@ -13,14 +13,9 @@ public class UniqueTest : IInnerIdentity
 
     [JsonIgnore] public ApplicationUser? Creator { get; set; }
     public string CreatorId { get; set; }
-    public TestSettings Settings { get; set; }
-
+    public List<TestSettings> Settings { get; set; }
     [StringLength(100)] public string? TestName { get; set; }
     [Column(TypeName = "timestamp(6)")] public DateTime? CreationTime { get; set; } = DateTime.Now;
     public List<UniqueTask>? Tasks { get; set; } = [];
 
-    public UniqueTest()
-    {
-        Settings = new TestSettings();
-    }
 }

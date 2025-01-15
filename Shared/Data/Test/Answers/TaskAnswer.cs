@@ -13,10 +13,12 @@ public class TaskAnswer : IInnerIdentity
     public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonIgnore] public ApplicationUser? Student { get; set; }
-    public UniqueTask? AnsweredTask { get; set; }
-    [JsonIgnore] public TestAnswer? TestAnswer { get; set; }
     public string StudentId { get; set; }
+    
+    public UniqueTask? AnsweredTask { get; set; }
     public Guid? AnsweredTaskId { get; set; }
+    
+    [JsonIgnore] public TestAnswer? TestAnswer { get; set; }
     public Guid TestAnswerId { get; set; }
 
     public List<VariableAnswer>? MarkedVariables { get; set; } = [];
@@ -24,6 +26,7 @@ public class TaskAnswer : IInnerIdentity
     // public List<Guid> MarkedVariableIds { get; set; } = new List<Guid>();
 
     [StringLength(1000)] public string? StringAnswer { get; set; }
+    
     [StringLength(1000)] public string? Result { get; set; } // For SQL
 
 

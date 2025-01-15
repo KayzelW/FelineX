@@ -413,13 +413,50 @@ namespace Web.Migrations
                     b.ToTable("VariableAnswers");
                 });
 
+            modelBuilder.Entity("Shared.Data.Test.TestLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("Expiration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("TestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TestSettingsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestId");
+
+                    b.HasIndex("TestSettingsId");
+
+                    b.ToTable("TestLinks");
+                });
+
             modelBuilder.Entity("Shared.Data.Test.TestSettings", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("UniqueTestId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UniqueTestId");
 
                     b.ToTable("TestSettings");
                 });
@@ -437,9 +474,6 @@ namespace Web.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SettingsId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("TestName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -447,8 +481,6 @@ namespace Web.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("SettingsId");
 
                     b.ToTable("Tests");
                 });
@@ -705,6 +737,33 @@ namespace Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Shared.Data.Test.TestLink", b =>
+                {
+                    b.HasOne("Shared.Data.Test.UniqueTest", "Test")
+                        .WithMany()
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shared.Data.Test.TestSettings", "TestSettings")
+                        .WithMany()
+                        .HasForeignKey("TestSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Test");
+
+                    b.Navigation("TestSettings");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.TestSettings", b =>
+                {
+                    b.HasOne("Shared.Data.Test.UniqueTest", null)
+                        .WithMany("Settings")
+                        .HasForeignKey("UniqueTestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Shared.Data.Test.UniqueTest", b =>
                 {
                     b.HasOne("Shared.Data.ApplicationUser", "Creator")
@@ -713,15 +772,7 @@ namespace Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shared.Data.Test.TestSettings", "Settings")
-                        .WithMany()
-                        .HasForeignKey("SettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Creator");
-
-                    b.Navigation("Settings");
                 });
 
             modelBuilder.Entity("Shared.Data.UserGroup", b =>
@@ -821,6 +872,11 @@ namespace Web.Migrations
                         .IsRequired();
 
                     b.Navigation("VariableAnswers");
+                });
+
+            modelBuilder.Entity("Shared.Data.Test.UniqueTest", b =>
+                {
+                    b.Navigation("Settings");
                 });
 #pragma warning restore 612, 618
         }

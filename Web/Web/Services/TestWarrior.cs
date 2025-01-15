@@ -12,7 +12,7 @@ public sealed partial class TestWarrior : ITestWarriorQueue
     private readonly AppDbContext _dbContext;
     private readonly ILogger<TestWarrior> _logger;
 
-    public static Dictionary<DBMS, string>? AvailableDBMS;
+    public static Dictionary<DBMS, string> AvailableDBMS = new();
 
     private readonly ConcurrentQueue<TestAnswer> _testAnswers;
     private readonly ConcurrentQueue<TaskAnswer> _sqlTasks;
@@ -26,7 +26,7 @@ public sealed partial class TestWarrior : ITestWarriorQueue
 
         logger.LogInformation("TestWarrior instance created.");
 
-        if (AvailableDBMS != null)
+        if (AvailableDBMS.Keys.Count != 0)
         {
             return;
         }
@@ -35,6 +35,7 @@ public sealed partial class TestWarrior : ITestWarriorQueue
 
         try
         {
+            logger.LogInformation("INIT запись моделей данных");
             AvailableDBMS = new Dictionary<DBMS, string>();
             // var fields = configuration.GetSection("Settings:TestDatabaseUrls");
 

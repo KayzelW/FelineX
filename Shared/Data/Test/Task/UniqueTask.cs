@@ -6,14 +6,15 @@ using Shared.Types;
 
 namespace Shared.Data.Test.Task;
 
-public sealed class UniqueTask : IInnerIdentity
+public class UniqueTask : IInnerIdentity
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; } = Guid.NewGuid();
 
     [JsonIgnore] public ApplicationUser? Creator { get; set; }
     public string CreatorId { get; set; }
-    public TaskSettings Settings { get; set; }
+    
+    [JsonIgnore] public TaskSettings Settings { get; set; }
 
     [StringLength(1000)] public string? Question { get; set; } = "";
     public InteractionType InteractionType { get; set; } = InteractionType.LongStringTask;

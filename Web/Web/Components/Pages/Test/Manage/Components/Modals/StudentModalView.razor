@@ -1,0 +1,112 @@
+﻿@using Shared.Data
+@using Shared.Data.Test
+@using Web.Services.Repositories
+
+<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
+        <!-- Установлены ширина и max-width -->
+        <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
+            <div class="modal-header">
+                <h3 class="modal-title">Студенты этого теста</h3>
+                <button type="button" class="btn-close" aria-label="Close"
+                        @onclick="() => { Close(); }"></button>
+            </div>
+            <div class="modal-body">
+
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h4>Добавленные студенты</h4>
+                        <table class="table table-borderless table-responsive" size="auto"
+                               style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                            <thead>
+                            <tr>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                            </tr>
+                            </thead>
+                            @foreach (var student in TestSettings.TestUsers)
+                            {
+                                <tr>
+                                    <th scope="row">@student.NormalizedUserName</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                @onclick="() => {TestSettings.TestUsers.Remove(student); 
+                                                    InvokeAsync(StateHasChanged);}">
+                                            <i class="bi bi-dash-square-dotted"
+                                               style="color: #00003A; box-shadow: none;"
+                                               title="Добавить студента"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                    <div style="flex: 1;">
+                        <h4>Добавить нового студента</h4>
+                        <div class="search-container">
+                            <input type="text" placeholder="Поиск..." @oninput="@OnSearchUserInput">
+                            <button type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+
+                        </div>
+                        <table class="table table-borderless table-responsive" size="auto"
+                               style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                            <thead>
+                            <tr>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№
+                                </th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                            </tr>
+                            </thead>
+                            @if (userSuggestions.Count > 0)
+                            {
+                                @foreach (var user in userSuggestions)
+                                {
+                                    <tr>
+                                        <th scope="row">@(userSuggestions.IndexOf(user) + 1)</th>
+                                        <th scope="row">@user.NormalizedUserName</th>
+                                        <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                            <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                                    style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                    @onclick="() => {TestSettings.TestUsers.Add(user); 
+                                                    InvokeAsync(StateHasChanged);}">
+                                                <i class="bi bi-plus-square-dotted"
+                                                   style="color: #00003A; box-shadow: none;"
+                                                   title="Удалить студента"></i>
+                                            </button>
+                                        </th>
+                                    </tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public TestSettings TestSettings { get; set; }
+    [Parameter] public Action Close { get; set; }
+
+    [Inject] private Logger<StudentModalView> Logger { get; set; }
+    [Inject] private UserRepository UserRepository { get; set; }
+
+    private List<ApplicationUser>? userSuggestions = [];
+    private DateTimeOffset LastSearchInsert { get; set; }
+
+    private async void OnSearchUserInput(ChangeEventArgs e)
+    {
+        if (LastSearchInsert - DateTimeOffset.Now < TimeSpan.FromSeconds(5))
+            return;
+        LastSearchInsert = DateTimeOffset.Now;
+
+        userSuggestions = await UserRepository.OnTrySearch(e.Value.ToString());
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

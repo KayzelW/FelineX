@@ -15,6 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<ThemeTask> ThemeTasks { get; set; }
     public DbSet<UniqueTest> Tests { get; set; }
     public DbSet<TestSettings> TestSettings { get; set; }
+    public DbSet<TestLink> TestLinks { get; set; }
     public DbSet<UniqueTask> Tasks { get; set; }
     public DbSet<TaskSettings> TaskSettings { get; set; }
     public DbSet<VariableAnswer> VariableAnswers { get; set; }
@@ -43,7 +44,65 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+
+        #region TestConfigure
+
+        modelBuilder.Entity<UniqueTest>()
+            .HasMany(x => x.Tasks)
+            .WithMany(x => x.Tests);
+        modelBuilder.Entity<UniqueTest>()
+            .HasOne(x => x.Creator)
+            .WithMany();
+        modelBuilder.Entity<UniqueTest>()
+            .HasOne(x => x.Creator)
+            .WithMany()
+            .HasForeignKey(x => x.CreatorId);
+        modelBuilder.Entity<UniqueTest>()
+            .HasMany(x => x.Settings)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<UniqueTest>()
+            .Navigation(x => x.Tasks)
+            .AutoInclude();
+        modelBuilder.Entity<UniqueTest>()
+            .Navigation(x => x.Settings)
+            .AutoInclude();
+        
+        #endregion
+
+        #region TaskConfigure
+
+        modelBuilder.Entity<UniqueTask>()
+            .HasMany(x => x.Thematics)
+            .WithMany(task => task.Tasks);
+        modelBuilder.Entity<UniqueTask>()
+            .HasMany(x => x.VariableAnswers)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UniqueTask>()
+            .Navigation(x => x.Settings)
+            .AutoInclude();
+        modelBuilder.Entity<UniqueTask>()
+            .Navigation(x => x.VariableAnswers)
+            .AutoInclude();
+
+        modelBuilder.Entity<UniqueTask>()
+            .HasOne(x => x.Creator)
+            .WithMany()
+            .HasForeignKey(x => x.CreatorId);
+        modelBuilder.Entity<UniqueTask>()
+            .HasOne(x => x.Settings)
+            .WithOne(y => y.AssignedTask)
+            .HasForeignKey<TaskSettings>()
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UniqueTask>()
+            .Navigation(x => x.Settings)
+            .AutoInclude();
+        
+        #endregion
+
         #region SettingsConfigure
 
         modelBuilder.Entity<TestSettings>()
@@ -67,38 +126,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
         #endregion
 
-        #region TaskConfigure
+        #region TestLinkConfigure
 
-        modelBuilder.Entity<UniqueTask>()
-            .HasMany(x => x.Thematics)
-            .WithMany(task => task.Tasks);
-        modelBuilder.Entity<UniqueTask>()
-            .HasMany(x => x.VariableAnswers)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<UniqueTask>()
-            .Navigation(x => x.Settings)
-            .AutoInclude();
-        modelBuilder.Entity<UniqueTask>()
-            .Navigation(x => x.VariableAnswers)
-            .AutoInclude();
-        #endregion
-
-        #region TestConfigure
-
-        modelBuilder.Entity<UniqueTest>()
-            .HasMany(x => x.Tasks)
-            .WithMany(x => x.Tests);
-        modelBuilder.Entity<UniqueTest>()
-            .HasOne(x => x.Creator)
+        modelBuilder.Entity<TestLink>()
+            .HasOne(x => x.Test)
             .WithMany()
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<UniqueTest>()
-            .Navigation(x => x.Tasks)
-            .AutoInclude();
-        modelBuilder.Entity<UniqueTest>()
-            .Navigation(x => x.Settings)
-            .AutoInclude();
+            .HasForeignKey(u => u.TestId);
+        modelBuilder.Entity<TestLink>()
+            .HasOne(x => x.TestSettings)
+            .WithMany()
+            .HasForeignKey(u => u.TestSettingsId);
 
         #endregion
 
@@ -137,30 +174,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
         #region usingId
 
-        modelBuilder.Entity<UniqueTest>()
-            .HasOne(x => x.Creator)
-            .WithMany()
-            .HasForeignKey(x => x.CreatorId)
-            .OnDelete(DeleteBehavior.Cascade);
-        // modelBuilder.Entity<UniqueTest>()
-        //     .HasOne(x => x.Settings)
-        //     .WithMany() //TODO remove many
-        //     .HasForeignKey(x => x.SettingsId)
-        //     .OnDelete(DeleteBehavior.Cascade);
+        
 
 
-        modelBuilder.Entity<UniqueTask>()
-            .HasOne(x => x.Creator)
-            .WithMany()
-            .HasForeignKey(x => x.CreatorId);
-        modelBuilder.Entity<UniqueTask>()
-            .HasOne(x => x.Settings)
-            .WithOne(y => y.AssignedTask)
-            .HasForeignKey<TaskSettings>()
-            .OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<UniqueTask>()
-            .Navigation(x => x.Settings)
-            .AutoInclude();
+        
 
         modelBuilder.Entity<TaskAnswer>()
             .HasOne(x => x.Student)

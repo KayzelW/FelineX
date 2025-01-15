@@ -25,7 +25,7 @@ public sealed partial class TestWarrior
             {
                 taskAnswer.IsSuccess = true;
                 taskAnswer.IsFailedCheck = false;
-                taskAnswer.TestAnswer.Score += taskAnswer.TestAnswer.TaskWeight;
+                taskAnswer.TestAnswer!.Score += taskAnswer.TestAnswer.TaskWeight;
                 taskAnswer.Result = "Exit queries are completely identical";
                 await SaveSqlTaskAsync(taskAnswer);
                 return;

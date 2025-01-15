@@ -7,16 +7,13 @@
       },
       "dotnetRunMessages": true,
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "https://localhost:8081;https://0.0.0.0:8081;http://0.0.0.0:8080;"
+      "applicationUrl": "https://localhost:5000;http://localhost:5001;"
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "environmentVariables": {
-        "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
-      },
+      "environmentVariables": {},
       "publishAllPorts": true,
       "useSSL": true
     }

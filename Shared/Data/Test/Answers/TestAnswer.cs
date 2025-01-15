@@ -12,7 +12,7 @@ public class TestAnswer : IInnerIdentity
 
     public ApplicationUser? Student { get; set; }
     public string StudentId { get; set; }
-    public UniqueTest? AnsweredTest { get; set; }
+    public UniqueTest AnsweredTest { get; set; }
     public Guid? AnsweredTestId { get; set; }
     
     public List<TaskAnswer>? TaskAnswers { get; set; } = [];

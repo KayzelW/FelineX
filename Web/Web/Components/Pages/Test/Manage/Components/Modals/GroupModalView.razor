@@ -1,0 +1,106 @@
+﻿@using Shared.Data
+@using Shared.Data.Test
+@using Web.Services.Repositories
+
+<div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" style="width: 70%; max-width: 70%; height: 80%; max-height: 80%">
+        <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
+            <div class="modal-header">
+                <h3 class="modal-title">Группы этого теста</h3>
+                <button type="button" class="btn-close" aria-label="Close"
+                        @onclick="() => { Close(); }"></button>
+            </div>
+            <div class="modal-body">
+
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <h4>Добавленные группы</h4>
+                        <table class="table table-borderless table-responsive" size="auto">
+                            <thead>
+                            <tr>
+                                <th scope="col">ФИО</th>
+                            </tr>
+                            </thead>
+                            @foreach (var group in TestSettings.TestGroups)
+                            {
+                                <tr>
+                                    <th scope="row">@(TestSettings.TestGroups.IndexOf(group) + 1)</th>
+                                    <th scope="row">@group.GroupName</th>
+                                    <th scope="col">
+                                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                @onclick="() => { TestSettings.TestGroups.Remove(group);
+                                                InvokeAsync(StateHasChanged);}">
+                                            <i class="bi bi-dash-square-dotted" title="Удалить группу"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                    <div style="flex: 1;">
+                        <h4>Добавить новую группу</h4>
+                        <div class="search-container">
+                            <input type="text" placeholder="Поиск..." @oninput="OnSearchGroupInput">
+                            <button type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+
+                        </div>
+                        <table class="table table-borderless table-responsive" size="auto"
+                               style="--bs-table-bg: #DDEBFF; border-radius: .5rem; max-width: 300px; -webkit-text-fill-color: #00003A">
+                            <thead>
+                            <tr>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A; border-radius: .5rem">№
+                                </th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A">ФИО</th>
+                                <th scope="col" style="-webkit-text-fill-color: #00003A"></th>
+                            </tr>
+                            </thead>
+                            @foreach (var group in groupSuggestions)
+                            {
+                                <tr>
+                                    <th scope="row">@(groupSuggestions.IndexOf(group) + 1)</th>
+                                    <th scope="row">@group.GroupName</th>
+                                    <th scope="col" style="-webkit-text-fill-color: #00003A">
+                                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                                @onclick="() => { TestSettings.TestGroups.Add(group);
+                                                InvokeAsync(StateHasChanged);}">
+                                            <i class="bi bi-plus-square-dotted"
+                                               style="color: #00003A; box-shadow: none;"
+                                               title="Добавить группу"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public TestSettings TestSettings { get; set; }
+    [Parameter] public Action Close { get; set; }
+
+    [Inject] private Logger<GroupModalView> Logger { get; set; }
+    [Inject] private GroupRepository GroupRepository { get; set; }
+
+    private List<UserGroup>? groupSuggestions = [];
+    private DateTimeOffset LastSearchInsert { get; set; }
+
+    private async void OnSearchGroupInput(ChangeEventArgs e)
+    {
+        if (LastSearchInsert - DateTimeOffset.Now < TimeSpan.FromSeconds(5))
+            return;
+        LastSearchInsert = DateTimeOffset.Now;
+
+        groupSuggestions = await GroupRepository.OnTrySearch(e.Value.ToString());
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

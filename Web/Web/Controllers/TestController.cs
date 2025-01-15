@@ -30,8 +30,8 @@ public partial class TestController(
 
         var tests = await dbContext.Tests
             .Where(t =>
-                t.Settings.TestUsers!.Any(u => u.Id == userId) ||
-                t.Settings.TestGroups!.Any(g => g.Students!.Any(u => u.Id == userId)) ||
+                // t.Settings.TestUsers!.Any(u => u.Id == userId) ||
+                // t.Settings.TestGroups!.Any(g => g.Students!.Any(u => u.Id == userId)) ||
                 t.CreatorId == userId)
             .ToListAsync();
 

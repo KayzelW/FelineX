@@ -1,8 +1,0 @@
-<resources>
-    <string name="base_url_https" translatable="false">https://95.84.209.46:8081</string>
-    <string name="base_url_http" translatable="false">http://95.84.209.46:8080</string>
-    
-    <string name="LoginForm_AuthBtn">Авторизоваться</string>
-    <string name="app_name">Android</string>
-    <string name="app_text">Hello, Android!</string>
-</resources>

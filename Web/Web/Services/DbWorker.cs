@@ -126,10 +126,9 @@ public class DbWorker(IServiceProvider serviceProvider, ILogger<DbWorker> logger
                 test.CreatorId = root.Id;
                 test.TestName = "CringeTest";
                 test.CreationTime = DateTime.Now;
-                
-                
-                await dbContext.SaveChangesAsync(stoppingToken);
             }
+            
+            await dbContext.SaveChangesAsync(stoppingToken);
         }
     }
 }

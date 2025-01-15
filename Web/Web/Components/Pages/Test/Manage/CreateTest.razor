@@ -1,0 +1,179 @@
+﻿@page "/Test/Create"
+@attribute [Authorize(Policy = "Teacher")]
+
+@using System.Text.Json
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Authorization
+@using Npgsql.Internal.Postgres
+@using Shared.Data
+@using Shared.Data.Test
+@using Shared.Data.Test.Task
+@using Shared.Extensions
+@using Shared.Types
+@using Web.Client.Services
+@using Web.Services.Repositories
+@using Web.Components.Pages.Test.Manage.Components
+@using Web.Components.Pages.Test.Manage.Components.Modals
+
+
+
+<h3 class="text-center">Новый тест</h3>
+
+<div class="input-group input-group-lg" style="max-width: max-content">
+    <input type="text" class="form-control" placeholder="Введите название" aria-label="Введите название"
+           aria-describedby="basic-addon1" @bind="NewTest.TestName"
+           style="background-color: #EFF4FF; box-shadow: none; ">
+</div>
+
+<div style="display: flex; gap: 20px; padding-top: 2%">
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 1;">
+        <label>Добавить студентов</label>
+        <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => { isModalVisibleStudent = true; }">
+            +
+        </button>
+    </div>
+
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none; flex: 3">
+        <label>Добавить классы</label>
+        <button class="btn" style=" box-shadow: none;" type="button" @onclick="() => { isModalVisibleGroup = true; }">
+            +
+        </button>
+    </div>
+</div>
+
+<div class="container mt-5">
+    @foreach (var task in NewTest.Tasks)
+    {
+        <TaskEdit Task="task" TaskCollection="NewTest.Tasks"/>
+    }
+
+    <div class="d-flex justify-content-end">
+        <div class="dropdown">
+            <a class="btn" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+               style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; --bs-dropdown-border-color: #00003A;  box-shadow: none;"
+               data-toggle="dropdown">
+                +
+            </a>
+            <ul class="dropdown-menu" style="background-color: #DDE8FF; box-shadow: none;">
+                <li>
+                    <a class="dropdown-item"
+                       @onclick="(() => { Plus(InteractionType.ShortStringTask); })">@EnumNamesExtentions.ToString(InteractionType.ShortStringTask)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       @onclick="(() => { Plus(InteractionType.LongStringTask); })">@EnumNamesExtentions.ToString(InteractionType.LongStringTask)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       @onclick="(() => { Plus(InteractionType.OneVariantTask); })">@EnumNamesExtentions.ToString(InteractionType.OneVariantTask)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       @onclick="(() => { Plus(InteractionType.ManyVariantsTask); })">@EnumNamesExtentions.ToString(InteractionType.ManyVariantsTask)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       @onclick="(() => { Plus(InteractionType.SqlQueryTask); })">@EnumNamesExtentions.ToString(InteractionType.SqlQueryTask)</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="height: 40px; -webkit-text-fill-color: #00003A; box-shadow: none;">
+        <button class="btn"
+                style="border-radius: .5rem; border-color: #00003A; background-color: #EFF4FF; --bs-btn-color: #00003A; height: 40px; box-shadow: none;"
+                type="button" @onclick="Save">
+            Сохранить
+        </button>
+    </div>
+</div>
+
+@if (isModalVisibleStudent)
+{
+    <StudentModalView Close="@(() =>
+                             {
+                                 isModalVisibleStudent = false;
+                                 InvokeAsync(StateHasChanged);
+                             })"/>
+}
+
+
+@if (isModalVisibleGroup)
+{
+    <GroupModalView Close="@(() =>
+                           {
+                               isModalVisibleGroup = false;
+                               InvokeAsync(StateHasChanged);
+                           })"/>
+}
+
+
+@code {
+    [Inject] private HttpClient HttpClient { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private ILogger<EditTest> Logger { get; set; }
+
+    [Parameter] public UniqueTest NewTest { get; set; } = new();
+    private bool isModalVisibleStudent;
+    private bool isModalVisibleGroup;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        // UserRepository.SuggestionsUpdated += UpdateUserSuggestions;
+        // GroupRepository.SuggestionsUpdated += UpdateGroupSuggestions;
+    }
+
+    
+    private void Plus(InteractionType interactionType)
+    {
+        try
+        {
+            var t = new UniqueTask(null, interactionType);
+            if (t.InteractionType is InteractionType.LongStringTask or InteractionType.SqlQueryTask)
+            {
+                var v = new VariableAnswer
+                {
+                    Truthful = true
+                };
+                t.VariableAnswers!.Add(v);
+            }
+
+            NewTest.Tasks!.Add(t);
+
+            Logger.LogInformation($"Added task with type {t.InteractionType}");
+            var json = JsonSerializer.Serialize(NewTest, new JsonSerializerOptions { WriteIndented = true });
+            Logger.LogInformation(json);
+            // InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError($"Error adding task {e}");
+        }
+    }
+
+    private async void Save()
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(NewTest, new JsonSerializerOptions { WriteIndented = true });
+            Logger.LogInformation(json);
+
+            await HttpClient.PostAsJsonAsync("api/Test/create_test", NewTest);
+            NavigationManager.NavigateTo("/my_tests");
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Не удалось сохранить изменения в тесте");
+        }
+    }
+
+    private void Delete(UniqueTask task)
+    {
+        NewTest.Tasks?.Remove(task);
+        InvokeAsync(StateHasChanged);
+    }
+
+
+}

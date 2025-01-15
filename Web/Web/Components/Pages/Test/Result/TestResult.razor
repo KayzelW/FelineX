@@ -1,0 +1,61 @@
+﻿@page "/result_test/{AnsweredTestId}/"
+
+@using Microsoft.Extensions.Logging
+@using Shared.Extensions
+
+
+
+
+@if (TestAnswerScore is null)
+{
+    <div class="d-flex justify-content-center">
+        <div class="Sticker" style="width: 104px; height: 104px; display: flex; justify-content: flex-end"><img
+                src="https://media.tenor.com/9fBgVWrDYs0AAAAi/run-busy.gif" width="88" height="79.44444444444444"
+                alt="Run Busy Sticker - Run Busy Coko Stickers" style="max-width: 104px; background-color: unset;">
+        </div>
+    </div>
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Тест проверяется</h3>
+
+    <h5 class="text-center" style="padding-top: 25px">Подождите маленько, потом обновите</h5>
+    <a class="text-center" style="font-size: 5px;">Так сказали разрабы</a>
+}
+else
+{
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">Ваши результаты:</h3>
+    <h3 class="text-center" style="-webkit-text-fill-color: #00003A;">@TestAnswerScore%</h3>
+    <div class="d-flex justify-content-center" style="min-height: 60px">
+        <img src="@CatScoreString" alt="Фото">
+    </div>
+}
+
+
+
+@code {
+
+    [Inject] private ILogger<TestResult> Logger { get; set; }
+    [Inject] private HttpClient HttpClient { get; set; }
+
+    [Parameter] public string AnsweredTestId { get; set; }
+    private double? TestAnswerScore { get; set; }
+    private double CatScore { get; set; }
+    private string CatScoreString { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        try
+        {
+            TestAnswerScore = await HttpClient.GetFromJsonAsync<double>($"api/Test/get_test_score/{AnsweredTestId}");
+            if (TestAnswerScore != null)
+            {
+                CatScore = (int)Math.Floor((decimal)(TestAnswerScore / 10));
+                CatScoreString = $"images/cats/{CatScore}.png";
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogError($"Exception while getting test results with id {AnsweredTestId}:{e}");
+        }
+    }
+
+}

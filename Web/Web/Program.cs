@@ -1,3 +1,4 @@
+using Blazored.Toast;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication;
@@ -11,17 +12,27 @@ using Web.Components;
 using Web.Components.Account;
 using Web.Services;
 using Web.Services.Interfaces;
+using Web.Services.Repositories;
 using _Imports = Web.Client._Imports;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Services
 
+builder.AddServiceDefaults();
+builder.AddRedisDistributedCache("cache");
+
+builder.AddNpgsqlDataSource(connectionName: "FelineX");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("FelineX"))
+);
+
 builder.Services.AddControllers();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
+builder.Services.AddHttpClient();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
@@ -49,10 +60,6 @@ builder.Services.AddHangfire(configuration => configuration
     .UseMemoryStorage());
 builder.Services.AddHangfireServer();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
@@ -71,7 +78,7 @@ builder.Services.ConfigureApplicationCookie(opt =>
             if (context.Request.Path.HasValue
                 && context.Request.Path.Value.Contains("/api/"))
             {
-                context.Response.StatusCode = 403;
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.CompleteAsync();
                 return;
             }
@@ -84,15 +91,17 @@ builder.Services.ConfigureApplicationCookie(opt =>
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 builder.Services.AddHostedService<DbWorker>();
+
 builder.Services.AddSingleton<ITestWarriorQueue, TestWarrior>();
 builder.Services.AddSingleton<TestWarrior>();
+
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<GroupRepository>();
+
 builder.Services.AddSwaggerGen();
 builder.Services.AddLogging();
-// builder.Services.AddHttpLogging(opt =>
-// {
-//     opt.
-// });
-// builder.Services.AddHostedService<TestWarrior>();
+
+builder.Services.AddBlazoredToast();
 
 #endregion
 

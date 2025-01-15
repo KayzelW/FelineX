@@ -1,20 +1,28 @@
-﻿@inherits LayoutComponentBase
+﻿@using Web.Components.Custom
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu />
+        <NavMenu/>
     </div>
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <FastTestLinkInsert/>
         </div>
-
+        
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+<BlazoredToasts Position="ToastPosition.BottomCenter"
+                Timeout="5"
+                IconType="IconType.FontAwesome"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fa fa-thumbs-up"
+                ErrorIcon="fa fa-bug"/>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.

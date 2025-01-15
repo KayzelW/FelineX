@@ -1,18 +1,13 @@
 ﻿@page "/correctionTest/{TestId}"
 
 @using System.Text.Json
-@using Shared.DB.Interfaces
-@using Task = System.Threading.Tasks.Task
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Microsoft.Extensions.Logging
-@using Shared.Extensions
-@using Shared.Types
-@using MyTest = Shared.DB.Test.Test;
-@using MyTask = Shared.DB.Test.Task.Task;
 
 @inject ApiService _ApiService
 @inject ILogger<Auth> _logger
 @inject NavigationManager nav
-@inject SearchService<User> _userSearchService
+@inject UserRepository UserRepository
 @inject SearchService<UserGroup> _groupSearchService
 
 
@@ -149,7 +144,7 @@
                                 @* *@
                                 @*               INSERT INTO Blogs (Url) VALUES ('https://example.com'); *@
                                 @*               INSERT INTO Blogs (Url) VALUES ('https://another.com');</textarea> *@
-                                <AceEditor EditorId="ForEditSqlQueryInstall" @bind-Value="@task.Settings.SqlQueryInstall"></AceEditor>
+                                <AceEditor EditorId="ForEditSqlQueryInstall" Value="@task.Settings.SqlQueryInstall"></AceEditor>
 
 
                             </div>
