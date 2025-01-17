@@ -65,7 +65,7 @@
     [Inject] private NavigationManager _navigationManager { get; set; }
     [Inject] private HttpClient HttpClient { get; set; }
 
-    [Parameter] private Guid Id { get; set; }
+    [Parameter] public Guid Id { get; set; }
 
     private List<SimpleUser> _students = [];
 
