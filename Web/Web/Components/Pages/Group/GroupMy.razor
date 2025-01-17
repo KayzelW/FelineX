@@ -1,0 +1,81 @@
+﻿@page "/Group/My"
+
+@using Microsoft.AspNetCore.Authorization
+@using Shared.Data
+
+@attribute [Authorize(Policy = "Teacher")]
+
+<div class="container-center">
+    <button class="btn" type="button" @onclick="NavigateToCreateClass"> Создать новый класс</button>
+</div>
+
+<div class="text-success" style="border-color:  #00003A; height: 1px">
+    <hr>
+</div>
+
+
+<h3>Мои классы</h3>
+
+<table class="table table-borderless table-responsive" size="auto">
+    <thead>
+    <tr>
+        <th scope="col">Название</th>
+        <th scope="col">Кол-во человек</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Groups != null)
+    {
+        @foreach (var group in Groups)
+        {
+            <tr>
+                <td>@group.GroupName</td>
+                <td>
+                    @if (group.Students != null)
+                    {
+                        @group.Students.Count
+                    }
+                </td>
+                <td>
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                style="background-color: transparent; border: 0px">
+                            <i class="bi bi-link-45deg" style="color: #00003A" title="Менеджер ссылок"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary m-1 "
+                                style="background-color: transparent; border: 0px">
+                            <i class="bi bi-pencil" style="color: #00003A" title="Изменить"></i>
+                        </button>
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                style="background-color: transparent; border: 0px">
+                            <i class="bi bi-trash3 " style="color: #00003A" title="Удалить"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+
+@code {
+
+    [Inject] private NavigationManager _navigationManager { get; set; }
+    [Inject] private HttpClient HttpClient { get; set; }
+
+    private List<UserGroup>? Groups { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Groups = await HttpClient.GetFromJsonAsync<List<UserGroup>>("api/Class/get_classes");
+    }
+
+    private void NavigateToCreateClass()
+    {
+        _navigationManager.NavigateTo("/create_class");
+    }
+
+}

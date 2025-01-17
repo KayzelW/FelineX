@@ -42,6 +42,7 @@
 	
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=7f87c278_002D4ee8_002D42cb_002Da008_002D906de6bb655f_0023APIServer/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=9cf6e22e_002D45d0_002D4196_002D865d_002Dbb506830878d_0023DesktopMAUIApp/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=e55e2c7d_002D67b1_002D4675_002Db718_002D7e646fc074fc_0023WebAssembly/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=ef504245_002D6cd4_002D4f1a_002D9bee_002Dd3018bf4945a_0023Aspire_002EApiService/@EntryIndexedValue">True</s:Boolean>
 	
 	

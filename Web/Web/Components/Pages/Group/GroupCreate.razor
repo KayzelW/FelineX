@@ -1,38 +1,41 @@
-@page "/create_class"
-@attribute [Authorize, AuthorizeLevel(AccessLevel.Teacher)]
-@using System.Text.RegularExpressions
+@page "/Group/Create"
+@attribute [Authorize(Policy = "Teacher")]
 @using System.Text.Json
-@using Shared.Types
-@inject ApiService _apiService
-@inject ILogger<Create_class> _logger
+@using Microsoft.AspNetCore.Authorization
+@using Shared.Data
+
+
 
 <h3 class="text-center">Новый класс</h3>
- <link rel="stylesheet" href="./css/class.css">
+@* <link rel="stylesheet" href="./css/class.css"> *@
 <div class="input-group input-group-lg" style="max-width: max-content; padding-bottom: 25px">
-    <input type="text" class="form-control" placeholder="Введите название"  aria-describedby="basic-addon1" style="box-shadow: none; max-height: 30px; " @bind="Group.GroupName">
+    <input type="text" class="form-control" placeholder="Введите название" aria-describedby="basic-addon1"
+           style="box-shadow: none; max-height: 30px; " @bind="Group.GroupName">
 </div>
-
-
 
 <div style="display: flex; gap: 20px;"> <!-- Используем Flexbox -->
     <div style="flex: 1;"> <!-- Первая таблица с заголовком -->
         <h3>Добавить нового студента</h3>
         <div class="input-group input-group-lg" style="max-width: max-content; max-height: 30px; margin-bottom: 20px;">
-            <input type="text" class="form-control" placeholder="Введите имя"  aria-describedby="basic-addon1" style=" box-shadow: none; max-height: 30px;">
-            <button class="btn" type="button" style="max-height: 30px; box-shadow: none; font-size: medium; padding: 5px">+</button>
+            <input type="text" class="form-control" placeholder="Введите имя" aria-describedby="basic-addon1"
+                   style=" box-shadow: none; max-height: 30px;">
+            <button class="btn" type="button"
+                    style="max-height: 30px; box-shadow: none; font-size: medium; padding: 5px">+
+            </button>
         </div>
-        <table class="table" size="auto" >
+        <table class="table" size="auto">
             <thead>
-                <tr>
-                    <th scope="col" >ФИО</th>
-                </tr>
+            <tr>
+                <th scope="col">ФИО</th>
+            </tr>
             </thead>
             @foreach (var student in Students!)
             {
                 <tr>
                     <th scope="row">@student.NormalizedUserName</th>
                     <th scope="col">
-                        <button type="button" class="btn" style="border: 0px; box-shadow: none;" @onclick="() => AddStudent(student)">
+                        <button type="button" class="btn" style="border: 0px; box-shadow: none;"
+                                @onclick="() => AddStudent(student)">
                             <i class="bi bi-plus-square-dotted" title="Добавить студента"></i>
                         </button>
                     </th>
@@ -43,22 +46,23 @@
 
     <div style="flex: 1;"> <!-- Вторая таблица с заголовком -->
         <h3>Студенты этого класса</h3>
-        <table class="table" size="auto" >
+        <table class="table" size="auto">
             <thead>
-                <tr>
-                    <th scope="col" >№</th>
-                    <th scope="col" >ФИО</th>
-                    <th scope="col" ></th>
-                </tr>
+            <tr>
+                <th scope="col">№</th>
+                <th scope="col">ФИО</th>
+                <th scope="col"></th>
+            </tr>
             </thead>
             @foreach (var student in Group.Students!)
             {
                 <tr>
                     <th scope="row">@(Group.Students.IndexOf(student) + 1)</th>
                     <th scope="row">@student.NormalizedUserName</th>
-                    <th scope="col" >
-                        <button type="button" class="btn " style="border: 0px; box-shadow: none;" @onclick="() => DeleteStudent(student)">
-                            <i class="bi bi-dash-square-dotted"  title="Удалить студента"></i>
+                    <th scope="col">
+                        <button type="button" class="btn " style="border: 0px; box-shadow: none;"
+                                @onclick="() => DeleteStudent(student)">
+                            <i class="bi bi-dash-square-dotted" title="Удалить студента"></i>
                         </button>
                     </th>
                 </tr>
@@ -67,34 +71,37 @@
     </div>
 </div>
 
-<div  style="padding-top: 50px">
+<div style="padding-top: 50px">
     <button class="btn" type="button" style="box-shadow: none" @onclick="SaveGroup">
         Сохранить
     </button>
 </div>
 
 @code {
-    private List<User>? Students { get; set; } = [];
-    private UserGroup? Group { get; set; } = new()
+    [Inject] private ILogger<GroupCreate> _logger { get; set; }
+    [Inject] private HttpClient HttpClient { get; set; }
+
+    private List<ApplicationUser>? Students { get; set; } = [];
+
+    private UserGroup Group { get; set; } = new()
     {
-        Students = new List<User>()
+        Students = new List<ApplicationUser>()
     };
 
     protected override async Task OnInitializedAsync()
     {
-        
         await base.OnInitializedAsync();
-        Students = await _apiService.GetStudents();
+        Students = await HttpClient.GetFromJsonAsync<List<ApplicationUser>>("api/Class/get_students");
     }
 
-    private void AddStudent(User user)
+    private void AddStudent(ApplicationUser user)
     {
         Group.Students?.Add(user);
         Students?.Remove(user);
         InvokeAsync(StateHasChanged);
     }
 
-    private void DeleteStudent(User user)
+    private void DeleteStudent(ApplicationUser user)
     {
         Group.Students!.Remove(user);
         Students?.Add(user);
@@ -105,6 +112,7 @@
     {
         var json = JsonSerializer.Serialize(Group, new JsonSerializerOptions { WriteIndented = true });
         _logger.LogInformation(json);
-        await _apiService.AddGroup(Group);
+        await HttpClient.PostAsJsonAsync("api/Class/add_group", Group);
     }
+
 }

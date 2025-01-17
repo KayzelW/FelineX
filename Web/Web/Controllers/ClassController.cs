@@ -95,18 +95,25 @@ public class ClassController : Controller
     }
 
     [HttpGet("get_students")]
-    public async Task<IEnumerable<SimpleUser>?> GetStudents()
+    public async Task<IEnumerable<SimpleUser>> GetStudents([FromQuery] Guid? Id)
     {
         try
         {
-            var students = (await _userManager.GetUsersInRoleAsync("Student"))
-                .Select(x => new SimpleUser(x.Id, x.UserName, x.NormalizedUserName));
-            return students;
+            if (Id == null)
+            {
+                var students = (await _userManager.GetUsersInRoleAsync("Student"))
+                    .Select(x => new SimpleUser(Guid.Parse(x.Id), x.UserName))
+                    .Take(20);
+                return students;
+            }
+
+            var group = await _dbContext.Groups.Include(x => x.Students).FirstOrDefaultAsync(x => x.Id == Id);
+            return group?.Students?.Select(x => new SimpleUser(Guid.Parse(x.Id), x.UserName)) ?? [];
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Exсeption while getting students");
-            return null;
+            return [];
         }
     }
 }
