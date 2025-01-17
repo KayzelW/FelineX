@@ -207,10 +207,12 @@ else
     [Inject] private NavigationManager NavigationManager { get; }
 
     [Parameter] public string TestLink { get; set; }
+    
     private TestAnswer testAnswer { get; set; } = new TestAnswer()
     {
         AnsweredTest = null,
     };
+    
     private UniqueTest? test => testAnswer.AnsweredTest;
     private bool IsSended { get; set; } = false;
 
@@ -234,7 +236,7 @@ else
     {
         IsSended = true;
         var ansTestId = await ApiService.SubmitTest(testAnswer);
-        NavigationManager.NavigateTo($"result_test/{ansTestId}");
+        NavigationManager.NavigateTo($"/Test/Send/{ansTestId}");
     }
 
 }

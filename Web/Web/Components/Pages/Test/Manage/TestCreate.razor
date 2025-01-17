@@ -111,7 +111,7 @@
 @code {
     [Inject] private HttpClient HttpClient { get; set; }
     [Inject] private NavigationManager NavigationManager { get; set; }
-    [Inject] private ILogger<EditTest> Logger { get; set; }
+    [Inject] private ILogger<TestEdit> Logger { get; set; }
 
     [Parameter] public UniqueTest NewTest { get; set; } = new();
     private bool isModalVisibleStudent;

@@ -42,5 +42,16 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\tests\CorrectionTest.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\CreatedTest.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\CreateTest.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\MyTests.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\Test.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\TestAnswers.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\TestResult.razor" />
+      <_ContentIncludedByDefault Remove="Pages\tests\TestResultStudents.razor" />
+    </ItemGroup>
+
 
 </Project>

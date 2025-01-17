@@ -10,7 +10,7 @@ using TestDTO = Web.Controllers.Models.TestDTO;
 
 namespace Web.Controllers;
 
-[ApiController, Route("api/[controller]"), Authorize]
+[ApiController, Route("api/[controller]"), Authorize(Policy = "Teacher")]
 public partial class TestController(
     AppDbContext dbContext,
     ILogger<TestController> logger,
@@ -23,7 +23,7 @@ public partial class TestController(
     /// Must be used when Teacher trying to see all available tests 
     /// </summary>
     /// <returns>list of <see cref="Test"/></returns>
-    [HttpGet("get_tests"), Authorize(Policy = "Teacher")]
+    [HttpGet("get_tests")]
     public async Task<ActionResult<IEnumerable<UniqueTest>>> GetTests()
     {
         var userId = this.GetUserId().ToString();
@@ -82,7 +82,7 @@ public partial class TestController(
         return Ok(test);
     }
 
-    [HttpGet("get_original_test/{id:guid}"), Authorize(Roles = "Teacher,Admin")]
+    [HttpGet("get_original_test/{id:guid}")]
     public async Task<IActionResult?> GetOriginalTest(Guid id)
     {
         var test = await dbContext.Tests
@@ -92,13 +92,14 @@ public partial class TestController(
         return Ok(test);
     }
 
-    [HttpGet("get_list_students_test_answers/{testId:guid}"), Authorize(Roles = "Teacher,Admin")]
-    public async Task<IActionResult> GetListStudentsTestAnswers(Guid testId)
+    [HttpGet("get_list_students_test_answers/{testId:guid}")]
+    public async Task<ActionResult<IEnumerable<TestAnswer>>> GetListStudentsTestAnswers(Guid testId)
     {
         try
         {
             var listTestAnswers = await dbContext.TestAnswers!.Where(x => x.AnsweredTestId == testId)
                 .Include(x => x.Student)
+                .Take(20)
                 .ToListAsync();
             return Ok(listTestAnswers);
         }

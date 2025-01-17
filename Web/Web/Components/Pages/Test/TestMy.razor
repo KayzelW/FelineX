@@ -1,16 +1,14 @@
-﻿@page "/my_tests"
-@attribute [Authorize, AuthorizeLevel(AccessLevel.Exists)]
+﻿@page "/Test/My"
+@attribute [Authorize(Policy = "Teacher")]
 
-@using MyTest = Shared.DB.Test.Test;
 @using QRCoder
-@using Shared.Types
-@using System.IO
-@inject ApiService _ApiService
-@inject NavigationManager _navigationManager
-@inject ILogger<MyTests> _logger
+@using Microsoft.AspNetCore.Authorization
+@using Shared.Data.Test
+
 
 <div class="container-center">
-    <button class="btn" style=" box-shadow: none;" type="button" @onclick="NavigateToCreateTest">Создать новый тест</button>
+    <button class="btn" style=" box-shadow: none;" type="button" @onclick="NavigateToCreateTest">Создать новый тест
+    </button>
 </div>
 
 <div class="text-success" style="border-color:  #00003A; height: 1px">
@@ -19,7 +17,7 @@
 
 <div>
     <h2 class="text-left">Тесты</h2>
-    <h1> </h1>
+    <h1></h1>
 </div>
 
 @if (Tests.Count == 0)
@@ -28,7 +26,8 @@
 }
 else
 {
-    <table class="table table-borderless table-responsive table-a" size="auto" style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
+    <table class="table table-borderless table-responsive table-a" size="auto"
+           style="--bs-table-bg: #DDEBFF; border-radius: .5rem;  -webkit-text-fill-color: #00003A">
         <thead>
         <tr>
             <th scope="col" style=" -webkit-text-fill-color: #00003A; border-radius: .5rem">#</th>
@@ -46,24 +45,34 @@ else
                 <th scope="row">@test.Id</th>
                 <td>
                     <p>
-                        <a class="link-opacity-100-hover" @onclick="() => NavigateToTest(test.Id.ToString())">@test.TestName</a>
+                        <a class="link-opacity-100-hover"
+                           @onclick="() => NavigateToTest(test.Id.ToString())">@test.TestName</a>
                     </p>
                 </td>
                 <td>@test.CreationTime.ToString()</td>
                 <td>@test.Tasks?.Count</td>
                 <td>
                     <div class="btn-group" role="group" aria-label="Basic example" style="box-shadow: none;">
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => ShowQrCode(test.Id)">
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                @onclick="() => ShowQrCode(test.Id)">
                             <i class="bi bi-qr-code" style="color: #00003A; box-shadow: none;" title="QR-код"></i>
                         </button>
-                        <button type="button" class="btn btn-secondary m-1" style="background-color: transparent; border: 0px; box-shadow: none;"  @onclick="() => NavigateToTestCorrect(test.Id.ToString())">
+                        <button type="button" class="btn btn-secondary m-1"
+                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                @onclick="() => NavigateToTestCorrect(test.Id.ToString())">
                             <i class="bi bi-pencil" style="color: #00003A; box-shadow: none;" title="Изменить"></i>
                         </button>
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => DeleteTest(test.Id)">
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                @onclick="() => DeleteTest(test)">
                             <i class="bi bi-trash3" style="color: #00003A; box-shadow: none;" title="Удалить"></i>
                         </button>
-                        <button type="button" class="btn btn-secondary m-1 btn-transparent" style="background-color: transparent; border: 0px; box-shadow: none;" @onclick="() => NavigateToTestAnswers(test.Id.ToString())">
-                            <i class="bi bi-bar-chart-line" style="color: #00003A; box-shadow: none;" title="Решения"></i>
+                        <button type="button" class="btn btn-secondary m-1 btn-transparent"
+                                style="background-color: transparent; border: 0px; box-shadow: none;"
+                                @onclick="() => NavigateToTestAnswers(test.Id.ToString())">
+                            <i class="bi bi-bar-chart-line" style="color: #00003A; box-shadow: none;"
+                               title="Решения"></i>
                         </button>
                     </div>
                 </td>
@@ -76,16 +85,16 @@ else
 @if (isQrModalVisible)
 {
     <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
-        <div class="modal-dialog" >
+        <div class="modal-dialog">
             <div class="modal-content" style="background-color:#DDEBFF; border-color: #00003A">
-                <div class="modal-header"  >
+                <div class="modal-header">
                     <h5 class="modal-title">QR-код для теста</h5>
-                    <button type="button" class="btn-close"  aria-label="Close" @onclick="HideQrCode"></button>
+                    <button type="button" class="btn-close" aria-label="Close" @onclick="HideQrCode"></button>
                 </div>
-                <div class="modal-body" >
+                <div class="modal-body">
                     @if (qrCodeImage != null)
                     {
-                        <img src="@qrCodeImage" alt="QR Code" style="width: 100%; height: auto;" />
+                        <img src="@qrCodeImage" alt="QR Code" style="width: 100%; height: auto;"/>
                     }
                     else
                     {
@@ -98,7 +107,11 @@ else
 }
 
 @code {
-    private List<MyTest> Tests { get; set; } = new();
+    [Inject] private NavigationManager NavigationManager { get; set; }
+    [Inject] private ILogger<TestMy> Logger { get; set; }
+    [Inject] private HttpClient HttpClient { get; set; }
+
+    private List<UniqueTest> Tests { get; set; } = new();
     private bool isQrModalVisible;
     private string? qrCodeImage;
 
@@ -107,7 +120,7 @@ else
         await base.OnInitializedAsync();
         try
         {
-            Tests = await _ApiService.GetTests();
+            Tests = await HttpClient.GetFromJsonAsync<List<UniqueTest>>("/api/Test/get_tests") ?? [];
         }
         catch (Exception e)
         {
@@ -120,35 +133,34 @@ else
 
     private void NavigateToCreateTest()
     {
-        _navigationManager.NavigateTo("/create_test");
+        NavigationManager.NavigateTo("/Test/Create");
     }
 
     private void NavigateToTest(string testId)
     {
-        _navigationManager.NavigateTo($"test/{testId}");
+        NavigationManager.NavigateTo($"/Test/{testId}");
     }
 
     private void NavigateToTestAnswers(string testId)
     {
-        _navigationManager.NavigateTo($"/test_answers/{testId}");
-    }
-    
-    private void NavigateToTestCorrect(string testId)
-    {
-        _navigationManager.NavigateTo($"/correctionTest/{testId}");
+        NavigationManager.NavigateTo($"/test_answers/{testId}");
     }
 
-    private async Task DeleteTest(Guid testId)
+    private void NavigateToTestCorrect(string testId)
     {
-        Tests.Remove(Tests.FirstOrDefault(x => x.Id == testId)!);
-        await _ApiService.DeleteTest(testId);
-        _logger.LogInformation($"Test with id {testId} deleted");
+        NavigationManager.NavigateTo($"/correctionTest/{testId}");
+    }
+
+    private async Task DeleteTest(UniqueTest test)
+    {
+        Tests.Remove(test);
+        await HttpClient.DeleteAsync($"api/Test/delete_test/{test.Id}");
         await InvokeAsync(StateHasChanged);
     }
 
     private void ShowQrCode(Guid testId)
     {
-        var testLink = _navigationManager.BaseUri + $"test/{testId}";
+        var testLink = NavigationManager.BaseUri + $"test/{testId}";
         qrCodeImage = GenerateQrCode(testLink);
         isQrModalVisible = true;
     }
@@ -168,4 +180,5 @@ else
         var imageDataUrl = $"data:image/png;base64,{Convert.ToBase64String(qrCodeBytes)}";
         return imageDataUrl;
     }
+
 }

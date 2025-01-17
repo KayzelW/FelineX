@@ -1,4 +1,4 @@
-﻿@page "/test_answers/{TestId}"
+﻿@page "/Test/Answers/{TestId}"
 @attribute [Authorize(Policy = "Teacher")]
 
 @using System.Globalization
@@ -25,7 +25,7 @@
     </thead>
     <tbody>
 
-    @if (_testAnswers == null)
+    @if (_testAnswers.Count == 0)
     {
         <h1>Никто пока не прошёл этот тест</h1>
     }
