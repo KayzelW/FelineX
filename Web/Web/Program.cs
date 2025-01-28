@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.Data;
 using Web.Components;
@@ -13,11 +12,16 @@ using Web.Components.Account;
 using Web.Services;
 using Web.Services.Interfaces;
 using Web.Services.Repositories;
-using _Imports = Web.Client._Imports;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #region Services
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
 
 builder.AddServiceDefaults();
 builder.AddRedisDistributedCache("cache");
@@ -29,9 +33,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllers();
 
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveWebAssemblyComponents();
 builder.Services.AddHttpClient();
 
 builder.Services.AddCascadingAuthenticationState();
@@ -50,9 +51,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = IdentityConstants.ApplicationScheme;
     options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-
-    // options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
-});
+})
+// .AddIdentityCookies()
+;
 
 builder.Services.AddHangfire(configuration => configuration
     .UseSimpleAssemblyNameTypeSerializer()
@@ -112,7 +113,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    // app.UseWebAssemblyDebugging();
+    app.UseWebAssemblyDebugging();
     app.UseMigrationsEndPoint();
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -129,15 +130,13 @@ app.MapHangfireDashboardWithAuthorizationPolicy("Admin", "/hangfire"); //.Requir
 
 app.MapControllers();
 
-// app.UseHttpLogging();
-
-app.UseStaticFiles();
 app.UseAntiforgery();
 
-// app.MapStaticAssets();
+app.MapStaticAssets();
 app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(_Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(Web.Client._Imports).Assembly);
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();

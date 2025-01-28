@@ -18,7 +18,7 @@ public partial class TestController(
     : Controller
 {
     private readonly ILogger _logger = logger;
-
+    
     /// <summary>
     /// Must be used when Teacher trying to see all available tests 
     /// </summary>
